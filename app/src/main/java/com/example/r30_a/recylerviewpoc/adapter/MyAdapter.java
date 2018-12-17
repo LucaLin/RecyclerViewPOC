@@ -6,6 +6,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.r30_a.recylerviewpoc.R;
@@ -45,6 +46,11 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MainViewHolder>{
 
         holder.txv_Name.setText(list.get(position).getName());
         holder.txv_PhoneNum.setText(list.get(position).getPhoneNum());
+        if(list.get(position).getImg_avatar() != null){
+            holder.img_avatar.setImageBitmap(list.get(position).getImg_avatar());
+        }else{
+            holder.img_avatar.setBackgroundResource(R.drawable.icon_avatar);
+        }
 
     }
 
@@ -67,11 +73,13 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MainViewHolder>{
     public class MainViewHolder extends RecyclerView.ViewHolder {
 
         TextView txv_Name, txv_PhoneNum;
+        ImageView img_avatar;
 
         public MainViewHolder(View v) {
             super(v);
             txv_Name = v.findViewById(R.id.txv_Name);
             txv_PhoneNum = v.findViewById(R.id.txv_PhoneNum);
+            img_avatar = v.findViewById(R.id.img_avatar);
         }
 
         public TextView getTxv_Name() {
@@ -80,6 +88,10 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MainViewHolder>{
 
         public TextView getTxv_PhoneNum() {
             return txv_PhoneNum;
+        }
+
+        public ImageView getImg_avatar() {
+            return img_avatar;
         }
     }
 }
