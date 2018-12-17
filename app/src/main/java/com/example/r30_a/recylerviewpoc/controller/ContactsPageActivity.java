@@ -14,7 +14,13 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
+import android.view.View;
+import android.widget.Adapter;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -29,10 +35,13 @@ import java.util.ArrayList;
 
 import static com.example.r30_a.recylerviewpoc.util.CommonUtil.isCellPhoneNumber;
 
-public class ContactsPageActivity extends AppCompatActivity {
+public class ContactsPageActivity extends AppCompatActivity{
 
     Toast toast;
-    ArrayList<ContactData> myContactList;//聯絡人清單表
+    ArrayList<ContactData> myContactList;
+    ArrayList<ContactData> tempList;//聯絡人清單表
+    ArrayList<ContactData> searchList ;
+
     private Cursor cursor;//搜尋資料的游標
     private ContactData contactData;//用來儲存資料的物件
     private ContentResolver resolver;
@@ -48,6 +57,7 @@ public class ContactsPageActivity extends AppCompatActivity {
     private CommonUtil commonUtil;
     RecyclerView contact_RecyclerView;
     MyAdapter adapter;
+    EditText edt_search;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,10 +65,8 @@ public class ContactsPageActivity extends AppCompatActivity {
         setContentView(R.layout.activity_contacts_page);
         initView();
 
-        adapter = new MyAdapter(this,getContactList(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,phoneNumberProjection));
-
-        contact_RecyclerView.setLayoutManager(new LinearLayoutManager(this));//設定排版樣式
-        contact_RecyclerView.setAdapter(adapter);
+        myContactList = getContactList(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,phoneNumberProjection);
+        setContactList(contact_RecyclerView,adapter,myContactList);
 
         ItemTouchHelper.Callback callback = new ItemTouchHelper.SimpleCallback(0,ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT){
             @Override
@@ -82,12 +90,22 @@ public class ContactsPageActivity extends AppCompatActivity {
 
     }
 
+    private void setContactList(RecyclerView recyclerView, MyAdapter adapter, ArrayList<ContactData> list) {
+
+        adapter = new MyAdapter(this,list);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));//設定排版樣式
+        recyclerView.setAdapter(adapter);
+
+    }
+
+
+
     @Override
     protected void onResume() {
         super.onResume();
 
         if(myContactList != null && myContactList.size()>0){
-
+            setContactList(contact_RecyclerView,adapter,myContactList);
         }
     }
 
@@ -95,14 +113,39 @@ public class ContactsPageActivity extends AppCompatActivity {
         resolver = this.getContentResolver();
         toast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
         commonUtil = new CommonUtil();
+        myContactList = new ArrayList<>();
         contact_RecyclerView = (RecyclerView)findViewById(R.id.contact_RecyclerView);
+        edt_search = (EditText)findViewById(R.id.edt_search);
+        edt_search.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if(start > 1){
+                    searchList = new ArrayList<>();
+                    for(int i = 0;i< myContactList.size();i++){
+                        String num = myContactList.get(i).getPhoneNum().substring(0,start+1);
+                        if(num.equals(String.valueOf(s))){
+                            searchList.add(myContactList.get(i));
+
+                        }
+                        setContactList(contact_RecyclerView,adapter,searchList);
+                    }
+                }else {
+                    setContactList(contact_RecyclerView, adapter, myContactList);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+        });
 
 
     }
 
 
     public ArrayList<ContactData> getContactList( Uri uri, String[] projecction){
-        myContactList = new ArrayList<>();
+        tempList = new ArrayList<>();
         try {
 
             String name;
@@ -124,20 +167,20 @@ public class ContactsPageActivity extends AppCompatActivity {
                     if (!TextUtils.isEmpty(mobileNum) && !isCellPhoneNumber(mobileNum)) {
                         continue;
                     } else {
-                        addContactToList(id,mobileNum,name, get_Avatar(resolver,id), myContactList);
+                        addContactToList(id,mobileNum,name, get_Avatar(resolver,id), tempList);
                     }
                 }
                 cursor.close();
-                return myContactList;
+                return tempList;
             } else {
                 toast.setText(R.string.noData);
                 toast.show();
-                return myContactList;
+                return tempList;
             }
         }catch (Exception e){
             e.getMessage();
         }
-        return myContactList;
+        return tempList;
 
 
     }
@@ -189,6 +232,7 @@ public class ContactsPageActivity extends AppCompatActivity {
 
 
     }
+
 
 
 }

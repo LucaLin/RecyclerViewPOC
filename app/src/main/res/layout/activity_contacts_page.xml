@@ -6,8 +6,20 @@
     android:layout_height="match_parent"
     tools:context="com.example.r30_a.recylerviewpoc.controller.ContactsPageActivity">
 
+    <EditText
+        android:id="@+id/edt_search"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_toLeftOf="@+id/btn_search"
+        android:ems="10"
+        android:hint="輸入號碼以搜尋"
+        android:inputType="phone" />
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/contact_RecyclerView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:layout_below="@+id/edt_search" />
+
 </RelativeLayout>

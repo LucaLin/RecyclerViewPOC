@@ -1,7 +1,15 @@
 package com.example.r30_a.recylerviewpoc.adapter;
 
+import android.Manifest;
+import android.app.AlertDialog;
+import android.app.Application;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,6 +18,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.r30_a.recylerviewpoc.R;
+import com.example.r30_a.recylerviewpoc.controller.ContactsPageActivity;
 import com.example.r30_a.recylerviewpoc.model.ContactData;
 
 import java.util.ArrayList;
@@ -18,7 +27,7 @@ import java.util.ArrayList;
  * Created by LUCA on 2018/12/12.
  */
 
-public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MainViewHolder>{
+public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MainViewHolder> {
 
 
     ArrayList<ContactData> list = new ArrayList();
@@ -42,7 +51,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MainViewHolder>{
     }
 
     @Override
-    public void onBindViewHolder(@NonNull MainViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final MainViewHolder holder, final int position) {
 
         holder.txv_Name.setText(list.get(position).getName());
         holder.txv_PhoneNum.setText(list.get(position).getPhoneNum());
@@ -51,6 +60,34 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MainViewHolder>{
         }else{
             holder.img_avatar.setBackgroundResource(R.drawable.icon_avatar);
         }
+        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                builder.setTitle("請選擇功能");
+                builder.setPositiveButton("通話", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + list.get(position).getPhoneNum()));
+                        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+                            return;
+                        }
+                        context.startActivity(intent);
+                    }
+                }).setNeutralButton("傳簡訊", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent intent = new Intent(Intent.ACTION_SENDTO,Uri.parse("smsto:"+ list.get(position).getPhoneNum()));
+                        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED) {
+                            return;
+                        }
+                        context.startActivity(intent);
+                    }
+                }).show();
+                return true;
+            }
+        });
+
 
     }
 
@@ -80,6 +117,8 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MainViewHolder>{
             txv_Name = v.findViewById(R.id.txv_Name);
             txv_PhoneNum = v.findViewById(R.id.txv_PhoneNum);
             img_avatar = v.findViewById(R.id.img_avatar);
+
+
         }
 
         public TextView getTxv_Name() {
