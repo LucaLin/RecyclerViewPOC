@@ -2,32 +2,34 @@ package com.example.r30_a.recylerviewpoc.controller;
 
 import android.content.ContentResolver;
 import android.content.ContentUris;
-import android.content.Context;
-import android.content.res.AssetFileDescriptor;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.net.Uri;
 import android.provider.ContactsContract;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.helper.ItemTouchHelper;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.view.View;
-import android.widget.Adapter;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
+
 import android.widget.Toast;
 
 import com.example.r30_a.recylerviewpoc.R;
 import com.example.r30_a.recylerviewpoc.adapter.MyAdapter;
 import com.example.r30_a.recylerviewpoc.model.ContactData;
 import com.example.r30_a.recylerviewpoc.util.CommonUtil;
+
+import com.yanzhenjie.recyclerview.swipe.Closeable;
+import com.yanzhenjie.recyclerview.swipe.OnSwipeMenuItemClickListener;
+import com.yanzhenjie.recyclerview.swipe.SwipeMenu;
+import com.yanzhenjie.recyclerview.swipe.SwipeMenuCreator;
+import com.yanzhenjie.recyclerview.swipe.SwipeMenuItem;
+import com.yanzhenjie.recyclerview.swipe.SwipeMenuRecyclerView;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -55,7 +57,8 @@ public class ContactsPageActivity extends AppCompatActivity{
     String tempId = "";//聯絡人id的暫存
     public static final int REQUEST_CODE = 1;
     private CommonUtil commonUtil;
-    RecyclerView contact_RecyclerView;
+//    RecyclerView contact_RecyclerView;
+    SwipeMenuRecyclerView contact_RecyclerView;
     MyAdapter adapter;
     EditText edt_search;
 
@@ -68,36 +71,73 @@ public class ContactsPageActivity extends AppCompatActivity{
         myContactList = getContactList(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,phoneNumberProjection);
         setContactList(contact_RecyclerView,adapter,myContactList);
 
-        ItemTouchHelper.Callback callback = new ItemTouchHelper.SimpleCallback(0,ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT){
+        contact_RecyclerView.setSwipeMenuCreator(new SwipeMenuCreator() {
             @Override
-            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+            public void onCreateMenu(SwipeMenu swipeLeftMenu, SwipeMenu swipeRightMenu, int viewType) {
 
-                return false;
+
+
+                SwipeMenuItem update_item = new SwipeMenuItem(ContactsPageActivity.this);
+                setMenuItem(update_item, 240,240,R.string.update,16, Color.parseColor("#00FF00"));
+                SwipeMenuItem delete_item = new SwipeMenuItem(ContactsPageActivity.this);
+                setMenuItem(delete_item,240,240,R.string.delete,16,Color.parseColor("#FF0000"));
+
+
+                swipeRightMenu.addMenuItem(update_item);
+                swipeRightMenu.addMenuItem(delete_item);
+
 
             }
+        });
 
+        contact_RecyclerView.setSwipeMenuItemClickListener(new OnSwipeMenuItemClickListener() {
             @Override
-            public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
-
+            public void onItemClick(Closeable closeable, int adapterPosition, int menuPosition, int direction) {
 
             }
-        };
-
-        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(callback);
-                itemTouchHelper.attachToRecyclerView(contact_RecyclerView);
+        });
 
 
+
+//
+//        ItemTouchHelper.Callback callback = new ItemTouchHelper.SimpleCallback(0,ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT){
+//            @Override
+//            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+//
+//                return false;
+//
+//            }
+//
+//            @Override
+//            public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+//
+//
+//            }
+//
+//            @Override
+//            public void onSelectedChanged(RecyclerView.ViewHolder viewHolder, int actionState) {
+//                super.onSelectedChanged(viewHolder, actionState);
+//
+//
+//            }
+//
+//
+//        };
 
     }
 
-    private void setContactList(RecyclerView recyclerView, MyAdapter adapter, ArrayList<ContactData> list) {
+    private SwipeMenuItem setMenuItem(SwipeMenuItem item, int width, int height, int text_resID, int textSize, int color) {
 
-        adapter = new MyAdapter(this,list);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));//設定排版樣式
-        recyclerView.setAdapter(adapter);
 
+        item.setWidth(width)
+                .setHeight(height)
+                .setText(text_resID)
+                .setTextSize(textSize)
+                .setBackgroundColor(color);
+
+
+        return item;
     }
-
 
 
     @Override
@@ -105,7 +145,7 @@ public class ContactsPageActivity extends AppCompatActivity{
         super.onResume();
 
         if(myContactList != null && myContactList.size()>0){
-            setContactList(contact_RecyclerView,adapter,myContactList);
+           // setContactList(contact_RecyclerView,adapter,myContactList);
         }
     }
 
@@ -114,7 +154,8 @@ public class ContactsPageActivity extends AppCompatActivity{
         toast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
         commonUtil = new CommonUtil();
         myContactList = new ArrayList<>();
-        contact_RecyclerView = (RecyclerView)findViewById(R.id.contact_RecyclerView);
+//        contact_RecyclerView = (RecyclerView) findViewById(R.id.contact_RecyclerView);
+        contact_RecyclerView = (SwipeMenuRecyclerView) findViewById(R.id.contact_RecyclerView);
         edt_search = (EditText)findViewById(R.id.edt_search);
         edt_search.addTextChangedListener(new TextWatcher() {
             @Override
@@ -210,7 +251,6 @@ public class ContactsPageActivity extends AppCompatActivity{
 
     }
 
-
     /*新增聯絡人到手機清單*/
     private void addContactToList(long id, String phoneNumber, String name, Bitmap avatar, ArrayList list) {
 
@@ -230,9 +270,17 @@ public class ContactsPageActivity extends AppCompatActivity{
             list.add(contactData);
         }
 
-
     }
 
+
+    //更新通訊錄清單的方法
+    private void setContactList(RecyclerView recyclerView, MyAdapter adapter, ArrayList<ContactData> list) {
+
+        adapter = new MyAdapter(this,list);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));//設定排版樣式
+        recyclerView.setAdapter(adapter);
+
+    }
 
 
 }

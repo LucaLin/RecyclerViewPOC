@@ -6,14 +6,13 @@
 
     <padding
         android:right="6dp"
-        android:left="6dp"
-        android:top="6dp"
-        android:bottom="6dp"/>
-    <corners
-        android:bottomRightRadius="10dp"
-        android:topLeftRadius="10dp"
-        android:bottomLeftRadius="10dp"
-            android:topRightRadius="10dp"/>
+        android:left="6dp"/>
+
+    <!--<corners-->
+        <!--android:bottomRightRadius="10dp"-->
+        <!--android:topLeftRadius="10dp"-->
+        <!--android:bottomLeftRadius="10dp"-->
+            <!--android:topRightRadius="10dp"/>-->
 
 
 

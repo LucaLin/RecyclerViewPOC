@@ -3,7 +3,12 @@
     <!--元件-->
     <string name="ContactPage">通訊錄</string>
     <string name="SettingPage">更多設定</string>
+    <string name="update">更新</string>
+    <string name="delete">刪除</string>
 
     <!--提示語-->
     <string name="noData">無資料可顯示喔！</string>
+
+
+
 </resources>
