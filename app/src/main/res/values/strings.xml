@@ -4,11 +4,22 @@
     <string name="ContactPage">通訊錄</string>
     <string name="SettingPage">更多設定</string>
     <string name="update">更新</string>
+    <string name="updateTo">更改為</string>
     <string name="delete">刪除</string>
+    <string name="ContactName">名字</string>
+    <string name="ContactPhone">手機</string>
 
     <!--提示語-->
     <string name="noData">無資料可顯示喔！</string>
-
+    <string name="permissonRequest">請先開啟使用者權限</string>
+    <string name="deleteOK">刪除成功</string>
+    <string name="noUpdate">未有更新資料！請重新輸入</string>
+    <string name="wrongInput">"oops!名稱或電話格式有誤喔！"</string>
+    <string name="hint">提示</string>
+    <string name="sureToUpdate">確定要更新嗎?</string>
+    <string name="updateDataOK">更新成功</string>
+    <string name="yes">確定</string>
+    <string name="no">取消</string>
 
 
 </resources>

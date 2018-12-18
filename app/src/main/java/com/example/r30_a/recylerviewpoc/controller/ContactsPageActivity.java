@@ -1,13 +1,18 @@
 package com.example.r30_a.recylerviewpoc.controller;
 
+import android.Manifest;
 import android.content.ContentResolver;
 import android.content.ContentUris;
+import android.content.ContentValues;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
 import android.provider.ContactsContract;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -90,51 +95,41 @@ public class ContactsPageActivity extends AppCompatActivity{
             }
         });
 
+
+
         contact_RecyclerView.setSwipeMenuItemClickListener(new OnSwipeMenuItemClickListener() {
             @Override
             public void onItemClick(Closeable closeable, int adapterPosition, int menuPosition, int direction) {
 
+                switch (menuPosition){
+                    //更新
+                    case 0:
+                        Intent intent = new Intent();
+                        intent.putExtra("id",String.valueOf(myContactList.get(adapterPosition).getId()));
+                        intent.putExtra("name", myContactList.get(adapterPosition).getName());
+                        intent.putExtra("phone", myContactList.get(adapterPosition).getPhoneNum());
+                        intent.setClass(ContactsPageActivity.this, UpdateDataActivity.class);
+                        startActivityForResult(intent, ContactsPageActivity.REQUEST_CODE);
+                        break;
+                    //刪除
+                    case 1:
+                        deleteContact(myContactList.get(adapterPosition).getId(),phoneNumberProjection);
+                        break;
+
+
+                }
             }
         });
-
-
-
-//
-//        ItemTouchHelper.Callback callback = new ItemTouchHelper.SimpleCallback(0,ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT){
-//            @Override
-//            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
-//
-//                return false;
-//
-//            }
-//
-//            @Override
-//            public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
-//
-//
-//            }
-//
-//            @Override
-//            public void onSelectedChanged(RecyclerView.ViewHolder viewHolder, int actionState) {
-//                super.onSelectedChanged(viewHolder, actionState);
-//
-//
-//            }
-//
-//
-//        };
 
     }
 
     private SwipeMenuItem setMenuItem(SwipeMenuItem item, int width, int height, int text_resID, int textSize, int color) {
-
 
         item.setWidth(width)
                 .setHeight(height)
                 .setText(text_resID)
                 .setTextSize(textSize)
                 .setBackgroundColor(color);
-
 
         return item;
     }
@@ -144,9 +139,11 @@ public class ContactsPageActivity extends AppCompatActivity{
     protected void onResume() {
         super.onResume();
 
-        if(myContactList != null && myContactList.size()>0){
-           // setContactList(contact_RecyclerView,adapter,myContactList);
-        }
+//           setContactList(contact_RecyclerView,adapter,getContactList(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,phoneNumberProjection));
+        adapter = new MyAdapter(this,getContactList(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,phoneNumberProjection));
+        contact_RecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        contact_RecyclerView.setAdapter(adapter);
+
     }
 
     private void initView() {
@@ -279,8 +276,81 @@ public class ContactsPageActivity extends AppCompatActivity{
         adapter = new MyAdapter(this,list);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));//設定排版樣式
         recyclerView.setAdapter(adapter);
+    }
+
+    /*刪除聯絡人*/
+    private void deleteContact(long id, String[] projection) {
+        if(ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED ||
+                ActivityCompat.checkSelfPermission(this,Manifest.permission.WRITE_CONTACTS) == PackageManager.PERMISSION_GRANTED){
+            try {
+
+                //使用id來找原始資料
+                Cursor c = resolver.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+                        projection,
+                        "contact_id =?",
+                        new String[]{String.valueOf(id)},
+                        null);
+                if (c.moveToFirst()) {
+                    resolver.delete(ContactsContract.RawContacts.CONTENT_URI, "contact_id =?", new String[]{String.valueOf(id)});
+                    toast.setText(R.string.deleteOK);
+                    toast.show();
+                    setContactList(contact_RecyclerView,adapter,getContactList(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,phoneNumberProjection));
+
+                }
+            } catch (Exception e) {
+                e.getMessage();
+            }
+        }else {
+            toast.setText(R.string.permissonRequest);toast.show();
+        }
+    }
+
+    //取回更新後的資料，做更新聯絡人的處理
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == REQUEST_CODE){
+            if(resultCode == RESULT_OK){
+                String contact_id = data.getStringExtra("id");
+                String updateName = data.getStringExtra("Name");
+                String updatePhone = data.getStringExtra("Phone");
+                String oldName = data.getStringExtra("oldName");
+
+                Cursor c = resolver.query(ContactsContract.Data.CONTENT_URI,
+                        new String[]{ContactsContract.Data.RAW_CONTACT_ID},
+                        ContactsContract.Contacts.DISPLAY_NAME + " =?",
+                        new String[]{ oldName },null);
+
+                c.moveToFirst();
+                String raw_contact_id = c.getString(c.getColumnIndex(ContactsContract.Data.RAW_CONTACT_ID));
+                c.close();
+
+                try{
+
+                    ContentValues values = new ContentValues();
+                    values.put(ContactsContract.CommonDataKinds.Phone.NUMBER,updatePhone);
+                    values.put(ContactsContract.CommonDataKinds.Phone.TYPE, ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE);
+                    resolver.update(ContactsContract.Data.CONTENT_URI,
+                            values,
+                            ContactsContract.Data.RAW_CONTACT_ID+" =?" +" AND "+ ContactsContract.Data.MIMETYPE + " =?" ,
+                            new String[]{raw_contact_id, ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE});
+
+                    values = new ContentValues();
+                    values.put(ContactsContract.Contacts.DISPLAY_NAME,updateName);
+                    resolver.update(
+                            ContactsContract.RawContacts.CONTENT_URI,
+                            values, ContactsContract.Data.CONTACT_ID+" =?",
+                            new String[]{contact_id});
+
+                }catch (Exception e){
+                    e.getMessage();
+                }
+            }
+        }
 
     }
+
 
 
 }
