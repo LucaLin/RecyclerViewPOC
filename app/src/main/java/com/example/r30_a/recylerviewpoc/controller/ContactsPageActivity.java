@@ -47,7 +47,7 @@ public class ContactsPageActivity extends AppCompatActivity{
     Toast toast;
     ArrayList<ContactData> myContactList;
     ArrayList<ContactData> tempList;//聯絡人清單表
-    ArrayList<ContactData> searchList ;
+    ArrayList<ContactData> searchList = new ArrayList<>();
 
     private Cursor cursor;//搜尋資料的游標
     private ContactData contactData;//用來儲存資料的物件
@@ -81,16 +81,23 @@ public class ContactsPageActivity extends AppCompatActivity{
             public void onCreateMenu(SwipeMenu swipeLeftMenu, SwipeMenu swipeRightMenu, int viewType) {
 
 
-
+                //建立右菜單更新按鈕
                 SwipeMenuItem update_item = new SwipeMenuItem(ContactsPageActivity.this);
-                setMenuItem(update_item, 240,240,R.string.update,16, Color.parseColor("#00FF00"));
+                setMenuItem(update_item, 240,240,R.string.update,16, Color.parseColor("#00dd00"));
+                //建立右菜單刪除按鈕
                 SwipeMenuItem delete_item = new SwipeMenuItem(ContactsPageActivity.this);
-                setMenuItem(delete_item,240,240,R.string.delete,16,Color.parseColor("#FF0000"));
-
+                setMenuItem(delete_item,240,240,R.string.delete,16,Color.parseColor("#dd0000"));
+                //建立左菜單通話按鈕
+                SwipeMenuItem dial_item = new SwipeMenuItem(ContactsPageActivity.this);
+                setMenuItem(dial_item, 240, 240, R.string.dial,16,Color.parseColor("#00dd00"));
+                //建立左菜單簡訊按鈕
+                SwipeMenuItem sms_item = new SwipeMenuItem(ContactsPageActivity.this);
+                setMenuItem(sms_item,240,240, R.string.smsto, 16, Color.parseColor("#dddddd"));
 
                 swipeRightMenu.addMenuItem(update_item);
                 swipeRightMenu.addMenuItem(delete_item);
-
+                swipeLeftMenu.addMenuItem(dial_item);
+                swipeLeftMenu.addMenuItem(sms_item);
 
             }
         });
@@ -101,13 +108,23 @@ public class ContactsPageActivity extends AppCompatActivity{
             @Override
             public void onItemClick(Closeable closeable, int adapterPosition, int menuPosition, int direction) {
 
+
+                if(direction == -1){//向右滑動
                 switch (menuPosition){
                     //更新
                     case 0:
                         Intent intent = new Intent();
-                        intent.putExtra("id",String.valueOf(myContactList.get(adapterPosition).getId()));
-                        intent.putExtra("name", myContactList.get(adapterPosition).getName());
-                        intent.putExtra("phone", myContactList.get(adapterPosition).getPhoneNum());
+                        if(searchList.size()>0){
+                            intent.putExtra("id",String.valueOf(searchList.get(adapterPosition).getId()));
+                            intent.putExtra("name", searchList.get(adapterPosition).getName());
+                            intent.putExtra("phone", searchList.get(adapterPosition).getPhoneNum());
+                            intent.putExtra("avatar", searchList.get(adapterPosition).getImg_avatar());
+                        }else {
+                            intent.putExtra("id",String.valueOf(myContactList.get(adapterPosition).getId()));
+                            intent.putExtra("name", myContactList.get(adapterPosition).getName());
+                            intent.putExtra("phone", myContactList.get(adapterPosition).getPhoneNum());
+                            intent.putExtra("avatar", myContactList.get(adapterPosition).getImg_avatar());
+                        }
                         intent.setClass(ContactsPageActivity.this, UpdateDataActivity.class);
                         startActivityForResult(intent, ContactsPageActivity.REQUEST_CODE);
                         break;
@@ -116,6 +133,29 @@ public class ContactsPageActivity extends AppCompatActivity{
                         deleteContact(myContactList.get(adapterPosition).getId(),phoneNumberProjection);
                         break;
 
+
+                    }
+                }else {
+                    switch (menuPosition){//向左滑動
+                        //通話
+                        case 0:
+                            Intent intent_dial = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + myContactList.get(adapterPosition).getPhoneNum()));
+                            if (ActivityCompat.checkSelfPermission(ContactsPageActivity.this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+                                return;
+                            }
+                            startActivity(intent_dial);
+                            break;
+                        //簡訊
+                        case 1:
+                            Intent intent_sms = new Intent(Intent.ACTION_SENDTO,Uri.parse("smsto:"+ myContactList.get(adapterPosition).getPhoneNum()));
+                        if (ActivityCompat.checkSelfPermission(ContactsPageActivity.this, Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED) {
+                            return;
+                        }
+                        startActivity(intent_sms);
+                            break;
+
+
+                    }
 
                 }
             }
@@ -138,8 +178,7 @@ public class ContactsPageActivity extends AppCompatActivity{
     @Override
     protected void onResume() {
         super.onResume();
-
-//           setContactList(contact_RecyclerView,adapter,getContactList(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,phoneNumberProjection));
+        searchList.clear();
         adapter = new MyAdapter(this,getContactList(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,phoneNumberProjection));
         contact_RecyclerView.setLayoutManager(new LinearLayoutManager(this));
         contact_RecyclerView.setAdapter(adapter);
@@ -160,7 +199,7 @@ public class ContactsPageActivity extends AppCompatActivity{
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if(start > 1){
-                    searchList = new ArrayList<>();
+                    searchList.clear();
                     for(int i = 0;i< myContactList.size();i++){
                         String num = myContactList.get(i).getPhoneNum().substring(0,start+1);
                         if(num.equals(String.valueOf(s))){
@@ -170,6 +209,7 @@ public class ContactsPageActivity extends AppCompatActivity{
                         setContactList(contact_RecyclerView,adapter,searchList);
                     }
                 }else {
+                    searchList.clear();
                     setContactList(contact_RecyclerView, adapter, myContactList);
                 }
             }
@@ -223,6 +263,7 @@ public class ContactsPageActivity extends AppCompatActivity{
 
     }
 
+    //取得聯絡人大頭照資料
     public static Bitmap get_Avatar(ContentResolver resolver, long contact_ID){
         Bitmap bitmap = null;
 
@@ -327,7 +368,7 @@ public class ContactsPageActivity extends AppCompatActivity{
                 c.close();
 
                 try{
-
+                    //更新電話
                     ContentValues values = new ContentValues();
                     values.put(ContactsContract.CommonDataKinds.Phone.NUMBER,updatePhone);
                     values.put(ContactsContract.CommonDataKinds.Phone.TYPE, ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE);
@@ -335,7 +376,7 @@ public class ContactsPageActivity extends AppCompatActivity{
                             values,
                             ContactsContract.Data.RAW_CONTACT_ID+" =?" +" AND "+ ContactsContract.Data.MIMETYPE + " =?" ,
                             new String[]{raw_contact_id, ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE});
-
+                    //更新名字
                     values = new ContentValues();
                     values.put(ContactsContract.Contacts.DISPLAY_NAME,updateName);
                     resolver.update(

@@ -8,6 +8,7 @@ import android.graphics.drawable.Drawable;
 import android.util.Base64;
 import android.widget.ImageView;
 
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 
 /**
@@ -51,7 +52,13 @@ public class ContactData {
 
     }
 
-    public Bitmap getImg_avatar() {
-        return img_avatar;
+    public byte[] getImg_avatar() {
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        if(img_avatar != null){
+            img_avatar.compress(Bitmap.CompressFormat.PNG,100,stream);
+        }else {
+            return null;
+        }
+        return stream.toByteArray();
     }
 }

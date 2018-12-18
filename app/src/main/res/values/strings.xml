@@ -8,6 +8,8 @@
     <string name="delete">刪除</string>
     <string name="ContactName">名字</string>
     <string name="ContactPhone">手機</string>
+    <string name="dial">通話</string>
+    <string name="smsto">簡訊</string>
 
     <!--提示語-->
     <string name="noData">無資料可顯示喔！</string>
@@ -20,6 +22,8 @@
     <string name="updateDataOK">更新成功</string>
     <string name="yes">確定</string>
     <string name="no">取消</string>
+    <string name="button_menu_camera">拍攝照片</string>
+    <string name="button_menu_picture">從相簿中選擇</string>
 
 
 </resources>

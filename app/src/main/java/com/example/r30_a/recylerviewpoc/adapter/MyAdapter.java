@@ -6,6 +6,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
 import android.support.annotation.NonNull;
@@ -69,37 +71,11 @@ public class MyAdapter extends SwipeMenuAdapter<MyAdapter.MainViewHolder> {
         holder.txv_Name.setText(list.get(position).getName());
         holder.txv_PhoneNum.setText(list.get(position).getPhoneNum());
         if(list.get(position).getImg_avatar() != null){
-            holder.img_avatar.setImageBitmap(list.get(position).getImg_avatar());
+            Bitmap bitmap_avatar = BitmapFactory.decodeByteArray(list.get(position).getImg_avatar(),0,list.get(position).getImg_avatar().length);
+            holder.img_avatar.setImageBitmap(bitmap_avatar);
         }else{
-            holder.img_avatar.setBackgroundResource(R.drawable.icon_avatar);
+            holder.img_avatar.setBackgroundResource(R.drawable.iconfinder_man_196742);
         }
-//        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
-//            @Override
-//            public boolean onLongClick(View v) {
-//                AlertDialog.Builder builder = new AlertDialog.Builder(context);
-//                builder.setTitle("請選擇功能");
-//                builder.setPositiveButton("通話", new DialogInterface.OnClickListener() {
-//                    @Override
-//                    public void onClick(DialogInterface dialog, int which) {
-//                        Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + list.get(position).getPhoneNum()));
-//                        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
-//                            return;
-//                        }
-//                        context.startActivity(intent);
-//                    }
-//                }).setNeutralButton("傳簡訊", new DialogInterface.OnClickListener() {
-//                    @Override
-//                    public void onClick(DialogInterface dialog, int which) {
-//                        Intent intent = new Intent(Intent.ACTION_SENDTO,Uri.parse("smsto:"+ list.get(position).getPhoneNum()));
-//                        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED) {
-//                            return;
-//                        }
-//                        context.startActivity(intent);
-//                    }
-//                }).show();
-//                return true;
-//            }
-//        });
 
     }
 

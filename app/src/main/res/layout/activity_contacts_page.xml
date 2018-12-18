@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:ems="10"
-        android:focusable="false"
+        android:focusable="auto"
         android:hint="輸入號碼以搜尋"
         android:inputType="phone"
         android:textColorLink="@color/colorPrimary" />
