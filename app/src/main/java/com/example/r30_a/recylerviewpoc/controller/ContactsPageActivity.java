@@ -37,6 +37,9 @@ import com.yanzhenjie.recyclerview.swipe.SwipeMenuItem;
 import com.yanzhenjie.recyclerview.swipe.SwipeMenuRecyclerView;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 
@@ -376,8 +379,8 @@ public class ContactsPageActivity extends AppCompatActivity{
                 String updateName = data.getStringExtra("Name");
                 String updatePhone = data.getStringExtra("Phone");
                 String oldName = data.getStringExtra("oldName");
-                byte[] bytes_avatar = data.getByteArrayExtra("avatar");
-
+//                byte[] bytes_avatar = data.getByteArrayExtra("avatar");
+                byte[] bytes_avatar = getBytesFromUri(data.getData());
                 Cursor c = resolver.query(ContactsContract.Data.CONTENT_URI,
                         new String[]{ContactsContract.Data.RAW_CONTACT_ID},
                         ContactsContract.Contacts.DISPLAY_NAME + " =?",
@@ -412,6 +415,7 @@ public class ContactsPageActivity extends AppCompatActivity{
                         if(photo_ID > 0){//已有設定大頭貼時
                             values = new ContentValues();
                             values.put(ContactsContract.Contacts.Photo.PHOTO,bytes_avatar);
+
                             resolver.update(ContactsContract.Data.CONTENT_URI,values, ContactsContract.Data.RAW_CONTACT_ID+ "=? AND "
                             + ContactsContract.Data.MIMETYPE+ "=?", new String[]{raw_contact_id, ContactsContract.CommonDataKinds.Photo.CONTENT_ITEM_TYPE});
                         }else {//尚未有大頭貼時
@@ -432,6 +436,31 @@ public class ContactsPageActivity extends AppCompatActivity{
             Now_ContactList.clear();
         }
 
+    }
+
+    public byte[] getBytesFromUri(Uri uri){
+        ContentResolver resolver = getContentResolver();
+        byte[] data = null;
+        try {
+            InputStream inputStream = resolver.openInputStream(uri);
+            byte[] buffer = new byte[1024];
+            int len = 0;
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            while ((len = inputStream.read(buffer)) != -1){
+                outputStream.write(buffer,0,len);
+
+            }
+            data = outputStream.toByteArray();
+            outputStream.close();
+            inputStream.close();
+            return data;
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return data;
     }
 
 

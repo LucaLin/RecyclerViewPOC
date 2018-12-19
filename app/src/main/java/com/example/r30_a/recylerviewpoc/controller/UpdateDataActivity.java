@@ -29,6 +29,8 @@ import com.github.dfqin.grantor.PermissionsUtil;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 
 public class UpdateDataActivity extends AppCompatActivity implements View.OnClickListener{
 
@@ -47,8 +49,9 @@ public class UpdateDataActivity extends AppCompatActivity implements View.OnClic
     //取得結果用的Request Code
     private final int CAMERA_REQUEST = 1;
     private final int ALBUM_REQUEST = 2;
+    private final int CROP_REQUEST = 3;
 
-
+    Uri uri;
 
 
     @Override
@@ -123,19 +126,18 @@ public class UpdateDataActivity extends AppCompatActivity implements View.OnClic
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                 try {
-                                    //ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                                    //update_avatar.compress(Bitmap.CompressFormat.PNG,100,stream);
-                                    Bundle bundle = new Bundle();
 
                                     Intent intent = new Intent();
                                     intent.putExtra("id", dataId);
                                     intent.putExtra("Name", updateName);
                                     intent.putExtra("Phone", updatePhone);
                                     intent.putExtra("oldName", txvDataName.getText());
-                                    intent.putExtra("avatar",bytes);
-//                                    intent.putExtra("avatar",stream.toByteArray());
-                                    intent.setClass(UpdateDataActivity.this, ContactsPageActivity.class);
+//                                    intent.putExtra("avatar",bytes);
+                                    intent.setData(uri);
                                     setResult(RESULT_OK, intent);
+
+                                    intent.setClass(UpdateDataActivity.this, ContactsPageActivity.class);
+
                                     //startActivityForResult(intent,ContactsPageActivity.REQUEST_CODE);
                                     toast.setText(R.string.updateDataOK);
                                     toast.show();
@@ -207,19 +209,43 @@ public class UpdateDataActivity extends AppCompatActivity implements View.OnClic
         if(resultCode == RESULT_OK){
 
             if(requestCode == ALBUM_REQUEST){
-                Uri uri = data.getData();
-                ContentResolver cr = this.getContentResolver();
+                uri = data.getData();
 
                 try{
-                    update_avatar= BitmapFactory.decodeStream(cr.openInputStream(uri));
-                    img_avatar.setImageBitmap(update_avatar);
+
+//                    img_avatar.setImageURI(uri);
+
+                    InputStream inputStream = getContentResolver().openInputStream(uri);
+                    update_avatar = BitmapFactory.decodeStream(inputStream);
                     ByteArrayOutputStream stream = new ByteArrayOutputStream();
                     update_avatar.compress(Bitmap.CompressFormat.PNG,100,stream);
+                    img_avatar.setImageBitmap(update_avatar);
                     bytes = stream.toByteArray();
                 }catch (Exception e){
                     e.getMessage();
                 }
-            }
+        }
+
         }
     }
+
+//    private void doCropPhoto(Uri uri) {
+//        Intent intent = getCropImageIntent(uri);
+//        startActivityForResult(intent,CROP_REQUEST);
+//    }
+//
+//    private Intent getCropImageIntent(Uri uri) {
+//        Intent intent = new Intent("com.android.camera.action.CROP");
+//        intent.setDataAndType(uri,"image/*");
+//        intent.putExtra("crop","true");
+//        intent.putExtra("scale",true);
+//        intent.putExtra("aspectX", 1);// 这兩項為裁剪框的比例.
+//        intent.putExtra("aspectY", 1);// x:y=1:1
+//        intent.putExtra("outputX", 500);//回傳照片比例X
+//        intent.putExtra("outputY", 500);//回傳照片比例Y
+//        intent.putExtra("return-data", true);
+//        return intent;
+//
+//    }
+
 }
