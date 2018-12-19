@@ -1,9 +1,13 @@
 package com.example.r30_a.recylerviewpoc.controller;
 
+import android.Manifest;
+import android.content.ContentResolver;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -20,6 +24,11 @@ import android.widget.Toast;
 
 import com.example.r30_a.recylerviewpoc.R;
 import com.example.r30_a.recylerviewpoc.util.CommonUtil;
+import com.github.dfqin.grantor.PermissionsUtil;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
 
 public class UpdateDataActivity extends AppCompatActivity implements View.OnClickListener{
 
@@ -30,6 +39,15 @@ public class UpdateDataActivity extends AppCompatActivity implements View.OnClic
     String dataId;
     ImageView img_avatar;
     FrameLayout pickUserPhoto;
+    Bitmap old_avatar, update_avatar;
+    ByteArrayOutputStream stream;
+    byte[] bytes;
+    SharedPreferences sharedPreferences;
+
+    //取得結果用的Request Code
+    private final int CAMERA_REQUEST = 1;
+    private final int ALBUM_REQUEST = 2;
+
 
 
 
@@ -65,11 +83,18 @@ public class UpdateDataActivity extends AppCompatActivity implements View.OnClic
 
         byte[] avatar_byte = intent.getByteArrayExtra("avatar" );
         if(avatar_byte != null && avatar_byte.length  != 0 ){
-            Bitmap bitmap_avatar = BitmapFactory.decodeByteArray(avatar_byte,0,avatar_byte.length);
-            img_avatar.setImageBitmap(bitmap_avatar);
+            old_avatar = BitmapFactory.decodeByteArray(avatar_byte,0,avatar_byte.length);
+            img_avatar.setImageBitmap(old_avatar);
         }
         pickUserPhoto = (FrameLayout)findViewById(R.id.pickUserPhoto);
         pickUserPhoto.setOnClickListener(this);
+
+
+
+
+
+
+
 
 
     }
@@ -82,7 +107,8 @@ public class UpdateDataActivity extends AppCompatActivity implements View.OnClic
             final String updateName = edtName.getText().toString();
             final String updatePhone = edtPhone.getText().toString();
 
-            if (updateName.equals(txvDataName.getText()) && updatePhone.equals(txvDataPhone.getText())) {
+            if (updateName.equals(txvDataName.getText()) && updatePhone.equals(txvDataPhone.getText())
+                    && old_avatar == update_avatar) {
                 toast.setText(R.string.noUpdate);
                 toast.show();
             } else if (TextUtils.isEmpty(updateName) || TextUtils.isEmpty(updatePhone)) {
@@ -96,17 +122,29 @@ public class UpdateDataActivity extends AppCompatActivity implements View.OnClic
                             .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
+                                try {
+                                    //ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                                    //update_avatar.compress(Bitmap.CompressFormat.PNG,100,stream);
+                                    Bundle bundle = new Bundle();
 
                                     Intent intent = new Intent();
                                     intent.putExtra("id", dataId);
                                     intent.putExtra("Name", updateName);
                                     intent.putExtra("Phone", updatePhone);
                                     intent.putExtra("oldName", txvDataName.getText());
+                                    intent.putExtra("avatar",bytes);
+//                                    intent.putExtra("avatar",stream.toByteArray());
                                     intent.setClass(UpdateDataActivity.this, ContactsPageActivity.class);
                                     setResult(RESULT_OK, intent);
+                                    //startActivityForResult(intent,ContactsPageActivity.REQUEST_CODE);
                                     toast.setText(R.string.updateDataOK);
                                     toast.show();
                                     finish();
+
+                                }catch (Exception e){
+                                    e.getMessage();
+                                }
+
 
                                 }
                             }).setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
@@ -139,7 +177,7 @@ public class UpdateDataActivity extends AppCompatActivity implements View.OnClic
                         //cameraStart();
                         break;
                     case R.id.item_picture:
-                       // albumStart();
+                        albumStart();
                         break;
                 }
                 return true;
@@ -147,5 +185,41 @@ public class UpdateDataActivity extends AppCompatActivity implements View.OnClic
         });
         popupMenu.show();
 
+    }
+
+    private void albumStart() {
+        String[] permissionAlbum = {//先檢查權限
+                Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,};
+        if(!PermissionsUtil.hasPermission(this,permissionAlbum)) {
+
+            Intent albumIntent = new Intent();
+            albumIntent.setType("image/*");//設定只顯示圖片區，不要秀其它的資料夾
+            albumIntent.setAction(Intent.ACTION_GET_CONTENT);//取得本機相簿的action
+            startActivityForResult(albumIntent, ALBUM_REQUEST);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(resultCode == RESULT_OK){
+
+            if(requestCode == ALBUM_REQUEST){
+                Uri uri = data.getData();
+                ContentResolver cr = this.getContentResolver();
+
+                try{
+                    update_avatar= BitmapFactory.decodeStream(cr.openInputStream(uri));
+                    img_avatar.setImageBitmap(update_avatar);
+                    ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                    update_avatar.compress(Bitmap.CompressFormat.PNG,100,stream);
+                    bytes = stream.toByteArray();
+                }catch (Exception e){
+                    e.getMessage();
+                }
+            }
+        }
     }
 }

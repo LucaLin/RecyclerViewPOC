@@ -22,6 +22,16 @@ public class ContactData {
     private long id;
     private Bitmap img_avatar ;
 
+    public int getNumber() {
+        return number;
+    }
+
+    public void setNumber(int number) {
+        this.number = number;
+    }
+
+    private int number;
+
     public void setName(String name) {
         this.name = name;
     }

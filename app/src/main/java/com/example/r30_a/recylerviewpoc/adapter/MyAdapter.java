@@ -70,6 +70,7 @@ public class MyAdapter extends SwipeMenuAdapter<MyAdapter.MainViewHolder> {
 
         holder.txv_Name.setText(list.get(position).getName());
         holder.txv_PhoneNum.setText(list.get(position).getPhoneNum());
+        holder.number.setText(String.valueOf(list.get(position).getNumber()));
         if(list.get(position).getImg_avatar() != null){
             Bitmap bitmap_avatar = BitmapFactory.decodeByteArray(list.get(position).getImg_avatar(),0,list.get(position).getImg_avatar().length);
             holder.img_avatar.setImageBitmap(bitmap_avatar);
@@ -82,7 +83,7 @@ public class MyAdapter extends SwipeMenuAdapter<MyAdapter.MainViewHolder> {
 
     @Override
     public int getItemViewType(int position) {
-        return super.getItemViewType(position);
+        return list.get(position).getNumber();
     }
 
     @Override
@@ -93,7 +94,7 @@ public class MyAdapter extends SwipeMenuAdapter<MyAdapter.MainViewHolder> {
 
     public class MainViewHolder extends RecyclerView.ViewHolder {
 
-        TextView txv_Name, txv_PhoneNum;
+        TextView txv_Name, txv_PhoneNum, number;
         ImageView img_avatar;
         RelativeLayout contactData_layout;
 
@@ -103,6 +104,8 @@ public class MyAdapter extends SwipeMenuAdapter<MyAdapter.MainViewHolder> {
             txv_PhoneNum = v.findViewById(R.id.txv_PhoneNum);
             img_avatar = v.findViewById(R.id.img_avatar);
             contactData_layout = v.findViewById(R.id.contactData_layout);
+
+            number = v.findViewById(R.id.number);
 
         }
 
