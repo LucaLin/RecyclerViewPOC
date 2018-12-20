@@ -42,6 +42,11 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import android.provider.ContactsContract.CommonDataKinds.Phone;
+import android.provider.ContactsContract.Data;
+import android.provider.ContactsContract.CommonDataKinds.Photo;
+import android.provider.ContactsContract.Contacts;
+import android.provider.ContactsContract.RawContacts;
 
 import static com.example.r30_a.recylerviewpoc.util.CommonUtil.isCellPhoneNumber;
 
@@ -59,15 +64,12 @@ public class ContactsPageActivity extends AppCompatActivity{
     private ContentResolver resolver;
     public static final Uri SIM_URI = Uri.parse("content://icc/adn");//讀取sim卡資料的uri string
     String[] phoneNumberProjection = new String[]{//欲搜尋的欄位區塊
-            ContactsContract.CommonDataKinds.Phone.CONTACT_ID,
-            ContactsContract.CommonDataKinds.Phone.NUMBER,
-            ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME,
-            ContactsContract.CommonDataKinds.Photo.PHOTO_ID
+            Phone.CONTACT_ID, Phone.NUMBER,
+            Phone.DISPLAY_NAME, Photo.PHOTO_ID
             };
     String tempId = "";//聯絡人id的暫存
     public static final int REQUEST_CODE = 1;
     private CommonUtil commonUtil;
-//    RecyclerView contact_RecyclerView;
     SwipeMenuRecyclerView contact_RecyclerView;
     MyAdapter adapter;
     EditText edt_search;
@@ -79,8 +81,6 @@ public class ContactsPageActivity extends AppCompatActivity{
         initView();
 
         myContactList = getContactList(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,phoneNumberProjection);
-        //setContactList(contact_RecyclerView,adapter,myContactList);
-
         contact_RecyclerView.setSwipeMenuCreator(new SwipeMenuCreator() {
             @Override
             public void onCreateMenu(SwipeMenu swipeLeftMenu, SwipeMenu swipeRightMenu, int viewType) {
@@ -106,8 +106,6 @@ public class ContactsPageActivity extends AppCompatActivity{
 
             }
         });
-
-
 
         contact_RecyclerView.setSwipeMenuItemClickListener(new OnSwipeMenuItemClickListener() {
             @Override
@@ -160,7 +158,6 @@ public class ContactsPageActivity extends AppCompatActivity{
                         startActivity(intent_sms);
                             break;
 
-
                     }
 
                 }
@@ -188,15 +185,10 @@ public class ContactsPageActivity extends AppCompatActivity{
         if(Now_ContactList != null && Now_ContactList.size()>0){
             setContactList(contact_RecyclerView,adapter,Now_ContactList);
         }else {
-            adapter = new MyAdapter(this,getContactList(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,phoneNumberProjection));
+            adapter = new MyAdapter(this,getContactList(Phone.CONTENT_URI,phoneNumberProjection));
             contact_RecyclerView.setLayoutManager(new LinearLayoutManager(this));
             contact_RecyclerView.setAdapter(adapter);
-
         }
-
-
-
-
     }
 
     private void initView() {
@@ -252,10 +244,10 @@ public class ContactsPageActivity extends AppCompatActivity{
                 while (cursor != null && cursor.moveToNext()) {
                     //抓取id用來判別是否有重覆資料抓取
 
-                    long id = cursor.getLong(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.CONTACT_ID));
+                    long id = cursor.getLong(cursor.getColumnIndex(Phone.CONTACT_ID));
 
-                        name = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
-                        mobileNum = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+                        name = cursor.getString(cursor.getColumnIndex(Phone.DISPLAY_NAME));
+                        mobileNum = cursor.getString(cursor.getColumnIndex(Phone.NUMBER));
 
 
                     if (!TextUtils.isEmpty(mobileNum) && !isCellPhoneNumber(mobileNum)) {
@@ -286,9 +278,9 @@ public class ContactsPageActivity extends AppCompatActivity{
     public static Bitmap get_Avatar(ContentResolver resolver, long contact_ID){
         Bitmap bitmap = null;
 
-        Uri contactUri = ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI,contact_ID);
-        Uri phontUri = Uri.withAppendedPath(contactUri, ContactsContract.Contacts.Photo.CONTENT_DIRECTORY);
-        Cursor cursor = resolver.query(phontUri,new String[]{ContactsContract.Contacts.Photo.PHOTO},null,null,null);
+        Uri contactUri = ContentUris.withAppendedId(Contacts.CONTENT_URI,contact_ID);
+        Uri phontUri = Uri.withAppendedPath(contactUri, Contacts.Photo.CONTENT_DIRECTORY);
+        Cursor cursor = resolver.query(phontUri,new String[]{Photo.PHOTO},null,null,null);
 
         if(cursor == null){
             return null;
@@ -347,7 +339,7 @@ public class ContactsPageActivity extends AppCompatActivity{
             try {
 
                 //使用id來找原始資料
-                Cursor c = resolver.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+                Cursor c = resolver.query(Phone.CONTENT_URI,
                         projection,
                         "contact_id =?",
                         new String[]{String.valueOf(id)},
@@ -356,7 +348,7 @@ public class ContactsPageActivity extends AppCompatActivity{
                     resolver.delete(ContactsContract.RawContacts.CONTENT_URI, "contact_id =?", new String[]{String.valueOf(id)});
                     toast.setText(R.string.deleteOK);
                     toast.show();
-                    setContactList(contact_RecyclerView,adapter,getContactList(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,phoneNumberProjection));
+                    setContactList(contact_RecyclerView,adapter,getContactList(Phone.CONTENT_URI,phoneNumberProjection));
 
                 }
             } catch (Exception e) {
@@ -379,89 +371,72 @@ public class ContactsPageActivity extends AppCompatActivity{
                 String updateName = data.getStringExtra("Name");
                 String updatePhone = data.getStringExtra("Phone");
                 String oldName = data.getStringExtra("oldName");
-//                byte[] bytes_avatar = data.getByteArrayExtra("avatar");
-                byte[] bytes_avatar = getBytesFromUri(data.getData());
-                Cursor c = resolver.query(ContactsContract.Data.CONTENT_URI,
-                        new String[]{ContactsContract.Data.RAW_CONTACT_ID},
-                        ContactsContract.Contacts.DISPLAY_NAME + " =?",
+
+                Cursor c = resolver.query(Data.CONTENT_URI,
+                        new String[]{Data.RAW_CONTACT_ID},
+                        Contacts.DISPLAY_NAME + " =?",
                         new String[]{ oldName },null);
 
                 c.moveToFirst();
-                String raw_contact_id = c.getString(c.getColumnIndex(ContactsContract.Data.RAW_CONTACT_ID));
+                String raw_contact_id = c.getString(c.getColumnIndex(Data.RAW_CONTACT_ID));
                 c.close();
 
                 try{
                     //更新電話
                     ContentValues values = new ContentValues();
-                    values.put(ContactsContract.CommonDataKinds.Phone.NUMBER,updatePhone);
-                    values.put(ContactsContract.CommonDataKinds.Phone.TYPE, ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE);
-                    resolver.update(ContactsContract.Data.CONTENT_URI,
+                    values.put(Phone.NUMBER,updatePhone);
+                    values.put(Phone.TYPE, Phone.TYPE_MOBILE);
+                    resolver.update(Data.CONTENT_URI,
                             values,
-                            ContactsContract.Data.RAW_CONTACT_ID+" =?" +" AND "+ ContactsContract.Data.MIMETYPE + " =?" ,
-                            new String[]{raw_contact_id, ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE});
+                            Data.RAW_CONTACT_ID+" =?" +" AND "+ Data.MIMETYPE + " =?" ,
+                            new String[]{raw_contact_id, Phone.CONTENT_ITEM_TYPE});
                     //更新名字
                     values = new ContentValues();
-                    values.put(ContactsContract.Contacts.DISPLAY_NAME,updateName);
+                    values.put(Contacts.DISPLAY_NAME,updateName);
                     resolver.update(
-                            ContactsContract.RawContacts.CONTENT_URI,
-                            values, ContactsContract.Data.CONTACT_ID+" =?",
+                            RawContacts.CONTENT_URI,
+                            values, Data.CONTACT_ID+" =?",
                             new String[]{contact_id});
-                    //更新大頭貼
-//
-                    Cursor cursor  = resolver.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,null,
-                            ContactsContract.CommonDataKinds.Phone.CONTACT_ID+" = " + contact_id,null,null);
-                    if(cursor != null && cursor.moveToNext()){
-                        Long photo_ID = cursor.getLong(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.PHOTO_ID));
-                        if(photo_ID > 0){//已有設定大頭貼時
-                            values = new ContentValues();
-                            values.put(ContactsContract.Contacts.Photo.PHOTO,bytes_avatar);
-
-                            resolver.update(ContactsContract.Data.CONTENT_URI,values, ContactsContract.Data.RAW_CONTACT_ID+ "=? AND "
-                            + ContactsContract.Data.MIMETYPE+ "=?", new String[]{raw_contact_id, ContactsContract.CommonDataKinds.Photo.CONTENT_ITEM_TYPE});
-                        }else {//尚未有大頭貼時
-                            values = new ContentValues();
-                            values.put(ContactsContract.Data.RAW_CONTACT_ID,raw_contact_id);
-                            values.put(ContactsContract.Contacts.Photo.PHOTO,bytes_avatar);
-                            values.put(ContactsContract.Contacts.Data.MIMETYPE, ContactsContract.CommonDataKinds.Photo.CONTENT_ITEM_TYPE);
-                            resolver.insert(ContactsContract.Data.CONTENT_URI,values);
-                        }
-                    }
-
                 }catch (Exception e){
                     e.getMessage();
                 }
-
-
             }
             Now_ContactList.clear();
         }
 
     }
-
+    //圖片uri路徑轉成byte[]
     public byte[] getBytesFromUri(Uri uri){
         ContentResolver resolver = getContentResolver();
         byte[] data = null;
         try {
-            InputStream inputStream = resolver.openInputStream(uri);
-            byte[] buffer = new byte[1024];
-            int len = 0;
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            while ((len = inputStream.read(buffer)) != -1){
-                outputStream.write(buffer,0,len);
 
+                InputStream inputStream = resolver.openInputStream(uri);
+                byte[] buffer = new byte[1024];
+                int len;
+                ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                while ((len = inputStream.read(buffer)) != -1) {
+                    outputStream.write(buffer, 0, len);
+
+                }
+                data = outputStream.toByteArray();
+                outputStream.close();
+                inputStream.close();
+                return data;
+
+
+
+
+
+            } catch(FileNotFoundException e){
+                e.printStackTrace();
+            } catch(IOException e){
+                e.printStackTrace();
             }
-            data = outputStream.toByteArray();
-            outputStream.close();
-            inputStream.close();
             return data;
 
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return data;
     }
+
 
 
 

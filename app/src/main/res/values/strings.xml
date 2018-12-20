@@ -24,6 +24,10 @@
     <string name="no">取消</string>
     <string name="button_menu_camera">拍攝照片</string>
     <string name="button_menu_picture">從相簿中選擇</string>
+    <string name="dialog_permission_label_storage_message">存取裝置中的相片、媒體和檔案</string> 
+    <string name="dialog_permission_label_camera_message">開啟相機</string> 
+    <string name="dialog_permission_label_and">及</string>
+    <string name="dialog_title">訊息</string>
 
 
 </resources>
