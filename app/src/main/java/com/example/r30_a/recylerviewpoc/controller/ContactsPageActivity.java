@@ -1,9 +1,11 @@
 package com.example.r30_a.recylerviewpoc.controller;
 
 import android.Manifest;
+import android.app.SearchManager;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -13,15 +15,17 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.provider.ContactsContract;
 import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.Editable;
+
 import android.text.TextUtils;
-import android.text.TextWatcher;
+
 import android.widget.EditText;
 
+import android.widget.SearchView;
 import android.widget.Toast;
 
 import com.example.r30_a.recylerviewpoc.R;
@@ -72,7 +76,7 @@ public class ContactsPageActivity extends AppCompatActivity{
     private CommonUtil commonUtil;
     SwipeMenuRecyclerView contact_RecyclerView;
     MyAdapter adapter;
-    EditText edt_search;
+    SearchView searchView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -191,6 +195,7 @@ public class ContactsPageActivity extends AppCompatActivity{
         }
     }
 
+
     private void initView() {
         resolver = this.getContentResolver();
         toast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
@@ -198,34 +203,37 @@ public class ContactsPageActivity extends AppCompatActivity{
         myContactList = new ArrayList<>();
 //        contact_RecyclerView = (RecyclerView) findViewById(R.id.contact_RecyclerView);
         contact_RecyclerView = (SwipeMenuRecyclerView) findViewById(R.id.contact_RecyclerView);
-        edt_search = (EditText)findViewById(R.id.edt_search);
-        //根據搜尋結果顯示欲搜尋資料
-        edt_search.addTextChangedListener(new TextWatcher() {
+
+        searchView = (SearchView)findViewById(R.id.searchView);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if(start > 1){
+            public boolean onQueryTextChange(String newText) {
+                //根據搜尋結果顯示欲搜尋資料
+                if(newText.length()>0){
                     searchList.clear();
                     for(int i = 0;i< myContactList.size();i++){
-                        String num = myContactList.get(i).getPhoneNum().substring(0,start+1);
-                        if(num.equals(String.valueOf(s))){
+                        String num = myContactList.get(i).getPhoneNum().substring(0,newText.length());
+                        String name = myContactList.get(i).getName();
+                        if(num.equals(newText) || (name.length() >= newText.length() &&
+                                                  name.substring(0,newText.length()).equals(newText))  ){
                             searchList.add(myContactList.get(i));
 
                         }
                         setContactList(contact_RecyclerView,adapter,searchList);
                     }
+
                 }else {
                     searchList.clear();
                     setContactList(contact_RecyclerView, adapter, myContactList);
                 }
+                return true;
             }
-
-            @Override
-            public void afterTextChanged(Editable s) {}
         });
-
-
     }
 
 
@@ -333,28 +341,44 @@ public class ContactsPageActivity extends AppCompatActivity{
     }
 
     /*刪除聯絡人*/
-    private void deleteContact(long id, String[] projection) {
+    private void deleteContact(final long id, final String[] projection) {
         if(ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED ||
                 ActivityCompat.checkSelfPermission(this,Manifest.permission.WRITE_CONTACTS) == PackageManager.PERMISSION_GRANTED){
-            try {
 
-                //使用id來找原始資料
-                Cursor c = resolver.query(Phone.CONTENT_URI,
-                        projection,
-                        "contact_id =?",
-                        new String[]{String.valueOf(id)},
-                        null);
-                if (c.moveToFirst()) {
-                    resolver.delete(ContactsContract.RawContacts.CONTENT_URI, "contact_id =?", new String[]{String.valueOf(id)});
-                    toast.setText(R.string.deleteOK);
-                    toast.show();
-                    setContactList(contact_RecyclerView,adapter,getContactList(Phone.CONTENT_URI,phoneNumberProjection));
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("注意")
+                    .setMessage("此功能會永久刪除此聯絡人，確定要繼續嗎？")
+                    .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            try {
 
-                }
-            } catch (Exception e) {
-                e.getMessage();
-            }
-            Now_ContactList.clear();
+                                //使用id來找原始資料
+                                Cursor c = resolver.query(Phone.CONTENT_URI,
+                                        projection,
+                                        "contact_id =?",
+                                        new String[]{String.valueOf(id)},
+                                        null);
+                                if (c.moveToFirst()) {
+
+                                    resolver.delete(ContactsContract.RawContacts.CONTENT_URI, "contact_id =?", new String[]{String.valueOf(id)});
+                                    toast.setText(R.string.deleteOK);
+                                    toast.show();
+                                    setContactList(contact_RecyclerView,adapter,getContactList(Phone.CONTENT_URI,phoneNumberProjection));
+
+                                }
+                            } catch (Exception e) {
+                                e.getMessage();
+                            }
+                            Now_ContactList.clear();
+
+                        }
+                    })
+                    .setNegativeButton(R.string.no,null)
+                    .show();
+
+
+
         }else {
             toast.setText(R.string.permissonRequest);toast.show();
         }

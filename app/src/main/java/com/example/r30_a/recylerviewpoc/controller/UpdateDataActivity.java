@@ -59,7 +59,6 @@ public class UpdateDataActivity extends AppCompatActivity implements View.OnClic
     ImageView img_avatar;
     FrameLayout pickUserPhoto;
     Bitmap old_avatar;
-    ByteArrayOutputStream stream;
     byte[] bytes;
     ContentResolver resolver;
     ContentValues values;
@@ -313,7 +312,6 @@ public class UpdateDataActivity extends AppCompatActivity implements View.OnClic
                     e.getMessage();
                 }
             }
-
         }
     }
 

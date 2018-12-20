@@ -6,22 +6,16 @@
     android:layout_height="match_parent"
     tools:context="com.example.r30_a.recylerviewpoc.controller.ContactsPageActivity">
 
-    <EditText
-        android:id="@+id/edt_search"
+    <SearchView
+        android:id="@+id/searchView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:ems="10"
-        android:focusable="auto"
-        android:hint="輸入號碼以搜尋"
-        android:inputType="phone"
-        android:textColorLink="@color/colorPrimary" />
+        style="@style/SearchBar_theme"/>
 
     <com.yanzhenjie.recyclerview.swipe.SwipeMenuRecyclerView
         android:id="@+id/contact_RecyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/edt_search"
-        />
+        android:layout_below="@+id/searchView" />
 
 </RelativeLayout>
