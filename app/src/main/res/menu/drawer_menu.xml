@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+
+
+
+                <item
+                    android:id="@+id/allContact"
+                    android:icon="@drawable/icons8_book_24"
+                    android:title="@string/allContact"/>
+                <item
+                    android:id="@+id/favorContact"
+                    android:icon="@drawable/icons8_star_white_24"
+                    android:title="@string/favorContact"/>
+
+                <item
+                    android:id="@+id/settings"
+                    android:icon="@drawable/icons8_setting_24"
+                    android:title="@string/SettingPage"/>
+
+
+
+
+</menu>

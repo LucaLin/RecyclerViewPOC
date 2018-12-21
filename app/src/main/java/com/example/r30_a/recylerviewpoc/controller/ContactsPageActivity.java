@@ -14,7 +14,12 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
 import android.provider.ContactsContract;
+import android.support.annotation.NonNull;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -23,6 +28,8 @@ import android.support.v7.widget.RecyclerView;
 
 import android.text.TextUtils;
 
+import android.view.MenuItem;
+import android.view.View;
 import android.widget.EditText;
 
 import android.widget.SearchView;
@@ -51,32 +58,36 @@ import android.provider.ContactsContract.Data;
 import android.provider.ContactsContract.CommonDataKinds.Photo;
 import android.provider.ContactsContract.Contacts;
 import android.provider.ContactsContract.RawContacts;
+import android.support.v7.widget.Toolbar;
 
 import static com.example.r30_a.recylerviewpoc.util.CommonUtil.isCellPhoneNumber;
 
 public class ContactsPageActivity extends AppCompatActivity{
 
     Toast toast;
-    ArrayList<ContactData> favorList = new ArrayList<>();//常用清單
-
-    ArrayList<ContactData> Now_ContactList = new ArrayList<>();
-    ArrayList<ContactData> searchList = new ArrayList<>();
+    private ArrayList<ContactData> favorList = new ArrayList<>();//常用清單
+    private ArrayList<ContactData> Now_ContactList = new ArrayList<>();
+    private ArrayList<ContactData> searchList = new ArrayList<>();
     int number=0;
 
     private Cursor cursor;//搜尋資料的游標
     private ContactData contactData;//用來儲存資料的物件
     private ContentResolver resolver;
     public static final Uri SIM_URI = Uri.parse("content://icc/adn");//讀取sim卡資料的uri string
-    String[] phoneNumberProjection = new String[]{//欲搜尋的欄位區塊
+    private String[] phoneNumberProjection = new String[]{//欲搜尋的欄位區塊
             Phone.CONTACT_ID, Phone.NUMBER,
             Phone.DISPLAY_NAME, Photo.PHOTO_ID
             };
-    String tempId = "";//聯絡人id的暫存
+    private String tempId = "";//聯絡人id的暫存
     public static final int REQUEST_CODE = 1;
     private CommonUtil commonUtil;
-    SwipeMenuRecyclerView contact_RecyclerView;
-    MyAdapter adapter;
-    SearchView searchView;
+    private SwipeMenuRecyclerView contact_RecyclerView;
+    private MyAdapter adapter;
+    private SearchView searchView;
+    private DrawerLayout drawerLayout;//側邊選單
+    private NavigationView navigationView;
+    private Toolbar toolbar;
+    View headerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -209,17 +220,12 @@ public class ContactsPageActivity extends AppCompatActivity{
         resolver = this.getContentResolver();
         toast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
         commonUtil = new CommonUtil();
-//        myContactList = new ArrayList<>();
-//        contact_RecyclerView = (RecyclerView) findViewById(R.id.contact_RecyclerView);
         contact_RecyclerView = (SwipeMenuRecyclerView) findViewById(R.id.contact_RecyclerView);
 
         searchView = (SearchView)findViewById(R.id.searchView);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
-            public boolean onQueryTextSubmit(String query) {
-                return false;
-            }
-
+            public boolean onQueryTextSubmit(String query) {return false;}
             @Override
             public boolean onQueryTextChange(String newText) {
                 //根據搜尋結果顯示欲搜尋資料
@@ -239,6 +245,31 @@ public class ContactsPageActivity extends AppCompatActivity{
                 }else {
                     searchList.clear();
                     setContactList(contact_RecyclerView, adapter, Now_ContactList);
+                }
+                return true;
+            }
+        });
+        //----------抽屜設定-----------//
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        navigationView = (NavigationView)findViewById(R.id.navigationView);
+        drawerLayout = (DrawerLayout)findViewById(R.id.drawerLayout);
+        //設定左上角的"三"圖示，使用toggle勾勾與layout連接在一起
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawerLayout, toolbar, R.string.drawer_open, R.string.drawer_close
+        );
+        drawerLayout.addDrawerListener(toggle);
+        toggle.syncState();
+        headerView = getLayoutInflater().inflate(R.layout.drawer_header, navigationView, false);
+
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                drawerLayout.closeDrawer(GravityCompat.START);//選單按完之後收起抽屜
+
+                switch (item.getItemId()){
+                    case R.id.allContact:break;
+                    case R.id.favorContact:break;
+                    case R.id.settings:break;
                 }
                 return true;
             }
