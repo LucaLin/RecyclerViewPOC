@@ -7,3 +7,8 @@
 /build
 /captures
 .externalNativeBuild
+app/src/main/res/layout/fragment_favor_contact.xml
+app/src/main/res/layout/fragment_blank.xml
+app/src/main/res/drawable/tab_allcontact.xml
+app/src/main/res/drawable/button_selected_color.xml
+app/src/main/java/com/example/r30_a/recylerviewpoc/fragment/FavorContactFragment.java

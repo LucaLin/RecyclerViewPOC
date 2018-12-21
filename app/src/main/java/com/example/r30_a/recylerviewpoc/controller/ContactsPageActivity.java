@@ -57,8 +57,8 @@ import static com.example.r30_a.recylerviewpoc.util.CommonUtil.isCellPhoneNumber
 public class ContactsPageActivity extends AppCompatActivity{
 
     Toast toast;
-    ArrayList<ContactData> myContactList;
-    ArrayList<ContactData> tempList;
+    ArrayList<ContactData> favorList = new ArrayList<>();//常用清單
+
     ArrayList<ContactData> Now_ContactList = new ArrayList<>();
     ArrayList<ContactData> searchList = new ArrayList<>();
     int number=0;
@@ -84,7 +84,7 @@ public class ContactsPageActivity extends AppCompatActivity{
         setContentView(R.layout.activity_contacts_page);
         initView();
 
-        myContactList = getContactList(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,phoneNumberProjection);
+        Now_ContactList = getContactList(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,phoneNumberProjection);
         contact_RecyclerView.setSwipeMenuCreator(new SwipeMenuCreator() {
             @Override
             public void onCreateMenu(SwipeMenu swipeLeftMenu, SwipeMenu swipeRightMenu, int viewType) {
@@ -97,16 +97,18 @@ public class ContactsPageActivity extends AppCompatActivity{
                 SwipeMenuItem delete_item = new SwipeMenuItem(ContactsPageActivity.this);
                 setMenuItem(delete_item,240,240,R.string.delete,16,Color.parseColor("#dd0000"));
                 //建立左菜單通話按鈕
-                SwipeMenuItem dial_item = new SwipeMenuItem(ContactsPageActivity.this);
-                setMenuItem(dial_item, 240, 240, R.string.dial,16,Color.parseColor("#00dd00"));
+//                SwipeMenuItem dial_item = new SwipeMenuItem(ContactsPageActivity.this);
+//                setMenuItem(dial_item, 240, 240, R.string.dial,16,Color.parseColor("#00dd00"));
                 //建立左菜單簡訊按鈕
-                SwipeMenuItem sms_item = new SwipeMenuItem(ContactsPageActivity.this);
-                setMenuItem(sms_item,240,240, R.string.smsto, 16, Color.parseColor("#dddddd"));
+//                SwipeMenuItem sms_item = new SwipeMenuItem(ContactsPageActivity.this);
+//                setMenuItem(sms_item,240,240, R.string.smsto, 16, Color.parseColor("#dddddd"));
+                SwipeMenuItem favor_item = new SwipeMenuItem(ContactsPageActivity.this);
+                setMenuItem(favor_item, 240, 240, R.string.favor,16,Color.parseColor("#00dd00"));
 
                 swipeRightMenu.addMenuItem(update_item);
                 swipeRightMenu.addMenuItem(delete_item);
-                swipeLeftMenu.addMenuItem(dial_item);
-                swipeLeftMenu.addMenuItem(sms_item);
+                swipeLeftMenu.addMenuItem(favor_item);
+              //  swipeLeftMenu.addMenuItem(sms_item);
 
             }
         });
@@ -138,29 +140,31 @@ public class ContactsPageActivity extends AppCompatActivity{
                         break;
                     //刪除
                     case 1:
-                        deleteContact(myContactList.get(adapterPosition).getId(),phoneNumberProjection);
+                        deleteContact(Now_ContactList.get(adapterPosition).getId(),phoneNumberProjection);
                         break;
 
 
                     }
                 }else {
                     switch (menuPosition){//向左滑動
-                        //通話
+                        //加入最愛
                         case 0:
-                            Intent intent_dial = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + myContactList.get(adapterPosition).getPhoneNum()));
-                            if (ActivityCompat.checkSelfPermission(ContactsPageActivity.this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
-                                return;
-                            }
-                            startActivity(intent_dial);
+
                             break;
+//                            Intent intent_dial = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + myContactList.get(adapterPosition).getPhoneNum()));
+//                            if (ActivityCompat.checkSelfPermission(ContactsPageActivity.this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+//                                return;
+//                            }
+//                            startActivity(intent_dial);
+//                            break;
                         //簡訊
-                        case 1:
-                            Intent intent_sms = new Intent(Intent.ACTION_SENDTO,Uri.parse("smsto:"+ myContactList.get(adapterPosition).getPhoneNum()));
-                        if (ActivityCompat.checkSelfPermission(ContactsPageActivity.this, Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED) {
-                            return;
-                        }
-                        startActivity(intent_sms);
-                            break;
+//                        case 1:
+//                            Intent intent_sms = new Intent(Intent.ACTION_SENDTO,Uri.parse("smsto:"+ myContactList.get(adapterPosition).getPhoneNum()));
+//                        if (ActivityCompat.checkSelfPermission(ContactsPageActivity.this, Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED) {
+//                            return;
+//                        }
+//                        startActivity(intent_sms);
+//                            break;
 
                     }
 
@@ -186,13 +190,18 @@ public class ContactsPageActivity extends AppCompatActivity{
     protected void onResume() {
         super.onResume();
         searchList.clear();
-        if(Now_ContactList != null && Now_ContactList.size()>0){
-            setContactList(contact_RecyclerView,adapter,Now_ContactList);
-        }else {
-            adapter = new MyAdapter(this,getContactList(Phone.CONTENT_URI,phoneNumberProjection));
-            contact_RecyclerView.setLayoutManager(new LinearLayoutManager(this));
-            contact_RecyclerView.setAdapter(adapter);
-        }
+//        if(Now_ContactList != null && Now_ContactList.size()>0){
+//            setContactList(contact_RecyclerView,adapter,Now_ContactList);
+//        }
+////        else {
+//            if(Now_ContactList != null && Now_ContactList.size() >0){
+//            adapter = new MyAdapter(this,Now_ContactList);
+//            contact_RecyclerView.setLayoutManager(new LinearLayoutManager(this));
+//            contact_RecyclerView.setAdapter(adapter);
+//            }else {
+                setContactList(contact_RecyclerView,adapter,getContactList(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,phoneNumberProjection));
+
+//        }
     }
 
 
@@ -200,7 +209,7 @@ public class ContactsPageActivity extends AppCompatActivity{
         resolver = this.getContentResolver();
         toast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
         commonUtil = new CommonUtil();
-        myContactList = new ArrayList<>();
+//        myContactList = new ArrayList<>();
 //        contact_RecyclerView = (RecyclerView) findViewById(R.id.contact_RecyclerView);
         contact_RecyclerView = (SwipeMenuRecyclerView) findViewById(R.id.contact_RecyclerView);
 
@@ -216,12 +225,12 @@ public class ContactsPageActivity extends AppCompatActivity{
                 //根據搜尋結果顯示欲搜尋資料
                 if(newText.length()>0){
                     searchList.clear();
-                    for(int i = 0;i< myContactList.size();i++){
-                        String num = myContactList.get(i).getPhoneNum().substring(0,newText.length());
-                        String name = myContactList.get(i).getName();
+                    for(int i = 0;i< Now_ContactList.size();i++){
+                        String num = Now_ContactList.get(i).getPhoneNum().substring(0,newText.length());
+                        String name = Now_ContactList.get(i).getName();
                         if(num.equals(newText) || (name.length() >= newText.length() &&
                                                   name.substring(0,newText.length()).equals(newText))  ){
-                            searchList.add(myContactList.get(i));
+                            searchList.add(Now_ContactList.get(i));
 
                         }
                         setContactList(contact_RecyclerView,adapter,searchList);
@@ -229,7 +238,7 @@ public class ContactsPageActivity extends AppCompatActivity{
 
                 }else {
                     searchList.clear();
-                    setContactList(contact_RecyclerView, adapter, myContactList);
+                    setContactList(contact_RecyclerView, adapter, Now_ContactList);
                 }
                 return true;
             }
@@ -238,7 +247,7 @@ public class ContactsPageActivity extends AppCompatActivity{
 
 
     public ArrayList<ContactData> getContactList( Uri uri, String[] projecction){
-        tempList = new ArrayList<>();
+        Now_ContactList = new ArrayList<>();
         try {
             number = 0;
             String name;
@@ -262,22 +271,22 @@ public class ContactsPageActivity extends AppCompatActivity{
                         continue;
                     } else {
                         number = number+1;
-                        addContactToList(number,id,mobileNum,name, get_Avatar(resolver,id), tempList);
+                        addContactToList(number,id,mobileNum,name, get_Avatar(resolver,id), Now_ContactList);
                     }
                 }
                 cursor.close();
-                Now_ContactList.addAll(tempList);
-                return tempList;
+                //Now_ContactList.addAll(tempList);
+                return Now_ContactList;
             } else {
                 toast.setText(R.string.noData);
                 toast.show();
-                return tempList;
+                return Now_ContactList;
             }
         }catch (Exception e){
             e.getMessage();
         }
 
-        return tempList;
+        return Now_ContactList;
 
 
     }
@@ -370,7 +379,7 @@ public class ContactsPageActivity extends AppCompatActivity{
                             } catch (Exception e) {
                                 e.getMessage();
                             }
-                            Now_ContactList.clear();
+
 
                         }
                     })
@@ -425,7 +434,7 @@ public class ContactsPageActivity extends AppCompatActivity{
                     e.getMessage();
                 }
             }
-            Now_ContactList.clear();
+
         }
 
     }
