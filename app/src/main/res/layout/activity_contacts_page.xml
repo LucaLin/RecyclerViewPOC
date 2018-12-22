@@ -5,12 +5,30 @@
     android:id="@+id/drawerLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#c9c9c9"
+    android:background="#bbbbbb"
     android:fitsSystemWindows="true"
     tools:context="com.example.r30_a.recylerviewpoc.controller.ContactsPageActivity">
+
     <RelativeLayout
+        android:id="@+id/main_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
+
+
+        <TextView
+            android:id="@+id/txvrunrun"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:text="這是跑馬燈，可以把它當做重要記事使用，只是現在還不知道要怎麼樣用較短的文字讓它跑的動，所以現在先打一個很長的測試"
+            android:textSize="16sp"
+            android:ellipsize="marquee"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:marqueeRepeatLimit="marquee_forever"
+            android:scrollHorizontally="true"
+            android:singleLine="true"
+            android:textColor="@android:color/white"/>
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
@@ -30,8 +48,8 @@
             android:id="@+id/contact_RecyclerView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_above="@+id/txvrunrun"
             android:layout_below="@+id/searchView" />
-
 
     </RelativeLayout>
 

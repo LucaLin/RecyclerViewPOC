@@ -30,19 +30,17 @@ public class MyAdapter extends SwipeMenuAdapter<MyAdapter.MainViewHolder> {
     public MyAdapter(Context context, ArrayList<ContactData> list) {
         this.list = list;
         this.context = context;
-
     }
 
     @Override
     public View onCreateContentView(ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(context).inflate(R.layout.contactslist_layout,parent,false);
 
+        View v = LayoutInflater.from(context).inflate(R.layout.contactslist_layout,parent,false);
         return v;
     }
 
     @Override
     public MainViewHolder onCompatCreateViewHolder(View realContentView, int viewType) {
-
         return new MainViewHolder(realContentView);
     }
 
@@ -57,11 +55,18 @@ public class MyAdapter extends SwipeMenuAdapter<MyAdapter.MainViewHolder> {
         holder.txv_Name.setText(list.get(position).getName());
         holder.txv_PhoneNum.setText(list.get(position).getPhoneNum());
         holder.number.setText(String.valueOf(list.get(position).getNumber()));
+        holder.img_favor.setVisibility(View.INVISIBLE);
+        //設定大頭貼
         if(list.get(position).getImg_avatar() != null){
             Bitmap bitmap_avatar = BitmapFactory.decodeByteArray(list.get(position).getImg_avatar(),0,list.get(position).getImg_avatar().length);
             holder.img_avatar.setImageBitmap(bitmap_avatar);
-        }else{
+        }else{//沒有大頭貼的話給一個預設圖
             holder.img_avatar.setBackgroundResource(R.drawable.iconfinder_man_196742);
+        }
+        //設定常用清單tag
+        if(list.get(position).getImg_favor() != null){
+            list.get(position).setImg_favor(holder.img_favor);
+            holder.img_favor.setVisibility(View.VISIBLE);
         }
 
     }
@@ -81,19 +86,17 @@ public class MyAdapter extends SwipeMenuAdapter<MyAdapter.MainViewHolder> {
     public class MainViewHolder extends RecyclerView.ViewHolder {
 
         TextView txv_Name, txv_PhoneNum, number;
-        ImageView img_avatar;
+        ImageView img_avatar;//大頭貼
         RelativeLayout contactData_layout;
-
+        ImageView img_favor;//常用清單tag
         public MainViewHolder(View v) {
             super(v);
             txv_Name = v.findViewById(R.id.txv_Name);
             txv_PhoneNum = v.findViewById(R.id.txv_PhoneNum);
             img_avatar = v.findViewById(R.id.img_avatar);
             contactData_layout = v.findViewById(R.id.contactData_layout);
-
+            img_favor = v.findViewById(R.id.img_favor);
             number = v.findViewById(R.id.number);
-
         }
-
     }
 }

@@ -11,6 +11,7 @@
     <string name="dial">通話</string>
     <string name="smsto">簡訊</string>
     <string name="favor">加入常用</string>
+    <string name="favorDone">已加入常用清單</string>
     <string name="allContact">全部聯絡人</string>
     <string name="favorContact">常用聯絡人</string>
     <string name="drawer_open">Drawer opened</string>

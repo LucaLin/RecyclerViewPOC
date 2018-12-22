@@ -6,7 +6,10 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.Base64;
+import android.view.View;
 import android.widget.ImageView;
+
+import com.example.r30_a.recylerviewpoc.R;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -21,6 +24,24 @@ public class ContactData {
     private String phoneNum;
     private long id;
     private Bitmap img_avatar ;
+    private ImageView img_favor;
+
+    public ImageView getImg_favor() {
+
+        return img_favor;
+
+    }
+    public void setFavorVisible(ImageView img_favor){
+        img_favor.setVisibility(View.VISIBLE);
+    };
+
+
+    public void setImg_favor(ImageView img_favor) {
+        this.img_favor = img_favor;
+
+    }
+
+
 
     public int getNumber() {
         return number;

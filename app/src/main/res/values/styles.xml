@@ -9,7 +9,6 @@
     </style>
 
     <style name="SearchBar_theme">
-
         <item name="android:closeIcon">@drawable/icons_delete</item>
         <item name="android:queryHint">輸入條件以快速搜尋</item>
 
