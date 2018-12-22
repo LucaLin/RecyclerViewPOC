@@ -7,6 +7,7 @@ import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -53,6 +54,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+
 import java.util.ArrayList;
 import android.provider.ContactsContract.CommonDataKinds.Phone;
 import android.provider.ContactsContract.Data;
@@ -60,6 +62,7 @@ import android.provider.ContactsContract.CommonDataKinds.Photo;
 import android.provider.ContactsContract.Contacts;
 import android.provider.ContactsContract.RawContacts;
 import android.support.v7.widget.Toolbar;
+
 
 import static com.example.r30_a.recylerviewpoc.util.CommonUtil.isCellPhoneNumber;
 
@@ -70,7 +73,7 @@ public class ContactsPageActivity extends AppCompatActivity{
     private ArrayList<ContactData> Now_ContactList = new ArrayList<>();
     private ArrayList<ContactData> searchList = new ArrayList<>();
     int number=0;
-
+    //--------聯絡人元件-------//
     private Cursor cursor;//搜尋資料的游標
     private ContactData contactData;//用來儲存資料的物件
     private ContentResolver resolver;
@@ -81,14 +84,17 @@ public class ContactsPageActivity extends AppCompatActivity{
             };
     private String tempId = "";//聯絡人id的暫存
     public static final int REQUEST_CODE = 1;
-    private CommonUtil commonUtil;
+    //-------聯絡人清單元件-----//
     private SwipeMenuRecyclerView contact_RecyclerView;
     private MyAdapter adapter;
     private SearchView searchView;
+    //------抽屜元件--------//
     private DrawerLayout drawerLayout;//側邊選單
     private NavigationView navigationView;
     private Toolbar toolbar;
     View headerView;
+
+    SharedPreferences sp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -167,6 +173,8 @@ public class ContactsPageActivity extends AppCompatActivity{
                             Now_ContactList.get(pos).setImg_favor(new ImageView(ContactsPageActivity.this));
                             setContactList(contact_RecyclerView, adapter, Now_ContactList);
 
+
+
                             toast.setText(R.string.favorDone);toast.show();
                             break;
 //                            Intent intent_dial = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + myContactList.get(adapterPosition).getPhoneNum()));
@@ -222,9 +230,8 @@ public class ContactsPageActivity extends AppCompatActivity{
     private void initView() {
         resolver = this.getContentResolver();
         toast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
-        commonUtil = new CommonUtil();
         contact_RecyclerView = (SwipeMenuRecyclerView) findViewById(R.id.contact_RecyclerView);
-
+        //------快速搜尋功能設定--------//
         searchView = (SearchView)findViewById(R.id.searchView);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -240,11 +247,9 @@ public class ContactsPageActivity extends AppCompatActivity{
                         if(num.equals(newText) || (name.length() >= newText.length() &&
                                                   name.substring(0,newText.length()).equals(newText))  ){
                             searchList.add(Now_ContactList.get(i));
-
                         }
                         setContactList(contact_RecyclerView,adapter,searchList);
                     }
-
                 }else {
                     searchList.clear();
                     setContactList(contact_RecyclerView, adapter, Now_ContactList);
@@ -274,6 +279,13 @@ public class ContactsPageActivity extends AppCompatActivity{
                     case R.id.allContact:break;
                     //常用清單
                     case R.id.favorContact:
+
+                        //String str_object = commonUtil.objectToString(favorList);
+
+
+
+
+                        startActivity(new Intent(ContactsPageActivity.this,FavorListPageActivity.class));
                         break;
                     //更多設定
                     case R.id.settings:
@@ -283,6 +295,9 @@ public class ContactsPageActivity extends AppCompatActivity{
                 return true;
             }
         });
+
+        sp = getSharedPreferences("favorList",MODE_PRIVATE);
+
     }
 
 
@@ -355,7 +370,7 @@ public class ContactsPageActivity extends AppCompatActivity{
             contactData = new ContactData();
             contactData.setId(id);//id
             contactData.setName(name);//名字
-            contactData.setPhoneNum(commonUtil.getFormatPhone(phoneNumber));//電話
+            contactData.setPhoneNum(CommonUtil.getFormatPhone(phoneNumber));//電話
             contactData.setNumber(number);//編號
 
             if(avatar != null){
