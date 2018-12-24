@@ -9,6 +9,7 @@ import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextPaint;
+import android.text.TextUtils;
 import android.view.View;
 
 import com.example.r30_a.recylerviewpoc.R;
@@ -35,11 +36,13 @@ public class MyDecoration extends RecyclerView.ItemDecoration {
 
         textPaint = new TextPaint();
         textPaint.setTypeface(Typeface.DEFAULT_BOLD);
+
         textPaint.setAntiAlias(true);
         textPaint.setTextSize(80);
         textPaint.getFontMetrics(fontMetrics);
         textPaint.setTextAlign(Paint.Align.LEFT);
         fontMetrics = new Paint.FontMetrics();
+
         topGap = resources.getDimensionPixelSize(R.dimen.section_top);
 
     }
@@ -70,6 +73,49 @@ public class MyDecoration extends RecyclerView.ItemDecoration {
                 c.drawRect(left,top,right,bottom,paint);
                 c.drawText(textLine,left,bottom,textPaint);
             }
+        }
+    }
+
+    //滑動時的群組欄要保留的操作
+    @Override
+    public void onDrawOver(Canvas c, RecyclerView parent, RecyclerView.State state) {
+        super.onDrawOver(c, parent, state);
+        int left = parent.getLeft();
+        int right = parent.getRight()-parent.getPaddingRight();
+        int itemCount = state.getItemCount();
+        int childCount = parent.getChildCount();
+
+        float lineHeight = textPaint.getTextSize() + fontMetrics.descent;
+
+        long pregroupId, groupId = -1;
+
+        for(int i = 0; i< childCount; i++){
+            View view = parent.getChildAt(i);
+            int pos = parent.getChildAdapterPosition(view);
+
+            pregroupId = groupId;
+            groupId = callBack.getGroupId(pos);
+
+            if(groupId < 0 || groupId == pregroupId){
+                continue;
+            }
+
+            String textLine = callBack.getGroupFirstLine(pos).toUpperCase();
+            if(TextUtils.isEmpty(textLine)){
+                continue;
+            }
+
+            int viewBottom = view.getBottom();
+            float textY = Math.max(topGap,view.getTop());
+            if( pos+1 <itemCount){
+
+                long nextGroupId = callBack.getGroupId(pos+1);
+                if(nextGroupId !=groupId && viewBottom < textY){
+                    textY = viewBottom;
+                }
+            }
+            c.drawRect(left,textY-topGap,right,textY,paint);
+            c.drawText(textLine,left,textY,textPaint);
         }
     }
 

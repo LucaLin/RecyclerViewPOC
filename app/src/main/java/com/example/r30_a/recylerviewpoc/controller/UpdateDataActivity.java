@@ -40,6 +40,7 @@ import com.github.dfqin.grantor.PermissionsUtil;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -200,6 +201,7 @@ public class UpdateDataActivity extends AppCompatActivity implements View.OnClic
 
         //先確認權限
         String[] permissionCamera = {
+                Manifest.permission.CAMERA,
                 Manifest.permission.READ_EXTERNAL_STORAGE,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE,};
                 boolean s = !PermissionUtil.needGrantRuntimePermission(UpdateDataActivity.this,permissionCamera,PermissionUtil.PERMISSION_REQUEST_CODE_EXTERNAL_STORAGE);
@@ -266,14 +268,13 @@ public class UpdateDataActivity extends AppCompatActivity implements View.OnClic
         if(resultCode == RESULT_OK){
 
             if(requestCode == ALBUM_REQUEST || requestCode == CAMERA_REQUEST){
-                Uri uri ;
-                if(data != null && data.getData() != null){
-                    uri = data.getData();
-                }else {
-                    uri = camera_uri;
-                }
-                doCropPhoto(uri);
 
+                if(data != null && data.getData() != null){
+                    album_uri = data.getData();
+                    doCropPhoto(album_uri);
+                }else {
+                    doCropPhoto(camera_uri);
+                }
         }else if(requestCode == CROP_REQUEST){
 
                 try{
@@ -315,23 +316,24 @@ public class UpdateDataActivity extends AppCompatActivity implements View.OnClic
         }
     }
 
-    private void setChangedAvatar(File file,ImageView img_avatar, ContentResolver resolver) {
-        try {
 
-            update_avatar = BitmapFactory.decodeFile(file.getAbsolutePath());
-            //bitmap to byte[]
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            update_avatar.compress(Bitmap.CompressFormat.PNG,100,outputStream);
-            bytes = outputStream.toByteArray();
-            outputStream.close();
+private void setChangedAvatar(File file,ImageView img_avatar, ContentResolver resolver) {
+    try {
 
-            img_avatar.setImageBitmap(update_avatar);
+        update_avatar = BitmapFactory.decodeFile(file.getAbsolutePath());
+        //bitmap to byte[]
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        update_avatar.compress(Bitmap.CompressFormat.PNG,100,outputStream);
+        bytes = outputStream.toByteArray();
+        outputStream.close();
 
-        }catch (Exception e){
-            e.getMessage();
+        img_avatar.setImageBitmap(update_avatar);
+
+    }catch (Exception e){
+        e.getMessage();
         }
-
     }
+
 
     private void doCropPhoto(Uri uri) {
         Intent intent = getCropImageIntent(uri);

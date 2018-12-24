@@ -24,4 +24,7 @@
         android:layout_marginStart="40dp"
         android:layout_toEndOf="@+id/btnContactPage"
         android:text="@string/SettingPage" />
+
+
+
 </RelativeLayout>

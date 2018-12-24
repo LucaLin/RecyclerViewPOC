@@ -8,6 +8,7 @@ import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -29,6 +30,7 @@ import android.support.v7.widget.RecyclerView;
 
 import android.text.TextUtils;
 
+import android.util.Base64;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
@@ -43,6 +45,12 @@ import com.example.r30_a.recylerviewpoc.adapter.MyDecoration;
 import com.example.r30_a.recylerviewpoc.model.ContactData;
 import com.example.r30_a.recylerviewpoc.util.CommonUtil;
 
+import com.google.gson.FieldNamingPolicy;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.yanzhenjie.recyclerview.swipe.Closeable;
 import com.yanzhenjie.recyclerview.swipe.OnSwipeMenuItemClickListener;
 import com.yanzhenjie.recyclerview.swipe.SwipeMenu;
@@ -72,6 +80,7 @@ public class ContactsPageActivity extends AppCompatActivity{
     Toast toast;
     private ArrayList<ContactData> favorList = new ArrayList<>();//常用清單
     private ArrayList<ContactData> Now_ContactList = new ArrayList<>();
+    private ArrayList<ContactData> oldList = new ArrayList<>();
     private ArrayList<ContactData> searchList = new ArrayList<>();
     int number=0;
     //--------聯絡人元件-------//
@@ -94,6 +103,7 @@ public class ContactsPageActivity extends AppCompatActivity{
     private NavigationView navigationView;
     private Toolbar toolbar;
     View headerView;
+    private RecyclerView.ItemDecoration itemDecoration;
 
     SharedPreferences sp;
 
@@ -101,6 +111,7 @@ public class ContactsPageActivity extends AppCompatActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contacts_page);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         initView();
         contact_RecyclerView.setSwipeMenuCreator(new SwipeMenuCreator() {
             @Override
@@ -172,7 +183,9 @@ public class ContactsPageActivity extends AppCompatActivity{
                                              favorList);
 
                             Now_ContactList.get(pos).setImg_favor(new ImageView(ContactsPageActivity.this));
+
                             setContactList(contact_RecyclerView, adapter, Now_ContactList);
+
 
 
 
@@ -218,12 +231,9 @@ public class ContactsPageActivity extends AppCompatActivity{
         super.onResume();
         searchList.clear();
 
-        if(Now_ContactList != null && Now_ContactList.size()>0){
-            setContactList(contact_RecyclerView,adapter,Now_ContactList);
-        }else {
         Now_ContactList = getContactList(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,phoneNumberProjection);
-                setContactList(contact_RecyclerView,adapter,Now_ContactList);
-        }
+        setContactList(contact_RecyclerView,adapter,Now_ContactList);
+
 
     }
 
@@ -232,6 +242,20 @@ public class ContactsPageActivity extends AppCompatActivity{
         resolver = this.getContentResolver();
         toast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
         contact_RecyclerView = (SwipeMenuRecyclerView) findViewById(R.id.contact_RecyclerView);
+        itemDecoration = new MyDecoration(this, new MyDecoration.DecorationCallBack() {
+            @Override
+            public long getGroupId(int pos) {
+                return Character.toUpperCase(Now_ContactList.get(pos).getName().charAt(0));
+            }
+
+            @Override
+            public String getGroupFirstLine(int pos) {
+                return Now_ContactList.get(pos).getName().substring(0,1).toUpperCase();
+            }
+        });
+        //增加群組分類抬頭
+        contact_RecyclerView.addItemDecoration(itemDecoration);
+
         //------快速搜尋功能設定--------//
         searchView = (SearchView)findViewById(R.id.searchView);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -241,6 +265,7 @@ public class ContactsPageActivity extends AppCompatActivity{
             public boolean onQueryTextChange(String newText) {
                 //根據搜尋結果顯示欲搜尋資料
                 if(newText.length()>0){
+                    contact_RecyclerView.removeItemDecoration(itemDecoration);
                     searchList.clear();
                     for(int i = 0;i< Now_ContactList.size();i++){
                         String num = Now_ContactList.get(i).getPhoneNum().substring(0,newText.length());
@@ -252,25 +277,13 @@ public class ContactsPageActivity extends AppCompatActivity{
                         setContactList(contact_RecyclerView,adapter,searchList);
                     }
                 }else {
+                    contact_RecyclerView.addItemDecoration(itemDecoration);
                     searchList.clear();
                     setContactList(contact_RecyclerView, adapter, Now_ContactList);
                 }
                 return true;
             }
         });
-
-        //增加群組分類抬頭
-        contact_RecyclerView.addItemDecoration(new MyDecoration(this, new MyDecoration.DecorationCallBack() {
-            @Override
-            public long getGroupId(int pos) {
-                return Character.toUpperCase(Now_ContactList.get(pos).getName().charAt(0));
-            }
-
-            @Override
-            public String getGroupFirstLine(int pos) {
-                return Now_ContactList.get(pos).getName().substring(0,1).toUpperCase();
-            }
-        }));
 
 
         //----------抽屜設定-----------//
@@ -296,9 +309,29 @@ public class ContactsPageActivity extends AppCompatActivity{
                     //常用清單
                     case R.id.favorContact:
 
-                        //String str_object = commonUtil.objectToString(favorList);
+                        JsonArray list = new JsonArray();
+                        for(int i=0;i<favorList.size();i++){
+                            JsonObject object = new JsonObject();
 
 
+                            object.addProperty("id",favorList.get(i).getId());
+                            object.addProperty("number",favorList.get(i).getNumber());
+                            object.addProperty("name",favorList.get(i).getName());
+                            object.addProperty("phoneNum",favorList.get(i).getPhoneNum());
+                            if(favorList.get(i).getImg_avatar() != null){
+                                String base64 = Base64.encodeToString(favorList.get(i).getImg_avatar(),Base64.DEFAULT);
+                            object.addProperty("img_avatar",base64);
+                            }else {
+                                object.addProperty("img_avatar","");
+                            }
+
+
+                            list.add(object);
+                        }
+
+
+                        JsonObject jsonObject = new JsonObject();
+                        jsonObject.add("favorList",list);
 
 
                         startActivity(new Intent(ContactsPageActivity.this,FavorListPageActivity.class));
@@ -340,6 +373,7 @@ public class ContactsPageActivity extends AppCompatActivity{
                     }
                 }
                 cursor.close();
+                oldList = Now_ContactList;
                 return Now_ContactList;
             } else {
                 toast.setText(R.string.noData);
