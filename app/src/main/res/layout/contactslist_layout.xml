@@ -17,14 +17,16 @@
         android:layout_alignParentRight="true"
         android:layout_centerHorizontal="false"
         android:layout_centerInParent="true"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:paddingRight="10dp">
 
         <ImageView
             android:id="@+id/img_favor"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:background="@android:drawable/btn_star_big_on" />
+            android:background="@android:drawable/btn_star_big_on"
+            android:paddingRight="10dp" />
     </LinearLayout>
 
     <LinearLayout
@@ -51,12 +53,13 @@
             android:id="@+id/img_avatar"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            android:paddingLeft="10dp" />
     </LinearLayout>
 
     <LinearLayout
         android:id="@+id/info_zone"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="false"
         android:layout_alignParentLeft="false"
@@ -78,9 +81,9 @@
 
             <ImageView
                 android:id="@+id/img_name"
-                android:layout_width="wrap_content"
+                android:layout_width="40dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:paddingLeft="10dp"
                 app:srcCompat="@drawable/icon_man" />
 
             <TextView
@@ -88,7 +91,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_weight="3"
+                android:paddingLeft="10dp"
                 android:text="name" />
 
         </LinearLayout>
@@ -100,9 +103,9 @@
 
             <ImageView
                 android:id="@+id/img_Phone"
-                android:layout_width="wrap_content"
+                android:layout_width="40dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:paddingLeft="10dp"
                 android:tag="slide_tag"
                 app:srcCompat="@drawable/icon_mobile" />
 
@@ -111,7 +114,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_weight="3"
+                android:paddingLeft="10dp"
                 android:tag="slide_tag"
                 android:text="number" />
 

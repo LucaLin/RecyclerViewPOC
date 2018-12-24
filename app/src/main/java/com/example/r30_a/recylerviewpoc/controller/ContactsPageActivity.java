@@ -39,6 +39,7 @@ import android.widget.Toast;
 
 import com.example.r30_a.recylerviewpoc.R;
 import com.example.r30_a.recylerviewpoc.adapter.MyAdapter;
+import com.example.r30_a.recylerviewpoc.adapter.MyDecoration;
 import com.example.r30_a.recylerviewpoc.model.ContactData;
 import com.example.r30_a.recylerviewpoc.util.CommonUtil;
 
@@ -257,6 +258,21 @@ public class ContactsPageActivity extends AppCompatActivity{
                 return true;
             }
         });
+
+        //增加群組分類抬頭
+        contact_RecyclerView.addItemDecoration(new MyDecoration(this, new MyDecoration.DecorationCallBack() {
+            @Override
+            public long getGroupId(int pos) {
+                return Character.toUpperCase(Now_ContactList.get(pos).getName().charAt(0));
+            }
+
+            @Override
+            public String getGroupFirstLine(int pos) {
+                return Now_ContactList.get(pos).getName().substring(0,1).toUpperCase();
+            }
+        }));
+
+
         //----------抽屜設定-----------//
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         navigationView = (NavigationView)findViewById(R.id.navigationView);
@@ -301,13 +317,13 @@ public class ContactsPageActivity extends AppCompatActivity{
     }
 
 
-    public ArrayList<ContactData> getContactList( Uri uri, String[] projecction){
+    public ArrayList<ContactData> getContactList( Uri uri, String[] projection){
         Now_ContactList = new ArrayList<>();
         try {
             number = 0;
             String name;
             String mobileNum;
-            cursor = resolver.query(uri, projecction, null, null, null);
+            cursor = resolver.query(uri, projection, null, null, Contacts.SORT_KEY_PRIMARY);
             //直接取contacts中的號碼資料區，再從號碼欄去抓對應的name跟number
             if (cursor != null) {
                 while (cursor != null && cursor.moveToNext()) {
