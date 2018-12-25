@@ -44,7 +44,8 @@ public class FavorListPageActivity extends AppCompatActivity {
 
     MyDBHelper myDBHelper;
     SQLiteDatabase db;
-    ArrayList<ContactData> favorList;
+    ArrayList<ContactData> favorList = new ArrayList<>();
+    ArrayList<ContactData> searchList = new ArrayList<>();
     SwipeMenuRecyclerView contact_RecyclerView;
     MyAdapter adapter;
     SearchView searchView;
@@ -145,6 +146,35 @@ public class FavorListPageActivity extends AppCompatActivity {
                 return true;
             }
         });
+
+        searchView = (SearchView)findViewById(R.id.searchView);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {return false;}
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                //根據搜尋結果顯示欲搜尋資料
+                if(newText.length()>0){
+                    contact_RecyclerView.removeItemDecoration(itemDecoration);
+                    searchList.clear();
+                    for(int i = 0;i< favorList.size();i++){
+                        String num = favorList.get(i).getPhoneNum().substring(0,newText.length());
+                        String name = favorList.get(i).getName();
+                        if(num.equals(newText) || (name.length() >= newText.length() &&
+                                name.substring(0,newText.length()).equals(newText))  ){
+                            searchList.add(favorList.get(i));
+                        }
+                        CommonUtil.setContactList(FavorListPageActivity.this,contact_RecyclerView,adapter,searchList);
+                    }
+                }else {
+                    contact_RecyclerView.addItemDecoration(itemDecoration);
+                    searchList.clear();
+                    CommonUtil.setContactList(FavorListPageActivity.this,contact_RecyclerView, adapter, favorList);
+                }
+                return true;
+            }
+        });
+
     }
 
 }

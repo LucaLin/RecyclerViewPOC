@@ -45,7 +45,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 .setView(R.layout.layout_progress_view)
                 .create();
 
-        if(PermissionsUtil.hasPermission(this, Manifest.permission.READ_CONTACTS) &&
+        if(     PermissionsUtil.hasPermission(this,Manifest.permission.CALL_PHONE) &&
+                PermissionsUtil.hasPermission(this,Manifest.permission.SEND_SMS) &&
+                PermissionsUtil.hasPermission(this, Manifest.permission.READ_CONTACTS) &&
                 PermissionsUtil.hasPermission(this,Manifest.permission.WRITE_CONTACTS)&&
                 PermissionsUtil.hasPermission(this,Manifest.permission.CAMERA) &&
                 PermissionsUtil.hasPermission(this,Manifest.permission.READ_EXTERNAL_STORAGE)&&
@@ -60,7 +62,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     Manifest.permission.WRITE_CONTACTS,
                     Manifest.permission.CAMERA,
                     Manifest.permission.READ_EXTERNAL_STORAGE,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                    Manifest.permission.CALL_PHONE,
+                    Manifest.permission.SEND_SMS
+
             });
 
         }

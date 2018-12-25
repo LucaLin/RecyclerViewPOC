@@ -1,9 +1,16 @@
 package com.example.r30_a.recylerviewpoc.adapter;
 
+import android.Manifest;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,7 +29,7 @@ import java.util.List;
  * Created by LUCA on 2018/12/12.
  */
 
-public class MyAdapter extends SwipeMenuAdapter<MyAdapter.MainViewHolder> {
+public class MyAdapter extends SwipeMenuAdapter<MyAdapter.MainViewHolder> implements View.OnClickListener{
 
     ArrayList<ContactData> list = new ArrayList();
     Context context;
@@ -69,6 +76,32 @@ public class MyAdapter extends SwipeMenuAdapter<MyAdapter.MainViewHolder> {
             holder.img_favor.setVisibility(View.VISIBLE);
         }
 
+        holder.contactData_layout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final String number = list.get(position).getPhoneNum();
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+
+                builder.setPositiveButton(R.string.dial, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent intent_dial = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + number));
+                            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+                                return;
+                            }
+                            context.startActivity(intent_dial);
+                    }
+                }).setNegativeButton(R.string.smsto, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                }).setTitle(R.string.hint)
+                  .create();
+                builder.show();
+            }
+        });
+
     }
 
 
@@ -80,6 +113,11 @@ public class MyAdapter extends SwipeMenuAdapter<MyAdapter.MainViewHolder> {
     @Override
     public int getItemCount() {
         return list.size();
+    }
+
+    @Override
+    public void onClick(View v) {
+        int id = v.getId();
     }
 
 
@@ -97,6 +135,8 @@ public class MyAdapter extends SwipeMenuAdapter<MyAdapter.MainViewHolder> {
             contactData_layout = v.findViewById(R.id.contactData_layout);
             img_favor = v.findViewById(R.id.img_favor);
             number = v.findViewById(R.id.number);
+
         }
+
     }
 }

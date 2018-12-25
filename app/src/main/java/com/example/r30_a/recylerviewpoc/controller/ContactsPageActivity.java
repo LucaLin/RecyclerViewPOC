@@ -215,6 +215,7 @@ public class ContactsPageActivity extends AppCompatActivity{
 
                     }
                 }
+
             }
         });
 
@@ -237,8 +238,6 @@ public class ContactsPageActivity extends AppCompatActivity{
 
     }
 
-
-
     @Override
     protected void onResume() {
         super.onResume();
@@ -254,15 +253,17 @@ public class ContactsPageActivity extends AppCompatActivity{
             CommonUtil.setContactList(ContactsPageActivity.this,contact_RecyclerView,adapter,Now_ContactList);
         }
 
-
     }
 
     private void initView(Context context) {
 
         myDBHelper = MyDBHelper.getInstance(this);
+        sp = getSharedPreferences("favorTags",MODE_PRIVATE);
         resolver = this.getContentResolver();
         toast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
         contact_RecyclerView = (SwipeMenuRecyclerView) findViewById(R.id.contact_RecyclerView);
+        Now_ContactList = getContactList(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,phoneNumberProjection);
+        //-----群組分類抬頭設定
         itemDecoration = new MyDecoration(this, new MyDecoration.DecorationCallBack() {
             @Override
             public long getGroupId(int pos) {
@@ -274,8 +275,7 @@ public class ContactsPageActivity extends AppCompatActivity{
                 return Now_ContactList.get(pos).getName().substring(0,1).toUpperCase();
             }
         });
-        Now_ContactList = getContactList(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,phoneNumberProjection);
-        //CommonUtil.setContactList(context,contact_RecyclerView,adapter,Now_ContactList);
+
         //增加群組分類抬頭
         contact_RecyclerView.addItemDecoration(itemDecoration);
 
@@ -313,7 +313,7 @@ public class ContactsPageActivity extends AppCompatActivity{
         navigationView = (NavigationView)findViewById(R.id.navigationView);
         drawerLayout = (DrawerLayout)findViewById(R.id.drawerLayout);
         CommonUtil.setDrawer(ContactsPageActivity.this,drawerLayout,toolbar,R.layout.drawer_header,navigationView);
-
+        //----------抽屜動作----------//
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -326,9 +326,7 @@ public class ContactsPageActivity extends AppCompatActivity{
                     case R.id.favorContact:
 
                         for(int i = 0;i<favorList.size();i++){
-
                         ContentValues values = new ContentValues(5);
-
 //                        values.put("id",String.valueOf(favorList.get(i).getId()));
                         values.put(MyDBHelper.NUMBER,String.valueOf(favorList.get(i).getNumber()));
                         values.put(MyDBHelper.NAME,favorList.get(i).getName());
@@ -339,11 +337,8 @@ public class ContactsPageActivity extends AppCompatActivity{
                         }else {
                             values.put(MyDBHelper.IMG_AVATAR,"");
                         }
-
                         myDBHelper.getWritableDatabase().insert(MyDBHelper.TABLE_NAME,null,values);
-
                         }
-
                         startActivity(new Intent(ContactsPageActivity.this,FavorListPageActivity.class));
                         break;
                     //更多設定
@@ -355,7 +350,6 @@ public class ContactsPageActivity extends AppCompatActivity{
             }
         });
 
-        sp = getSharedPreferences("favorTags",MODE_PRIVATE);
 
     }
 
@@ -434,17 +428,16 @@ public class ContactsPageActivity extends AppCompatActivity{
             contactData.setPhoneNum(CommonUtil.getFormatPhone(phoneNumber));//電話
             contactData.setNumber(number);//編號
 
-            if(avatar != null){
-            contactData.setImg_avatar(avatar);//大頭照
+            if (avatar != null) {
+                contactData.setImg_avatar(avatar);//大頭照
             }
-            if(favorIdSet.contains(String.valueOf(id))){
+            if (favorIdSet.contains(String.valueOf(id))) {
                 contactData.isFavor(true);
                 contactData.setImg_favor(new ImageView(this));
             }
 
             tempId = String.valueOf(id);
             list.add(contactData);
-
 
 
             //myDBHelper.getWritableDatabase().insert()
