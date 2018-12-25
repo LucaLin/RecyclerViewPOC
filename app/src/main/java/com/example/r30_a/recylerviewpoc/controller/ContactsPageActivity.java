@@ -120,19 +120,17 @@ public class ContactsPageActivity extends AppCompatActivity{
             public void onCreateMenu(SwipeMenu swipeLeftMenu, SwipeMenu swipeRightMenu, int viewType) {
 
                 //建立右菜單更新按鈕
-                SwipeMenuItem update_item = new SwipeMenuItem(ContactsPageActivity.this);
-                setMenuItem(update_item, 240,240,R.string.update,16, Color.parseColor("#00dd00"));
+                SwipeMenuItem update_item = CommonUtil.setMenuItem(ContactsPageActivity.this, 240,240,R.string.update,16, Color.parseColor("#00dd00"));
                 //建立右菜單刪除按鈕
-                SwipeMenuItem delete_item = new SwipeMenuItem(ContactsPageActivity.this);
-                setMenuItem(delete_item,240,240,R.string.delete,16,Color.parseColor("#dd0000"));
+                SwipeMenuItem delete_item = CommonUtil.setMenuItem(ContactsPageActivity.this,240,240,R.string.delete,16,Color.parseColor("#dd0000"));
                 //建立左菜單通話按鈕
 //                SwipeMenuItem dial_item = new SwipeMenuItem(ContactsPageActivity.this);
 //                setMenuItem(dial_item, 240, 240, R.string.dial,16,Color.parseColor("#00dd00"));
                 //建立左菜單簡訊按鈕
 //                SwipeMenuItem sms_item = new SwipeMenuItem(ContactsPageActivity.this);
 //                setMenuItem(sms_item,240,240, R.string.smsto, 16, Color.parseColor("#dddddd"));
-                SwipeMenuItem favor_item = new SwipeMenuItem(ContactsPageActivity.this);
-                setMenuItem(favor_item, 240, 240, R.string.favor,16,Color.parseColor("#00dd00"));
+                //建立左菜單加入最愛按鈕
+                SwipeMenuItem favor_item = CommonUtil.setMenuItem(ContactsPageActivity.this, 240, 240, R.string.favor,16,Color.parseColor("#00dd00"));
 
                 swipeRightMenu.addMenuItem(update_item);
                 swipeRightMenu.addMenuItem(delete_item);
@@ -167,37 +165,36 @@ public class ContactsPageActivity extends AppCompatActivity{
                         //加入最愛
                         case 0:
 
-                            //問題：需要控制重覆加入最愛!!!!!!!!!
-                            //問題：最愛tag在回來後也要顯示
-
                             if(favorList != null ){
-                                contactData = new ContactData();
-                                contactData.setId(Now_ContactList.get(pos).getId());//id
-                                contactData.setName(Now_ContactList.get(pos).getName());//名字
-                                contactData.setPhoneNum(CommonUtil.getFormatPhone(Now_ContactList.get(pos).getPhoneNum()));//電話
-                                contactData.setNumber(Now_ContactList.get(pos).getNumber());//編號
-                                byte[] bytes = Now_ContactList.get(pos).getImg_avatar();
-                                Bitmap avatar_bitmap = BitmapFactory.decodeByteArray(bytes,0,bytes.length);
-                                contactData.setImg_avatar(avatar_bitmap);
-                                contactData.isFavor(true);
-                                contactData.setImg_favor(new ImageView(ContactsPageActivity.this));
-                                favorList.add(contactData);
+                                String id = String.valueOf(Now_ContactList.get(pos).getId());
+                                if(!favorIdSet.contains(id) ){
+                                    contactData = new ContactData();
+                                    contactData.setId(Now_ContactList.get(pos).getId());//id
+                                    contactData.setName(Now_ContactList.get(pos).getName());//名字
+                                    contactData.setPhoneNum(CommonUtil.getFormatPhone(Now_ContactList.get(pos).getPhoneNum()));//電話
+                                    contactData.setNumber(Now_ContactList.get(pos).getNumber());//編號
+                                    byte[] bytes = Now_ContactList.get(pos).getImg_avatar();
+                                    Bitmap avatar_bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                                    contactData.setImg_avatar(avatar_bitmap);
+                                    contactData.isFavor(true);
+                                    contactData.setImg_favor(new ImageView(ContactsPageActivity.this));
 
-                                //把id存起來
-                                favorIdSet.add(String.valueOf(Now_ContactList.get(pos).getId()));
+                                    favorList.add(contactData);
+                                    //把id存起來
+                                    favorIdSet.add(id);
+                                    //更新當前清單
+                                    Now_ContactList.get(pos).setImg_favor(new ImageView(ContactsPageActivity.this));
+                                    Now_ContactList.get(pos).isFavor(true);
+                                    //refresh
+                                    CommonUtil.setContactList(ContactsPageActivity.this,contact_RecyclerView, adapter, Now_ContactList);
+                                    CommonUtil.isDataChanged = true;//通知有更新
 
-//                                Now_ContactList.get(pos).setImg_favor(new ImageView(ContactsPageActivity.this));
+                                    toast.setText(R.string.favorDone);toast.show();
+                                }else {
+                                    toast.setText(R.string.alreadyaddfavor);toast.show();
+                                }
                                 //當今清單的tag要顯示
-                                Now_ContactList.get(pos).setImg_favor(new ImageView(ContactsPageActivity.this));
-                                Now_ContactList.get(pos).isFavor(true);
-                                //refresh
-                                CommonUtil.setContactList(ContactsPageActivity.this,contact_RecyclerView, adapter, Now_ContactList);
-                                CommonUtil.isDataChanged = true;//通知有更新
 
-                                toast.setText(R.string.favorDone);toast.show();
-
-                            }else {
-                                toast.setText("已經加過了");toast.show();
                             }
 
                             break;
@@ -240,16 +237,7 @@ public class ContactsPageActivity extends AppCompatActivity{
 
     }
 
-    private SwipeMenuItem setMenuItem(SwipeMenuItem item, int width, int height, int text_resID, int textSize, int color) {
 
-        item.setWidth(width)
-                .setHeight(height)
-                .setText(text_resID)
-                .setTextSize(textSize)
-                .setBackgroundColor(color);
-
-        return item;
-    }
 
     @Override
     protected void onResume() {
@@ -258,7 +246,7 @@ public class ContactsPageActivity extends AppCompatActivity{
         //提取最愛清單
         favorIdSet = sp.getStringSet("favorTags",new HashSet<String>());
         //資料有更新時，要更新nowlist，無更新時丟回原本的
-        if(CommonUtil.isDataChanged){
+        if(CommonUtil.isDataChanged || favorIdSet.size()>0){
             Now_ContactList = getContactList(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,phoneNumberProjection);
             CommonUtil.setContactList(ContactsPageActivity.this,contact_RecyclerView,adapter,
                     Now_ContactList);
@@ -268,7 +256,6 @@ public class ContactsPageActivity extends AppCompatActivity{
 
 
     }
-
 
     private void initView(Context context) {
 
@@ -321,7 +308,6 @@ public class ContactsPageActivity extends AppCompatActivity{
             }
         });
 
-
         //----------抽屜設定-----------//
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         navigationView = (NavigationView)findViewById(R.id.navigationView);
@@ -343,7 +329,7 @@ public class ContactsPageActivity extends AppCompatActivity{
 
                         ContentValues values = new ContentValues(5);
 
-                        values.put("id",String.valueOf(favorList.get(i).getId()));
+//                        values.put("id",String.valueOf(favorList.get(i).getId()));
                         values.put(MyDBHelper.NUMBER,String.valueOf(favorList.get(i).getNumber()));
                         values.put(MyDBHelper.NAME,favorList.get(i).getName());
                         values.put(MyDBHelper.PHONE_NUMBER,favorList.get(i).getPhoneNum());
@@ -410,8 +396,6 @@ public class ContactsPageActivity extends AppCompatActivity{
         }
         return list;
     }
-
-
 
     //取得聯絡人大頭照資料
     public static Bitmap get_Avatar(ContentResolver resolver, long contact_ID){

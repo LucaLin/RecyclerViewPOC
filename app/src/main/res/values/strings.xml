@@ -38,6 +38,7 @@
     <string name="dialog_permission_label_camera_message">開啟相機</string> 
     <string name="dialog_permission_label_and">及</string>
     <string name="dialog_title">訊息</string>
+    <string name="alreadyaddfavor">此筆已經是常用清單了喔</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

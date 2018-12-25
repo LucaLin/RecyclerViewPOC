@@ -15,6 +15,7 @@ import android.view.View;
 import com.example.r30_a.recylerviewpoc.R;
 import com.example.r30_a.recylerviewpoc.adapter.MyAdapter;
 import com.example.r30_a.recylerviewpoc.model.ContactData;
+import com.yanzhenjie.recyclerview.swipe.SwipeMenuItem;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -129,5 +130,18 @@ public class CommonUtil {
         toggle.syncState();
         View headerView = activity.getLayoutInflater().inflate(headerViewResId, navigationView, false);
 
+    }
+
+    //設定側滑小菜單內容
+    public static SwipeMenuItem setMenuItem(Context context, int width, int height, int text_resID, int textSize, int color) {
+        SwipeMenuItem item = new SwipeMenuItem(context);
+
+        item.setWidth(width)
+                .setHeight(height)
+                .setText(text_resID)
+                .setTextSize(textSize)
+                .setBackgroundColor(color);
+
+        return item;
     }
 }

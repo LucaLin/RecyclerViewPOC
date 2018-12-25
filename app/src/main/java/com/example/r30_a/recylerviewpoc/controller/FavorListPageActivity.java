@@ -1,11 +1,15 @@
 package com.example.r30_a.recylerviewpoc.controller;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.provider.ContactsContract;
+import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -13,16 +17,21 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Base64;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 
 import com.example.r30_a.recylerviewpoc.R;
 import com.example.r30_a.recylerviewpoc.adapter.MyAdapter;
+import com.example.r30_a.recylerviewpoc.adapter.MyDecoration;
 import com.example.r30_a.recylerviewpoc.helper.MyDBHelper;
 import com.example.r30_a.recylerviewpoc.model.ContactData;
 import com.example.r30_a.recylerviewpoc.util.CommonUtil;
 import com.google.gson.JsonObject;
+import com.yanzhenjie.recyclerview.swipe.SwipeMenu;
+import com.yanzhenjie.recyclerview.swipe.SwipeMenuCreator;
+import com.yanzhenjie.recyclerview.swipe.SwipeMenuItem;
 import com.yanzhenjie.recyclerview.swipe.SwipeMenuRecyclerView;
 
 import org.json.JSONException;
@@ -32,7 +41,7 @@ import java.util.ArrayList;
 
 public class FavorListPageActivity extends AppCompatActivity {
 
-    JsonObject jsonObject;
+
     MyDBHelper myDBHelper;
     SQLiteDatabase db;
     ArrayList<ContactData> favorList;
@@ -43,6 +52,7 @@ public class FavorListPageActivity extends AppCompatActivity {
     private NavigationView navigationView;
     private Toolbar toolbar;
     View headerView;
+    MyDecoration decoration;
 
     private RecyclerView.ItemDecoration itemDecoration;
 
@@ -59,6 +69,19 @@ public class FavorListPageActivity extends AppCompatActivity {
         myDBHelper = MyDBHelper.getInstance(this);
         db = myDBHelper.getReadableDatabase();
         favorList = new ArrayList<>();
+//        decoration = new MyDecoration(this, new MyDecoration.DecorationCallBack() {
+//            @Override
+//            public long getGroupId(int pos) {
+//                return Character.toUpperCase(favorList.get(pos).getName().charAt(0));
+//            }
+//
+//            @Override
+//            public String getGroupFirstLine(int pos) {
+//                return favorList.get(pos).getName().substring(0,1).toUpperCase();
+//            }
+//        });
+
+
 
         contact_RecyclerView = (SwipeMenuRecyclerView)findViewById(R.id.contact_RecyclerView);
         navigationView = (NavigationView)findViewById(R.id.navigationView);
@@ -93,6 +116,35 @@ public class FavorListPageActivity extends AppCompatActivity {
         adapter = new MyAdapter(this,favorList);
         CommonUtil.setContactList(FavorListPageActivity.this,contact_RecyclerView,adapter,favorList);
 
+        //contact_RecyclerView.addItemDecoration(decoration);
+        contact_RecyclerView.setSwipeMenuCreator(new SwipeMenuCreator() {
+            @Override
+            public void onCreateMenu(SwipeMenu swipeLeftMenu, SwipeMenu swipeRightMenu, int viewType) {
+                //建立右菜單刪除按鈕
+                SwipeMenuItem delete_item = CommonUtil.setMenuItem(FavorListPageActivity.this,240,240,R.string.delete,16, Color.parseColor("#dd0000"));
+                swipeRightMenu.addMenuItem(delete_item);
+            }
+        });
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                drawerLayout.closeDrawer(GravityCompat.START);//選單按完之後收起抽屜
+
+                switch (item.getItemId()){
+                    case R.id.allContact:
+                        startActivity(new Intent(FavorListPageActivity.this,ContactsPageActivity.class));
+                        finish();
+                        break;
+
+                    case R.id.favorContact:break;
+
+                    case R.id.settings:
+                        startActivity(new Intent(FavorListPageActivity.this,SettingPageActivity.class));
+                        break;
+                }
+                return true;
+            }
+        });
     }
 
 }
