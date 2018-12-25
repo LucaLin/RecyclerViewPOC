@@ -78,8 +78,11 @@ public class ContactData {
     }
 
     public void setImg_avatar( Bitmap bitmap) {
-
-          img_avatar = bitmap;
+        if(bitmap != null){
+            img_avatar = bitmap;
+        }else {
+            img_avatar = null;
+        }
 
     }
 

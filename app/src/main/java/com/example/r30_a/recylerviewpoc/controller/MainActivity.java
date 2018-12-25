@@ -44,13 +44,33 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         builder.setTitle("loading")
                 .setView(R.layout.layout_progress_view)
                 .create();
+
+        if(PermissionsUtil.hasPermission(this, Manifest.permission.READ_CONTACTS) &&
+                PermissionsUtil.hasPermission(this,Manifest.permission.WRITE_CONTACTS)&&
+                PermissionsUtil.hasPermission(this,Manifest.permission.CAMERA) &&
+                PermissionsUtil.hasPermission(this,Manifest.permission.READ_EXTERNAL_STORAGE)&&
+                PermissionsUtil.hasPermission(this,Manifest.permission.WRITE_EXTERNAL_STORAGE)){
+        }else {
+            PermissionsUtil.requestPermission(this, new PermissionListener() {
+                @Override
+                public void permissionGranted(@NonNull String[] permission) {}
+                @Override
+                public void permissionDenied(@NonNull String[] permission) {}
+            },new String[]{Manifest.permission.READ_CONTACTS,
+                    Manifest.permission.WRITE_CONTACTS,
+                    Manifest.permission.CAMERA,
+                    Manifest.permission.READ_EXTERNAL_STORAGE,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+            });
+
+        }
+
     }
 
     @Override
     public void onClick(View v) {
 
-        if(PermissionsUtil.hasPermission(this, Manifest.permission.READ_CONTACTS) &&
-                PermissionsUtil.hasPermission(this,Manifest.permission.WRITE_CONTACTS))
+
         switch (v.getId()){
             case R.id.btnContactPage:
 
@@ -62,17 +82,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 startActivity(new Intent(this,SettingPageActivity.class));
                 break;
 
-        }else {
-            PermissionsUtil.requestPermission(this, new PermissionListener() {
-                @Override
-                public void permissionGranted(@NonNull String[] permission) {}
-                @Override
-                public void permissionDenied(@NonNull String[] permission) {}
-            },new String[]{Manifest.permission.READ_CONTACTS,
-                           Manifest.permission.WRITE_CONTACTS,
-                           });
+            }
 
-        }
 
     }
 }

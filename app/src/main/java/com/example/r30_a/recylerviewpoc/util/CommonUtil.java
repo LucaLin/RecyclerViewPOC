@@ -1,9 +1,19 @@
 package com.example.r30_a.recylerviewpoc.util;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.support.design.widget.NavigationView;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Base64;
+import android.view.View;
 
+import com.example.r30_a.recylerviewpoc.R;
+import com.example.r30_a.recylerviewpoc.adapter.MyAdapter;
 import com.example.r30_a.recylerviewpoc.model.ContactData;
 
 import java.io.ByteArrayOutputStream;
@@ -21,6 +31,7 @@ public class CommonUtil {
 
     private static final String MY_TEST_PREF = "MY_TEST_PREF";
     private static final String FIRST_USE = "FIRST_USE";
+    public static boolean isDataChanged = false;
 
     /*簡單判斷字串是否為電話號碼格式*/
     public static boolean isCellPhoneNumber(String cellphone) {
@@ -97,6 +108,26 @@ public class CommonUtil {
         SharedPreferences.Editor editor = sf.edit();
         editor.putBoolean(FIRST_USE, value);
         editor.commit();
+
+    }
+
+    //更新通訊錄清單的方法
+    public static void setContactList(Context context,RecyclerView recyclerView, MyAdapter adapter, ArrayList<ContactData> list) {
+
+        adapter = new MyAdapter(context,list);
+        recyclerView.setLayoutManager(new LinearLayoutManager(context));//設定排版樣式
+        recyclerView.setAdapter(adapter);
+
+    }
+    //設定抽屜layout
+    public static void setDrawer(Activity activity, DrawerLayout drawerLayout, Toolbar toolbar, int headerViewResId, NavigationView navigationView) {
+
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                activity, drawerLayout, toolbar, R.string.drawer_open, R.string.drawer_close
+        );
+        drawerLayout.addDrawerListener(toggle);
+        toggle.syncState();
+        View headerView = activity.getLayoutInflater().inflate(headerViewResId, navigationView, false);
 
     }
 }

@@ -147,6 +147,8 @@ public class UpdateDataActivity extends AppCompatActivity implements View.OnClic
                                     intent.putExtra("oldName", txvDataName.getText());
                                     setResult(RESULT_OK, intent);
                                     intent.setClass(UpdateDataActivity.this, ContactsPageActivity.class);
+
+                                    CommonUtil.isDataChanged = true;
                                     toast.setText(R.string.updateDataOK);
                                     toast.show();
                                     finish();
@@ -205,7 +207,7 @@ public class UpdateDataActivity extends AppCompatActivity implements View.OnClic
                 Manifest.permission.READ_EXTERNAL_STORAGE,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE,};
                 boolean s = !PermissionUtil.needGrantRuntimePermission(UpdateDataActivity.this,permissionCamera,PermissionUtil.PERMISSION_REQUEST_CODE_EXTERNAL_STORAGE);
-        if(PermissionUtil.needGrantRuntimePermission(UpdateDataActivity.this,permissionCamera,PermissionUtil.PERMISSION_REQUEST_CODE_EXTERNAL_STORAGE)) {
+//        if(PermissionUtil.needGrantRuntimePermission(UpdateDataActivity.this,permissionCamera,PermissionUtil.PERMISSION_REQUEST_CODE_EXTERNAL_STORAGE)) {
             //API < 23的版本使用原來的方法
             if(Build.VERSION.SDK_INT <= 23){
                 Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);//使用拍照
@@ -245,20 +247,20 @@ public class UpdateDataActivity extends AppCompatActivity implements View.OnClic
                 startActivityForResult(intent,CAMERA_REQUEST);
 
             }
-        }
+//        }
     }
 
     private void albumStart() {
-        String[] permissionAlbum = {//先檢查權限
-                Manifest.permission.READ_EXTERNAL_STORAGE,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE,};
-        if(!PermissionsUtil.hasPermission(this,permissionAlbum)) {
+//        String[] permissionAlbum = {//先檢查權限
+//                Manifest.permission.READ_EXTERNAL_STORAGE,
+//                Manifest.permission.WRITE_EXTERNAL_STORAGE,};
+//        if(!PermissionsUtil.hasPermission(this,permissionAlbum)) {
 
             Intent albumIntent = new Intent();
             albumIntent.setType("image/*");//設定只顯示圖片區，不要秀其它的資料夾
             albumIntent.setAction(Intent.ACTION_GET_CONTENT);//取得本機相簿的action
             startActivityForResult(albumIntent, ALBUM_REQUEST);
-        }
+//        }
     }
 
     @Override
@@ -306,6 +308,7 @@ public class UpdateDataActivity extends AppCompatActivity implements View.OnClic
                                 values.put(Data.MIMETYPE, Photo.CONTENT_ITEM_TYPE);
                                 resolver.insert(Data.CONTENT_URI,values);
                             }
+                            CommonUtil.isDataChanged = true;
                         }
                     }
 
