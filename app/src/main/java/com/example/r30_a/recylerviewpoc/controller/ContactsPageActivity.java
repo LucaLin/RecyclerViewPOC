@@ -31,6 +31,7 @@ import android.support.v7.widget.RecyclerView;
 
 import android.text.TextUtils;
 
+import android.util.ArraySet;
 import android.util.Base64;
 import android.view.MenuItem;
 import android.view.View;
@@ -47,12 +48,6 @@ import com.example.r30_a.recylerviewpoc.helper.MyDBHelper;
 import com.example.r30_a.recylerviewpoc.model.ContactData;
 import com.example.r30_a.recylerviewpoc.util.CommonUtil;
 
-import com.google.gson.FieldNamingPolicy;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.yanzhenjie.recyclerview.swipe.Closeable;
 import com.yanzhenjie.recyclerview.swipe.OnSwipeMenuItemClickListener;
 import com.yanzhenjie.recyclerview.swipe.SwipeMenu;
@@ -67,6 +62,9 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
+
 import android.provider.ContactsContract.CommonDataKinds.Phone;
 import android.provider.ContactsContract.Data;
 import android.provider.ContactsContract.CommonDataKinds.Photo;
@@ -108,7 +106,7 @@ public class ContactsPageActivity extends AppCompatActivity{
     View headerView;
     private RecyclerView.ItemDecoration itemDecoration;
     MyDBHelper myDBHelper;
-
+    Set<String> favorIdSet = new HashSet();
     SharedPreferences sp;
 
     @Override
@@ -170,18 +168,32 @@ public class ContactsPageActivity extends AppCompatActivity{
                         case 0:
 
                             //問題：需要控制重覆加入最愛!!!!!!!!!
+                            //問題：最愛tag在回來後也要顯示
 
                             if(favorList != null ){
-                            addContactToList(Now_ContactList.get(pos).getNumber(),
-                                             Now_ContactList.get(pos).getId(),
-                                             String.valueOf(Now_ContactList.get(pos).getPhoneNum()),
-                                             Now_ContactList.get(pos).getName(),
-                                             get_Avatar(resolver,Now_ContactList.get(pos).getId()),
-                                             favorList);
-                                Now_ContactList.get(pos).setImg_favor(new ImageView(ContactsPageActivity.this));
-                                CommonUtil.setContactList(ContactsPageActivity.this,contact_RecyclerView, adapter, Now_ContactList);
+                                contactData = new ContactData();
+                                contactData.setId(Now_ContactList.get(pos).getId());//id
+                                contactData.setName(Now_ContactList.get(pos).getName());//名字
+                                contactData.setPhoneNum(CommonUtil.getFormatPhone(Now_ContactList.get(pos).getPhoneNum()));//電話
+                                contactData.setNumber(Now_ContactList.get(pos).getNumber());//編號
+                                byte[] bytes = Now_ContactList.get(pos).getImg_avatar();
+                                Bitmap avatar_bitmap = BitmapFactory.decodeByteArray(bytes,0,bytes.length);
+                                contactData.setImg_avatar(avatar_bitmap);
+                                contactData.isFavor(true);
+                                contactData.setImg_favor(new ImageView(ContactsPageActivity.this));
+                                favorList.add(contactData);
 
-                                CommonUtil.isDataChanged = true;
+                                //把id存起來
+                                favorIdSet.add(String.valueOf(Now_ContactList.get(pos).getId()));
+
+//                                Now_ContactList.get(pos).setImg_favor(new ImageView(ContactsPageActivity.this));
+                                //當今清單的tag要顯示
+                                Now_ContactList.get(pos).setImg_favor(new ImageView(ContactsPageActivity.this));
+                                Now_ContactList.get(pos).isFavor(true);
+                                //refresh
+                                CommonUtil.setContactList(ContactsPageActivity.this,contact_RecyclerView, adapter, Now_ContactList);
+                                CommonUtil.isDataChanged = true;//通知有更新
+
                                 toast.setText(R.string.favorDone);toast.show();
 
                             }else {
@@ -205,11 +217,17 @@ public class ContactsPageActivity extends AppCompatActivity{
 //                            break;
 
                     }
-
                 }
             }
         });
 
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        //儲存最愛清單
+        sp.edit().putStringSet("favorTags",favorIdSet).commit();
     }
 
     private void putIntentExtraAndStart(Intent intent, ArrayList<ContactData> searchList, int pos) {
@@ -233,11 +251,12 @@ public class ContactsPageActivity extends AppCompatActivity{
         return item;
     }
 
-
     @Override
     protected void onResume() {
         super.onResume();
         searchList.clear();
+        //提取最愛清單
+        favorIdSet = sp.getStringSet("favorTags",new HashSet<String>());
         //資料有更新時，要更新nowlist，無更新時丟回原本的
         if(CommonUtil.isDataChanged){
             Now_ContactList = getContactList(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,phoneNumberProjection);
@@ -350,7 +369,7 @@ public class ContactsPageActivity extends AppCompatActivity{
             }
         });
 
-        sp = getSharedPreferences("favorList",MODE_PRIVATE);
+        sp = getSharedPreferences("favorTags",MODE_PRIVATE);
 
     }
 
@@ -370,11 +389,12 @@ public class ContactsPageActivity extends AppCompatActivity{
                     long id = cursor.getLong(cursor.getColumnIndex(Phone.CONTACT_ID));
                         name = cursor.getString(cursor.getColumnIndex(Phone.DISPLAY_NAME));
                         mobileNum = cursor.getString(cursor.getColumnIndex(Phone.NUMBER));
+
                     if (!TextUtils.isEmpty(mobileNum) && !isCellPhoneNumber(mobileNum)) {
                         continue;
                     } else {
                         number = number+1;
-                        addContactToList(number,id,mobileNum,name, get_Avatar(resolver,id), list);
+                        addContactToList(number,id,mobileNum,name, get_Avatar(resolver,id), favorIdSet, list);
                     }
                 }
                 cursor.close();
@@ -390,6 +410,8 @@ public class ContactsPageActivity extends AppCompatActivity{
         }
         return list;
     }
+
+
 
     //取得聯絡人大頭照資料
     public static Bitmap get_Avatar(ContentResolver resolver, long contact_ID){
@@ -418,7 +440,7 @@ public class ContactsPageActivity extends AppCompatActivity{
     }
 
     /*新增聯絡人到手機清單*/
-    private void addContactToList(int number,long id, String phoneNumber, String name, Bitmap avatar, ArrayList list) {
+    private void addContactToList(int number,long id, String phoneNumber, String name, Bitmap avatar, Set<String> favorIdSet, ArrayList list) {
 
         if (!tempId.equals(String.valueOf(id))) {
 
@@ -431,8 +453,14 @@ public class ContactsPageActivity extends AppCompatActivity{
             if(avatar != null){
             contactData.setImg_avatar(avatar);//大頭照
             }
+            if(favorIdSet.contains(String.valueOf(id))){
+                contactData.isFavor(true);
+                contactData.setImg_favor(new ImageView(this));
+            }
+
             tempId = String.valueOf(id);
             list.add(contactData);
+
 
 
             //myDBHelper.getWritableDatabase().insert()

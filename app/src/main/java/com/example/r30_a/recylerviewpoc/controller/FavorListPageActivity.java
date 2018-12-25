@@ -46,14 +46,11 @@ public class FavorListPageActivity extends AppCompatActivity {
 
     private RecyclerView.ItemDecoration itemDecoration;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_favor_list_page);
         initView();
-
-
 
     }
 

@@ -26,6 +26,16 @@ public class ContactData {
     private Bitmap img_avatar ;
     private ImageView img_favor;
 
+    public boolean getIsFavor() {
+        return isFavor;
+    }
+
+    public void isFavor(boolean favor) {
+        isFavor = favor;
+    }
+
+    private boolean isFavor = false;
+
     public ImageView getImg_favor() {
 
         return img_favor;
