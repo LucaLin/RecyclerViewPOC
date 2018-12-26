@@ -99,6 +99,13 @@ public class MyAdapter extends SwipeMenuAdapter<MyAdapter.MainViewHolder> implem
             }
         });
 
+        holder.txvrunrun.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                holder.txvrunrun.performClick();
+            }
+        });
+
 //        holder.contactData_layout.setOnClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View v) {
@@ -155,6 +162,7 @@ public class MyAdapter extends SwipeMenuAdapter<MyAdapter.MainViewHolder> implem
         RelativeLayout contactData_layout;
         ImageView img_favor;//常用清單tag
         ImageView imgbtn_dial,imgbtn_sms;
+        TextView txvrunrun;
         public MainViewHolder(View v) {
             super(v);
             txv_Name = v.findViewById(R.id.txv_Name);
@@ -165,6 +173,7 @@ public class MyAdapter extends SwipeMenuAdapter<MyAdapter.MainViewHolder> implem
             number = v.findViewById(R.id.number);
             imgbtn_dial = v.findViewById(R.id.imgbtn_dial);
             imgbtn_sms = v.findViewById(R.id.imgbtn_sms);
+            txvrunrun = v.findViewById(R.id.txvrunrun);
 
         }
 

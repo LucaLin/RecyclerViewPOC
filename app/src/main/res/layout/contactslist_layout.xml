@@ -12,7 +12,7 @@
     <LinearLayout
         android:id="@+id/avatar_layout"
         android:layout_width="wrap_content"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_centerHorizontal="false"
         android:layout_centerInParent="false"
         android:layout_centerVertical="false"
@@ -179,4 +179,31 @@
 
     </LinearLayout>
 
+    <LinearLayout
+        android:id="@+id/runrun_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#bbbbbb"
+        android:layout_below="@+id/avatar_layout"
+        android:layout_marginLeft="10dp"
+        android:layout_toLeftOf="@+id/function_layout"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/txvrunrun"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentBottom="true"
+            android:ellipsize="marquee"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:marqueeRepeatLimit="marquee_forever"
+            android:scrollHorizontally="true"
+            android:singleLine="true"
+            android:text="這是跑馬燈，可以把它當做重要記事使用，只是現在還不知道要怎麼樣用較短的文字讓它跑的動，所以現在先打一個很長的測試"
+            android:textColor="@android:color/white"
+            android:textSize="12sp" />
+
+
+    </LinearLayout>
 </RelativeLayout>

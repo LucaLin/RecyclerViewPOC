@@ -336,7 +336,7 @@ public class ContactsPageActivity extends AppCompatActivity{
             number = 0;
             String name;
             String mobileNum;
-            cursor = resolver.query(uri, projection, null, null, Contacts.SORT_KEY_PRIMARY);
+            cursor = resolver.query(uri, projection, null, null, Contacts.DISPLAY_NAME);
             //直接取contacts中的號碼資料區，再從號碼欄去抓對應的name跟number
             if (cursor != null) {
                 while (cursor != null && cursor.moveToNext()) {
