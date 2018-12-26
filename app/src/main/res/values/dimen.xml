@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     
-    <dimen name="section_top">32dp</dimen>
+    <dimen name="section_top">20dp</dimen>
     
 </resources>

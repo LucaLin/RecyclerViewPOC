@@ -32,13 +32,15 @@ public class MyDecoration extends RecyclerView.ItemDecoration {
         this.callBack = callBack;
 
         paint = new Paint();
-        paint.setColor(context.getResources().getColor(R.color.colorPrimary));
+//        paint.setColor(context.getResources().getColor(R.color.colorPrimary));
+        paint.setColor(Color.parseColor("#0091EA"));
+
 
         textPaint = new TextPaint();
         textPaint.setTypeface(Typeface.DEFAULT_BOLD);
 
         textPaint.setAntiAlias(true);
-        textPaint.setTextSize(80);
+        textPaint.setTextSize(65);
         textPaint.getFontMetrics(fontMetrics);
         textPaint.setTextAlign(Paint.Align.LEFT);
         fontMetrics = new Paint.FontMetrics();
@@ -71,7 +73,7 @@ public class MyDecoration extends RecyclerView.ItemDecoration {
 
                 //繪製一個方形區塊，範圍需要上下左右的長寬
                 c.drawRect(left,top,right,bottom,paint);
-                c.drawText(textLine,left,bottom,textPaint);
+                c.drawText(textLine,left,bottom-4,textPaint);
             }
         }
     }

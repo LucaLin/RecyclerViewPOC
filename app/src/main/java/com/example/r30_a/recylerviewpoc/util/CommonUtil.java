@@ -133,12 +133,12 @@ public class CommonUtil {
     }
 
     //設定側滑小菜單內容
-    public static SwipeMenuItem setMenuItem(Context context, int width, int height, int text_resID, int textSize, int color) {
+    public static SwipeMenuItem setMenuItem(Context context, int width, int height,int iconId, int textSize, int color) {
         SwipeMenuItem item = new SwipeMenuItem(context);
 
         item.setWidth(width)
                 .setHeight(height)
-                .setText(text_resID)
+                .setImage(iconId)
                 .setTextSize(textSize)
                 .setBackgroundColor(color);
 

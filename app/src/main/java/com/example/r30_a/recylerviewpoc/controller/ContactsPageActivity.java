@@ -120,22 +120,15 @@ public class ContactsPageActivity extends AppCompatActivity{
             public void onCreateMenu(SwipeMenu swipeLeftMenu, SwipeMenu swipeRightMenu, int viewType) {
 
                 //建立右菜單更新按鈕
-                SwipeMenuItem update_item = CommonUtil.setMenuItem(ContactsPageActivity.this, 240,240,R.string.update,16, Color.parseColor("#00dd00"));
+                SwipeMenuItem update_item = CommonUtil.setMenuItem(ContactsPageActivity.this, 200,300,R.drawable.icons8_restart_72,16, Color.parseColor("#00dd00"));
                 //建立右菜單刪除按鈕
-                SwipeMenuItem delete_item = CommonUtil.setMenuItem(ContactsPageActivity.this,240,240,R.string.delete,16,Color.parseColor("#dd0000"));
-                //建立左菜單通話按鈕
-//                SwipeMenuItem dial_item = new SwipeMenuItem(ContactsPageActivity.this);
-//                setMenuItem(dial_item, 240, 240, R.string.dial,16,Color.parseColor("#00dd00"));
-                //建立左菜單簡訊按鈕
-//                SwipeMenuItem sms_item = new SwipeMenuItem(ContactsPageActivity.this);
-//                setMenuItem(sms_item,240,240, R.string.smsto, 16, Color.parseColor("#dddddd"));
+                SwipeMenuItem delete_item = CommonUtil.setMenuItem(ContactsPageActivity.this,200,300,R.drawable.icons8_trash_72,16,Color.parseColor("#dd0000"));
                 //建立左菜單加入最愛按鈕
-                SwipeMenuItem favor_item = CommonUtil.setMenuItem(ContactsPageActivity.this, 240, 240, R.string.favor,16,Color.parseColor("#00dd00"));
+                SwipeMenuItem favor_item = CommonUtil.setMenuItem(ContactsPageActivity.this, 200, 300,R.drawable.icons8_heart_48,16,Color.parseColor("#00dd00"));
 
                 swipeRightMenu.addMenuItem(update_item);
                 swipeRightMenu.addMenuItem(delete_item);
                 swipeLeftMenu.addMenuItem(favor_item);
-              //  swipeLeftMenu.addMenuItem(sms_item);
 
             }
         });
@@ -196,26 +189,9 @@ public class ContactsPageActivity extends AppCompatActivity{
                                 //當今清單的tag要顯示
 
                             }
-
                             break;
-//                            Intent intent_dial = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + myContactList.get(adapterPosition).getPhoneNum()));
-//                            if (ActivityCompat.checkSelfPermission(ContactsPageActivity.this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
-//                                return;
-//                            }
-//                            startActivity(intent_dial);
-//                            break;
-                        //簡訊
-//                        case 1:
-//                            Intent intent_sms = new Intent(Intent.ACTION_SENDTO,Uri.parse("smsto:"+ myContactList.get(adapterPosition).getPhoneNum()));
-//                        if (ActivityCompat.checkSelfPermission(ContactsPageActivity.this, Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED) {
-//                            return;
-//                        }
-//                        startActivity(intent_sms);
-//                            break;
-
                     }
                 }
-
             }
         });
 
@@ -439,8 +415,6 @@ public class ContactsPageActivity extends AppCompatActivity{
             tempId = String.valueOf(id);
             list.add(contactData);
 
-
-            //myDBHelper.getWritableDatabase().insert()
         }
 
     }

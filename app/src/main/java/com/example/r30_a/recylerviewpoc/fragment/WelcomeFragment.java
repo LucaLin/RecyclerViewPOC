@@ -19,6 +19,7 @@ import com.example.r30_a.recylerviewpoc.util.CommonUtil;
 public class WelcomeFragment extends Fragment implements View.OnClickListener{
     private static final String PAGE_NUMBER = "page-number";
     public static int MAX_PAGE_NUMBER = 4;
+    Intent intent = null;
 
     public WelcomeFragment() {}
 
@@ -57,7 +58,7 @@ public class WelcomeFragment extends Fragment implements View.OnClickListener{
 
     @Override
     public void onClick(View v) {
-        Intent intent = null;
+
 
         intent = new Intent(getActivity(), MainActivity.class);
 
@@ -65,6 +66,7 @@ public class WelcomeFragment extends Fragment implements View.OnClickListener{
             CommonUtil.setFirstTimeUse(getActivity(),false);
             startActivity(intent);
             getActivity().finish();
+            intent = null;
         }
     }
 }

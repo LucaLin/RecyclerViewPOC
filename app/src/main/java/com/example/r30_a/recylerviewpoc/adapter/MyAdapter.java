@@ -76,34 +76,61 @@ public class MyAdapter extends SwipeMenuAdapter<MyAdapter.MainViewHolder> implem
             holder.img_favor.setVisibility(View.VISIBLE);
         }
 
-        holder.contactData_layout.setOnClickListener(new View.OnClickListener() {
+        holder.imgbtn_dial.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final String number = list.get(position).getPhoneNum();
-                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                Intent intent_dial = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + list.get(position).getPhoneNum()));
+                if (ActivityCompat.checkSelfPermission(context, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+                    return;
+                }
+                context.startActivity(intent_dial);
 
-                builder.setPositiveButton(R.string.dial, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        Intent intent_dial = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + number));
-                            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
-                                return;
-                            }
-                            context.startActivity(intent_dial);
-                    }
-                }).setNegativeButton(R.string.smsto, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-
-                    }
-                }).setTitle(R.string.hint)
-                  .create();
-                builder.show();
             }
         });
 
-    }
+        holder.imgbtn_sms.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent_sms = new Intent(Intent.ACTION_SENDTO,Uri.parse("smsto:"+ list.get(position).getPhoneNum()));
+                if (ActivityCompat.checkSelfPermission(context, Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED) {
+                    return;
+                }
+                context.startActivity(intent_sms);
+            }
+        });
 
+//        holder.contactData_layout.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                final String number = list.get(position).getPhoneNum();
+//                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+//                //通話
+//                builder.setPositiveButton(R.string.dial, new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialog, int which) {
+//                        Intent intent_dial = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + number));
+//                            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+//                                return;
+//                            }
+//                            context.startActivity(intent_dial);
+//                    }
+//                //簡訊
+//                }).setNegativeButton(R.string.smsto, new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialog, int which) {
+//                        Intent intent_sms = new Intent(Intent.ACTION_SENDTO,Uri.parse("smsto:"+ list.get(position).getPhoneNum()));
+//                        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED) {
+//                            return;
+//                        }
+//                        context.startActivity(intent_sms);
+//                    }
+//                }).setTitle(R.string.hint)
+//                  .create();
+//                builder.show();
+//            }
+//        });
+
+    }
 
     @Override
     public int getItemViewType(int position) {
@@ -127,6 +154,7 @@ public class MyAdapter extends SwipeMenuAdapter<MyAdapter.MainViewHolder> implem
         ImageView img_avatar;//大頭貼
         RelativeLayout contactData_layout;
         ImageView img_favor;//常用清單tag
+        ImageView imgbtn_dial,imgbtn_sms;
         public MainViewHolder(View v) {
             super(v);
             txv_Name = v.findViewById(R.id.txv_Name);
@@ -135,6 +163,8 @@ public class MyAdapter extends SwipeMenuAdapter<MyAdapter.MainViewHolder> implem
             contactData_layout = v.findViewById(R.id.contactData_layout);
             img_favor = v.findViewById(R.id.img_favor);
             number = v.findViewById(R.id.number);
+            imgbtn_dial = v.findViewById(R.id.imgbtn_dial);
+            imgbtn_sms = v.findViewById(R.id.imgbtn_sms);
 
         }
 

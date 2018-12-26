@@ -122,7 +122,7 @@ public class FavorListPageActivity extends AppCompatActivity {
             @Override
             public void onCreateMenu(SwipeMenu swipeLeftMenu, SwipeMenu swipeRightMenu, int viewType) {
                 //建立右菜單刪除按鈕
-                SwipeMenuItem delete_item = CommonUtil.setMenuItem(FavorListPageActivity.this,240,240,R.string.delete,16, Color.parseColor("#dd0000"));
+                SwipeMenuItem delete_item = CommonUtil.setMenuItem(FavorListPageActivity.this,200,300,R.drawable.icons8_trash_48,16, Color.parseColor("#dd0000"));
                 swipeRightMenu.addMenuItem(delete_item);
             }
         });
@@ -133,7 +133,6 @@ public class FavorListPageActivity extends AppCompatActivity {
 
                 switch (item.getItemId()){
                     case R.id.allContact:
-                        startActivity(new Intent(FavorListPageActivity.this,ContactsPageActivity.class));
                         finish();
                         break;
 
