@@ -58,7 +58,7 @@ public class WelcomeFragment extends Fragment implements View.OnClickListener{
 
     @Override
     public void onClick(View v) {
-
+        intent = null;
 
         intent = new Intent(getActivity(), MainActivity.class);
 

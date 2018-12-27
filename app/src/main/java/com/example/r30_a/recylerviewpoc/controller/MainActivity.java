@@ -12,6 +12,8 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 
 import com.example.r30_a.recylerviewpoc.R;
+import com.example.r30_a.recylerviewpoc.fragment.WelcomeFragment;
+import com.example.r30_a.recylerviewpoc.util.CommonUtil;
 import com.github.dfqin.grantor.PermissionListener;
 import com.github.dfqin.grantor.PermissionsUtil;
 
@@ -25,6 +27,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        //第一次使用的話先開歡迎畫面
+        if(CommonUtil.isFirstTimeUse(this)){
+            Intent intent = new Intent(this,WelcomeActivity.class);
+            startActivity(intent);
+            finish();
+        }
+
         initView();
     }
 
@@ -75,11 +84,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onClick(View v) {
 
-
         switch (v.getId()){
             case R.id.btnContactPage:
-
-
                 startActivity(new Intent(this,ContactsPageActivity.class));
                 break;
 

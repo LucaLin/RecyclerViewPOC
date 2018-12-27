@@ -16,9 +16,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import com.example.r30_a.recylerviewpoc.R;
+import com.example.r30_a.recylerviewpoc.controller.DetailPageActivity;
 import com.example.r30_a.recylerviewpoc.model.ContactData;
 import com.yanzhenjie.recyclerview.swipe.SwipeMenuAdapter;
 
@@ -106,36 +108,18 @@ public class MyAdapter extends SwipeMenuAdapter<MyAdapter.MainViewHolder> implem
             }
         });
 
-//        holder.contactData_layout.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                final String number = list.get(position).getPhoneNum();
-//                AlertDialog.Builder builder = new AlertDialog.Builder(context);
-//                //通話
-//                builder.setPositiveButton(R.string.dial, new DialogInterface.OnClickListener() {
-//                    @Override
-//                    public void onClick(DialogInterface dialog, int which) {
-//                        Intent intent_dial = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + number));
-//                            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
-//                                return;
-//                            }
-//                            context.startActivity(intent_dial);
-//                    }
-//                //簡訊
-//                }).setNegativeButton(R.string.smsto, new DialogInterface.OnClickListener() {
-//                    @Override
-//                    public void onClick(DialogInterface dialog, int which) {
-//                        Intent intent_sms = new Intent(Intent.ACTION_SENDTO,Uri.parse("smsto:"+ list.get(position).getPhoneNum()));
-//                        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED) {
-//                            return;
-//                        }
-//                        context.startActivity(intent_sms);
-//                    }
-//                }).setTitle(R.string.hint)
-//                  .create();
-//                builder.show();
-//            }
-//        });
+        //點擊進入detail頁面
+        holder.infoZone.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, DetailPageActivity.class);
+                intent.putExtra("id",list.get(position).getId());
+                intent.putExtra("name",list.get(position).getName());
+                intent.putExtra("phoneNumber",list.get(position).getPhoneNum());
+                intent.putExtra("avatar",list.get(position).getImg_avatar());
+                context.startActivity(intent);
+            }
+        });
 
     }
 
@@ -163,6 +147,7 @@ public class MyAdapter extends SwipeMenuAdapter<MyAdapter.MainViewHolder> implem
         ImageView img_favor;//常用清單tag
         ImageView imgbtn_dial,imgbtn_sms;
         TextView txvrunrun;
+        LinearLayout infoZone;
         public MainViewHolder(View v) {
             super(v);
             txv_Name = v.findViewById(R.id.txv_Name);
@@ -174,6 +159,7 @@ public class MyAdapter extends SwipeMenuAdapter<MyAdapter.MainViewHolder> implem
             imgbtn_dial = v.findViewById(R.id.imgbtn_dial);
             imgbtn_sms = v.findViewById(R.id.imgbtn_sms);
             txvrunrun = v.findViewById(R.id.txvrunrun);
+            infoZone = v.findViewById(R.id.info_zone);
 
         }
 

@@ -16,12 +16,21 @@
     <string name="favorContact">常用聯絡人</string>
     <string name="drawer_open">Drawer opened</string>
     <string name="drawer_close">Drawer closed</string>
+
+    <!--detail menu-->
+    <string name="p1_update">更新資料</string>
+    <string name="p2_addFavor">加入常用清單</string>
+    <string name="p3_delete">刪除聯絡人</string>
+
+
+
+
+
+    <!--提示語-->
     <string name="welcome_page1">歡迎使用通訊錄小app</string>
     <string name="welcome_page2">可愛又迷人的介面</string>
     <string name="welcome_page3">多種功能超好用！</string>
     <string name="welcome_page4">等不及開始用了吧！！</string>
-
-    <!--提示語-->
     <string name="noData">無資料可顯示喔！</string>
     <string name="permissonRequest">請先開啟使用者權限</string>
     <string name="deleteOK">刪除成功</string>
@@ -39,6 +48,9 @@
     <string name="dialog_permission_label_and">及</string>
     <string name="dialog_title">訊息</string>
     <string name="alreadyaddfavor">此筆已經是常用清單了喔</string>
+    <string name="note">備忘錄或介紹詞</string>
+    <string name="attention">"注意"</string>
+    <string name="deleteOrNot">此功能會永久刪除此聯絡人，確定要繼續嗎？</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

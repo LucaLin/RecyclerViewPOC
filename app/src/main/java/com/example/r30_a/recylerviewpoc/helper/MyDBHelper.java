@@ -20,6 +20,7 @@ public class MyDBHelper extends SQLiteOpenHelper {
     public static final String NAME = "NAME";
     public static final String PHONE_NUMBER = "PHONENUMBER";
     public static final String IMG_AVATAR = "IMGAVATAR";
+    public static final String NOTE = "NOTE";
 
     //資料表參數
     private static final String createTable = "CREATE TABLE IF NOT EXISTS "
@@ -28,7 +29,8 @@ public class MyDBHelper extends SQLiteOpenHelper {
             +NAME+" TEXT, "
             +NUMBER+" TEXT, "
             +PHONE_NUMBER+" TEXT, "
-            +IMG_AVATAR+" TEXT); ";
+            +IMG_AVATAR+" TEXT, "
+            +NOTE+" NOTE); ";
 
     private static MyDBHelper instance;
     //取得實體

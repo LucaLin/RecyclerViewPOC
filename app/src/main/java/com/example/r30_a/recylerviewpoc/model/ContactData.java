@@ -20,11 +20,23 @@ import java.io.InputStream;
 
 public class ContactData {
 
-    private String name;
-    private String phoneNum;
-    private long id;
-    private Bitmap img_avatar ;
-    private ImageView img_favor;
+    private String name;//名字
+    private String phoneNum;//手機號碼
+    private long id;//id
+    private Bitmap img_avatar ;//大頭照
+    private ImageView img_favor;//是否為常用清單的tag
+    private String note;//記事
+
+    
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
+    }
+
+
 
     public boolean getIsFavor() {
         return isFavor;

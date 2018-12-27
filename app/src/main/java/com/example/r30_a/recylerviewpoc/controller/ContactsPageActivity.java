@@ -89,10 +89,12 @@ public class ContactsPageActivity extends AppCompatActivity{
     private ContactData contactData;//用來儲存資料的物件
     private ContentResolver resolver;
     public static final Uri SIM_URI = Uri.parse("content://icc/adn");//讀取sim卡資料的uri string
+
     private String[] phoneNumberProjection = new String[]{//欲搜尋的欄位區塊
             Phone.CONTACT_ID, Phone.NUMBER,
             Phone.DISPLAY_NAME, Photo.PHOTO_ID
             };
+
     private String tempId = "";//聯絡人id的暫存
     public static final int REQUEST_CODE = 1;
     //-------聯絡人清單元件-----//
@@ -114,7 +116,7 @@ public class ContactsPageActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contacts_page);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        initView(this);
+        initView();
         contact_RecyclerView.setSwipeMenuCreator(new SwipeMenuCreator() {
             @Override
             public void onCreateMenu(SwipeMenu swipeLeftMenu, SwipeMenu swipeRightMenu, int viewType) {
@@ -135,7 +137,7 @@ public class ContactsPageActivity extends AppCompatActivity{
 
         contact_RecyclerView.setSwipeMenuItemClickListener(new OnSwipeMenuItemClickListener() {
             @Override
-            public void onItemClick(Closeable closeable, int pos, int menuPosition, int direction) {
+            public void onItemClick(Closeable closeable, final int pos, int menuPosition, int direction) {
 
                 if(direction == -1){//向右滑動
                 switch (menuPosition){
@@ -151,7 +153,34 @@ public class ContactsPageActivity extends AppCompatActivity{
                     //刪除
                     case 1:
                         deleteContact(Now_ContactList.get(pos).getId(),phoneNumberProjection);
-                        break;
+//                        CommonUtil.makeAlert(ContactsPageActivity.this,R.string.attention,R.string.deleteOrNot)
+//                                .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+//                                    @Override
+//                                    public void onClick(DialogInterface dialog, int which) {
+//                                        try {
+//                                            //使用id來找原始資料
+//                                            Cursor c = resolver.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+//                                                    phoneNumberProjection,
+//                                                    "contact_id =?",
+//                                                    new String[]{String.valueOf(Now_ContactList.get(pos).getId())},
+//                                                    null);
+//                                            if (c.moveToFirst()) {
+//                                                resolver.delete(ContactsContract.RawContacts.CONTENT_URI, "contact_id =?", new String[]{String.valueOf(Now_ContactList.get(pos).getId())});
+//                                                CommonUtil.isDataChanged = true;
+//                                            }
+//                                        } catch (Exception e) {
+//                                            e.getMessage();
+//                                        }
+//                                    }
+//                                })
+//                                .setNegativeButton(R.string.no,null)
+//                                .show();
+//
+//                        toast.setText(R.string.deleteOK);
+//                        toast.show();
+//                        Now_ContactList = getContactList(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,phoneNumberProjection);
+//                        CommonUtil.setContactList(ContactsPageActivity.this,contact_RecyclerView,adapter,Now_ContactList);
+//                        break;
                     }
                 }else {
                     switch (menuPosition){//向左滑動
@@ -204,11 +233,12 @@ public class ContactsPageActivity extends AppCompatActivity{
         sp.edit().putStringSet("favorTags",favorIdSet).commit();
     }
 
-    private void putIntentExtraAndStart(Intent intent, ArrayList<ContactData> searchList, int pos) {
-        intent.putExtra("id",String.valueOf(searchList.get(pos).getId()));
-        intent.putExtra("name", searchList.get(pos).getName());
-        intent.putExtra("phone", searchList.get(pos).getPhoneNum());
-        intent.putExtra("avatar", searchList.get(pos).getImg_avatar());
+    private void putIntentExtraAndStart(Intent intent, ArrayList<ContactData> list, int pos) {
+        intent.putExtra("id",String.valueOf(list.get(pos).getId()));
+        intent.putExtra("name", list.get(pos).getName());
+        intent.putExtra("phone", list.get(pos).getPhoneNum());
+        intent.putExtra("avatar", list.get(pos).getImg_avatar());
+        intent.putExtra("note",list.get(pos).getNote());
         intent.setClass(ContactsPageActivity.this, UpdateDataActivity.class);
         startActivityForResult(intent, ContactsPageActivity.REQUEST_CODE);
 
@@ -231,7 +261,7 @@ public class ContactsPageActivity extends AppCompatActivity{
 
     }
 
-    private void initView(Context context) {
+    private void initView() {
 
         myDBHelper = MyDBHelper.getInstance(this);
         sp = getSharedPreferences("favorTags",MODE_PRIVATE);
@@ -419,11 +449,8 @@ public class ContactsPageActivity extends AppCompatActivity{
 
     }
 
-
     /*刪除聯絡人*/
     private void deleteContact(final long id, final String[] projection) {
-        if(ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED ||
-                ActivityCompat.checkSelfPermission(this,Manifest.permission.WRITE_CONTACTS) == PackageManager.PERMISSION_GRANTED){
 
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle("注意")
@@ -432,7 +459,6 @@ public class ContactsPageActivity extends AppCompatActivity{
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             try {
-
                                 //使用id來找原始資料
                                 Cursor c = resolver.query(Phone.CONTENT_URI,
                                         projection,
@@ -447,23 +473,14 @@ public class ContactsPageActivity extends AppCompatActivity{
                                     CommonUtil.isDataChanged = true;
                                     Now_ContactList = getContactList(Phone.CONTENT_URI,phoneNumberProjection);
                                     CommonUtil.setContactList(ContactsPageActivity.this,contact_RecyclerView,adapter,Now_ContactList);
-
                                 }
                             } catch (Exception e) {
                                 e.getMessage();
                             }
-
-
                         }
                     })
                     .setNegativeButton(R.string.no,null)
                     .show();
-
-
-
-        }else {
-            toast.setText(R.string.permissonRequest);toast.show();
-        }
     }
 
     //取回更新後的資料，做更新聯絡人的處理

@@ -109,7 +109,6 @@ public class FavorListPageActivity extends AppCompatActivity {
                 data.setImg_avatar(img_avatar);
                 }
 
-
                 favorList.add(data);
             }
 

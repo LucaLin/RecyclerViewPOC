@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/p1_update"
+        android:title="@string/p1_update"/>
+    <item
+        android:id="@+id/p2_addFavor"
+        android:title="@string/p2_addFavor"/>
+    <item
+        android:id="@+id/p3_delete"
+        android:title="@string/p3_delete"/>
+</menu>

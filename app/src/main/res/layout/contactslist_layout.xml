@@ -183,10 +183,10 @@
         android:id="@+id/runrun_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#bbbbbb"
         android:layout_below="@+id/avatar_layout"
-        android:layout_marginLeft="10dp"
+        android:layout_marginLeft="20dp"
         android:layout_toLeftOf="@+id/function_layout"
+        android:background="#bbbbbb"
         android:orientation="horizontal">
 
         <TextView

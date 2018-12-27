@@ -1,11 +1,18 @@
 package com.example.r30_a.recylerviewpoc.util;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.provider.ContactsContract;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -14,6 +21,7 @@ import android.view.View;
 
 import com.example.r30_a.recylerviewpoc.R;
 import com.example.r30_a.recylerviewpoc.adapter.MyAdapter;
+import com.example.r30_a.recylerviewpoc.controller.ContactsPageActivity;
 import com.example.r30_a.recylerviewpoc.model.ContactData;
 import com.yanzhenjie.recyclerview.swipe.SwipeMenuItem;
 
@@ -120,6 +128,9 @@ public class CommonUtil {
         recyclerView.setAdapter(adapter);
 
     }
+
+
+
     //設定抽屜layout
     public static void setDrawer(Activity activity, DrawerLayout drawerLayout, Toolbar toolbar, int headerViewResId, NavigationView navigationView) {
 

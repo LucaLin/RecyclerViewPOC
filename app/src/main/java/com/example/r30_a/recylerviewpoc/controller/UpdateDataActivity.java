@@ -54,7 +54,7 @@ public class UpdateDataActivity extends AppCompatActivity implements View.OnClic
 
     TextView txvDataName, txvDataPhone;
     Button btnUpdate;
-    EditText edtName, edtPhone;
+    EditText edtName, edtPhone,edtNote;
     Toast toast;
     String dataId;
     ImageView img_avatar;
@@ -145,6 +145,8 @@ public class UpdateDataActivity extends AppCompatActivity implements View.OnClic
                                     intent.putExtra("Name", updateName);
                                     intent.putExtra("Phone", updatePhone);
                                     intent.putExtra("oldName", txvDataName.getText());
+
+
                                     setResult(RESULT_OK, intent);
                                     intent.setClass(UpdateDataActivity.this, ContactsPageActivity.class);
 
@@ -251,16 +253,12 @@ public class UpdateDataActivity extends AppCompatActivity implements View.OnClic
     }
 
     private void albumStart() {
-//        String[] permissionAlbum = {//先檢查權限
-//                Manifest.permission.READ_EXTERNAL_STORAGE,
-//                Manifest.permission.WRITE_EXTERNAL_STORAGE,};
-//        if(!PermissionsUtil.hasPermission(this,permissionAlbum)) {
 
             Intent albumIntent = new Intent();
             albumIntent.setType("image/*");//設定只顯示圖片區，不要秀其它的資料夾
             albumIntent.setAction(Intent.ACTION_GET_CONTENT);//取得本機相簿的action
             startActivityForResult(albumIntent, ALBUM_REQUEST);
-//        }
+
     }
 
     @Override
