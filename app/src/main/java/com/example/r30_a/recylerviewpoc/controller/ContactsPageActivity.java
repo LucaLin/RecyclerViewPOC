@@ -157,11 +157,27 @@ public class ContactsPageActivity extends AppCompatActivity{
                                 String id = String.valueOf(Now_ContactList.get(pos).getId());
                                 if(!CommonUtil.favorIdSet.contains(id) ){
 
-                                    addContactToFavorList(Now_ContactList,favorList,pos,favorIdSet);
+                                    //寫入資料庫
+                                    ContentValues values = new ContentValues(5);
+                                    values.put(MyDBHelper.CONTACT_ID,String.valueOf(Now_ContactList.get(pos).getId()));
+                                    values.put(MyDBHelper.NUMBER,String.valueOf(Now_ContactList.get(pos).getNumber()));
+                                    values.put(MyDBHelper.NAME,Now_ContactList.get(pos).getName());
+                                    values.put(MyDBHelper.PHONE_NUMBER,Now_ContactList.get(pos).getPhoneNum());
+
+                                    if(Now_ContactList.get(pos).getImg_avatar() != null && Now_ContactList.get(pos).getImg_avatar().length >0){
+                                        String img_base64 = Base64.encodeToString(Now_ContactList.get(pos).getImg_avatar(),Base64.DEFAULT);
+                                        values.put(MyDBHelper.IMG_AVATAR,img_base64);
+                                    } else {
+                                        values.put(MyDBHelper.IMG_AVATAR,"");
+                                    }
+                                    myDBHelper.getWritableDatabase().insert(MyDBHelper.TABLE_NAME,null,values);
+
+                                    CommonUtil.favorIdSet.add(id);
+                                    CommonUtil.isDataChanged =true;
+
                                     //更新當前清單
                                     Now_ContactList.get(pos).setImg_favor(new ImageView(ContactsPageActivity.this));
                                     Now_ContactList.get(pos).isFavor(true);
-                                    //refresh
                                     CommonUtil.setContactList(ContactsPageActivity.this,contact_RecyclerView, adapter, Now_ContactList);
 
                                     toast.setText(R.string.favorDone);toast.show();
@@ -177,28 +193,6 @@ public class ContactsPageActivity extends AppCompatActivity{
             }
         });
 
-    }
-    //加入常用清單
-    private void addContactToFavorList( ArrayList<ContactData> now_contactList, ArrayList<ContactData> favorList, int pos, Set<String> favorIdSet) {
-
-        ContactData contactData = new ContactData();
-        contactData.setId(now_contactList.get(pos).getId());//id
-        contactData.setName(now_contactList.get(pos).getName());//名字
-        contactData.setPhoneNum(CommonUtil.getFormatPhone(now_contactList.get(pos).getPhoneNum()));//電話
-        contactData.setNumber(now_contactList.get(pos).getNumber());//編號
-        byte[] bytes = now_contactList.get(pos).getImg_avatar();
-        if(bytes != null && bytes.length>0){
-            Bitmap avatar_bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-            contactData.setImg_avatar(avatar_bitmap);
-        }
-        contactData.isFavor(true);
-        contactData.setImg_favor(new ImageView(ContactsPageActivity.this));
-
-        favorList.add(contactData);
-        //把id存起來
-        CommonUtil.favorIdSet.add(String.valueOf(now_contactList.get(pos).getId()));
-        //通知有更新
-        CommonUtil.isDataChanged = true;//通知有更新
     }
 
     @Override
@@ -311,20 +305,6 @@ public class ContactsPageActivity extends AppCompatActivity{
                     //常用清單
                     case R.id.favorContact:
 
-                        for(int i = 0;i<favorList.size();i++){
-                        ContentValues values = new ContentValues(5);
-                        values.put(MyDBHelper.CONTACT_ID,String.valueOf(favorList.get(i).getId()));
-                        values.put(MyDBHelper.NUMBER,String.valueOf(favorList.get(i).getNumber()));
-                        values.put(MyDBHelper.NAME,favorList.get(i).getName());
-                        values.put(MyDBHelper.PHONE_NUMBER,favorList.get(i).getPhoneNum());
-                        if(favorList.get(i).getImg_avatar() != null && favorList.get(i).getImg_avatar().length >0){
-                        String img_base64 = Base64.encodeToString(favorList.get(i).getImg_avatar(),Base64.DEFAULT);
-                            values.put(MyDBHelper.IMG_AVATAR,img_base64);
-                        } else {
-                            values.put(MyDBHelper.IMG_AVATAR,"");
-                        }
-                        myDBHelper.getWritableDatabase().insert(MyDBHelper.TABLE_NAME,null,values);
-                        }
                         startActivity(new Intent(ContactsPageActivity.this,FavorListPageActivity.class));
                         break;
                     //更多設定

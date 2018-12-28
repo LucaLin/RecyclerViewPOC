@@ -145,15 +145,19 @@ public class FavorListPageActivity extends AppCompatActivity {
                     switch (menuPosition){
                         case 0:
 
-                            String s = String.valueOf(favorList.get(adapterPosition).getId());
                             CommonUtil.favorIdSet.remove(String.valueOf(favorList.get(adapterPosition).getId()));
+                            try{
+                                myDBHelper.getWritableDatabase().delete(MyDBHelper.TABLE_NAME,MyDBHelper.CONTACT_ID + "=? ",new String[]{String.valueOf(favorList.get(adapterPosition).getId())});
+                            }catch (Exception e){
+                                e.getMessage();
+                            }
                             favorList.remove(favorList.get(adapterPosition));
                             adapter = new MyAdapter(FavorListPageActivity.this,favorList);
                             CommonUtil.setContactList(FavorListPageActivity.this,contact_RecyclerView,adapter,favorList);
                             CommonUtil.isDataChanged = true;
                             toast.setText(R.string.deleteOK);toast.show();
                             //刪除最愛清單
-                            //myDBHelper.getWritableDatabase().delete(MyDBHelper.TABLE_NAME,)
+
 
                             break;
                     }

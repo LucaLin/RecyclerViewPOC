@@ -20,6 +20,7 @@ public class MyDBHelper extends SQLiteOpenHelper {
     public static final String NAME = "NAME";
     public static final String PHONE_NUMBER = "PHONENUMBER";
     public static final String IMG_AVATAR = "IMGAVATAR";
+    public static final int FAVOR_TAG = 0;
     public static final String NOTE = "NOTE";
 
     //資料表參數

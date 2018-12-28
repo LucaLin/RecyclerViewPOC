@@ -24,10 +24,13 @@ public class ContactData {
     private String phoneNum;//手機號碼
     private long id;//id
     private Bitmap img_avatar ;//大頭照
-    private ImageView img_favor;//是否為常用清單的tag
+    private ImageView img_favor;//是否為常用清單的圖
     private String note;//記事
 
-    
+
+
+
+
     public String getNote() {
         return note;
     }
