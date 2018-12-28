@@ -22,6 +22,7 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Base64;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.widget.Toast;
@@ -63,6 +64,7 @@ public class FavorListPageActivity extends AppCompatActivity {
     View headerView;
     MyDecoration decoration;
     SharedPreferences sp;
+    LinearLayout noDataLayout;
 
     private RecyclerView.ItemDecoration itemDecoration;
 
@@ -74,10 +76,17 @@ public class FavorListPageActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        sp.edit().putStringSet("favorTags",CommonUtil.favorIdSet).commit();
+    }
+
     private void initView() {
         sp = getSharedPreferences("favorTags",MODE_PRIVATE);
         CommonUtil.favorIdSet = sp.getStringSet("favorTags",new HashSet<String>());
         toast = Toast.makeText(this,"",Toast.LENGTH_SHORT);
+        noDataLayout = (LinearLayout)findViewById(R.id.noData);
 
         myDBHelper = MyDBHelper.getInstance(this);
         db = myDBHelper.getReadableDatabase();
@@ -123,11 +132,15 @@ public class FavorListPageActivity extends AppCompatActivity {
                 }
 
                 favorList.add(data);
+
+                adapter = new MyAdapter(this,favorList);
+                CommonUtil.setContactList(FavorListPageActivity.this,contact_RecyclerView,adapter,favorList);
+
             }
 
+        }else {
+            noDataLayout.setVisibility(View.VISIBLE);
         }
-        adapter = new MyAdapter(this,favorList);
-        CommonUtil.setContactList(FavorListPageActivity.this,contact_RecyclerView,adapter,favorList);
 
         //contact_RecyclerView.addItemDecoration(decoration);
         contact_RecyclerView.setSwipeMenuCreator(new SwipeMenuCreator() {
@@ -146,6 +159,7 @@ public class FavorListPageActivity extends AppCompatActivity {
                         case 0:
 
                             CommonUtil.favorIdSet.remove(String.valueOf(favorList.get(adapterPosition).getId()));
+
                             try{
                                 myDBHelper.getWritableDatabase().delete(MyDBHelper.TABLE_NAME,MyDBHelper.CONTACT_ID + "=? ",new String[]{String.valueOf(favorList.get(adapterPosition).getId())});
                             }catch (Exception e){

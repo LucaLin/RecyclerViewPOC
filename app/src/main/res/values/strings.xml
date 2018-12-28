@@ -34,6 +34,7 @@
     <string name="noData">無資料可顯示喔！</string>
     <string name="permissonRequest">請先開啟使用者權限</string>
     <string name="deleteOK">刪除成功</string>
+    <string name="noFavorData">您目前無常用清單</string>
     <string name="noUpdate">未有更新資料！請重新輸入</string>
     <string name="wrongInput">"oops!名稱或電話格式有誤喔！"</string>
     <string name="hint">提示</string>

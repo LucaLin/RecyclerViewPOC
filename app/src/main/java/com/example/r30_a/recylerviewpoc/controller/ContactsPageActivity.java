@@ -100,7 +100,6 @@ public class ContactsPageActivity extends AppCompatActivity{
     private Toolbar toolbar;
     private RecyclerView.ItemDecoration itemDecoration;
     MyDBHelper myDBHelper;
-    Set<String> favorIdSet = new HashSet();
     SharedPreferences sp;
 
     @Override
@@ -198,15 +197,10 @@ public class ContactsPageActivity extends AppCompatActivity{
     @Override
     protected void onStop() {
         super.onStop();
-        sp.edit().putStringSet("favorTags",CommonUtil.favorIdSet).commit();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
         //儲存最愛清單
         sp.edit().putStringSet("favorTags",CommonUtil.favorIdSet).commit();
     }
+    
 
     private void putIntentExtraAndStart(Intent intent, ArrayList<ContactData> list, int pos) {
         intent.putExtra("id",String.valueOf(list.get(pos).getId()));
@@ -223,6 +217,7 @@ public class ContactsPageActivity extends AppCompatActivity{
     protected void onResume() {
         super.onResume();
         searchList.clear();
+        CommonUtil.favorIdSet = sp.getStringSet("favorTags",new HashSet<String>());
         //資料有更新時，要更新nowlist，無更新時丟回原本的
         if(CommonUtil.isDataChanged || CommonUtil.favorIdSet.size()>0){
             Now_ContactList = getContactList(CommonUtil.ALL_CONTACTS_URI,CommonUtil.phoneNumberProjection);
@@ -238,7 +233,7 @@ public class ContactsPageActivity extends AppCompatActivity{
 
         myDBHelper = MyDBHelper.getInstance(this);
         sp = getSharedPreferences("favorTags",MODE_PRIVATE);
-        CommonUtil.favorIdSet = sp.getStringSet("favorTags",new HashSet<String>());
+
         resolver = this.getContentResolver();
         toast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
         contact_RecyclerView = (SwipeMenuRecyclerView) findViewById(R.id.contact_RecyclerView);

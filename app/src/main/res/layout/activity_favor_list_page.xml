@@ -12,6 +12,23 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <LinearLayout
+            android:id="@+id/noData"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/searchView"
+            android:orientation="horizontal"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/txvNoData"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="目前無資料" />
+        </LinearLayout>
+
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
@@ -26,14 +43,18 @@
             style="@style/SearchBar_theme"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/toolbar" />
+            android:layout_below="@+id/toolbar" >
+
+        </SearchView>
 
         <com.yanzhenjie.recyclerview.swipe.SwipeMenuRecyclerView
             android:id="@+id/contact_RecyclerView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_above="@+id/txvrunrun"
-            android:layout_below="@+id/searchView" />
+            android:layout_below="@+id/searchView" >
+
+        </com.yanzhenjie.recyclerview.swipe.SwipeMenuRecyclerView>
     </RelativeLayout>
 
     <android.support.design.widget.NavigationView
