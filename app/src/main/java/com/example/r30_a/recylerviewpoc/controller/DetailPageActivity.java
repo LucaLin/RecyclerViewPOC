@@ -1,5 +1,6 @@
 package com.example.r30_a.recylerviewpoc.controller;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -16,6 +17,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Base64;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
@@ -23,6 +25,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.r30_a.recylerviewpoc.R;
+import com.example.r30_a.recylerviewpoc.helper.MyDBHelper;
 import com.example.r30_a.recylerviewpoc.util.CommonUtil;
 
 import java.util.HashSet;
@@ -30,7 +33,7 @@ import java.util.Set;
 
 public class DetailPageActivity extends AppCompatActivity {
 
-    String name,phoneNumber;
+    String name,number,phoneNumber;
     ImageView img_avatar;
     long id;
 
@@ -42,7 +45,7 @@ public class DetailPageActivity extends AppCompatActivity {
     Context context;
     Toast toast;
     SharedPreferences sp;
-    Set<String> favorIdSet = new HashSet();
+    MyDBHelper myDBHelper;
 
 
     @Override
@@ -56,6 +59,7 @@ public class DetailPageActivity extends AppCompatActivity {
 
 
     private void initView() {
+        myDBHelper = MyDBHelper.getInstance(this);
 
         txvName = (TextView)findViewById(R.id.txv_detailName);
         txvPhoneNumber = (TextView)findViewById(R.id.txv_detailPhone);
@@ -65,6 +69,7 @@ public class DetailPageActivity extends AppCompatActivity {
         final Intent intent = getIntent();
         id = intent.getLongExtra("id",0);
         name = intent.getStringExtra("name");
+        number = String.valueOf(intent.getIntExtra("number",0));
         phoneNumber = intent.getStringExtra("phoneNumber");
         final byte[] bytes = intent.getByteArrayExtra("avatar");
         if(bytes != null && bytes.length>0){
@@ -87,7 +92,6 @@ public class DetailPageActivity extends AppCompatActivity {
 
                 switch (item.getItemId()){
                     case R.id.allContact:
-                        startActivity(new Intent(context,ContactsPageActivity.class));
                         finish();
                         break;
 
@@ -104,7 +108,7 @@ public class DetailPageActivity extends AppCompatActivity {
             }
         });
         sp = getSharedPreferences("favorTags",MODE_PRIVATE);
-        favorIdSet = sp.getStringSet("favorTags",null);
+        CommonUtil.favorIdSet = sp.getStringSet("favorTags",null);
 
         toolbar.inflateMenu(R.menu.detail_menu);
 
@@ -125,7 +129,23 @@ public class DetailPageActivity extends AppCompatActivity {
                         startActivity(intent_update);
                         break;
                     case R.id.p2_addFavor:
-                        if(!favorIdSet.contains(String.valueOf(id))) {
+                        if(!CommonUtil.favorIdSet.contains(String.valueOf(id))) {
+                            ContentValues values = new ContentValues(5);
+
+                            values.put(MyDBHelper.NUMBER,number);
+                            values.put(MyDBHelper.NAME,name);
+                            values.put(MyDBHelper.PHONE_NUMBER,phoneNumber);
+                            if(bytes != null && bytes.length >0){
+                                String img_base64 = Base64.encodeToString(bytes,Base64.DEFAULT);
+                                values.put(MyDBHelper.IMG_AVATAR,img_base64);
+                            } else {
+                                values.put(MyDBHelper.IMG_AVATAR,"");
+                            }
+                            myDBHelper.getWritableDatabase().insert(MyDBHelper.TABLE_NAME,null,values);
+                            CommonUtil.isDataChanged = true;
+                            CommonUtil.favorIdSet.add(String.valueOf(id));
+                            toast.setText(R.string.favorDone);toast.show();
+                            finish();
 
                         }else {
                             toast.setText(R.string.alreadyaddfavor);toast.show();

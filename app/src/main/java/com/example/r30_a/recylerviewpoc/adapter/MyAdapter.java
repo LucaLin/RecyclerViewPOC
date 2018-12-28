@@ -114,6 +114,7 @@ public class MyAdapter extends SwipeMenuAdapter<MyAdapter.MainViewHolder> implem
             public void onClick(View v) {
                 Intent intent = new Intent(context, DetailPageActivity.class);
                 intent.putExtra("id",list.get(position).getId());
+                intent.putExtra("number",list.get(position).getNumber());
                 intent.putExtra("name",list.get(position).getName());
                 intent.putExtra("phoneNumber",list.get(position).getPhoneNum());
                 intent.putExtra("avatar",list.get(position).getImg_avatar());

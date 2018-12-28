@@ -155,29 +155,14 @@ public class ContactsPageActivity extends AppCompatActivity{
 
                             if(favorList != null ){
                                 String id = String.valueOf(Now_ContactList.get(pos).getId());
-                                if(!favorIdSet.contains(id) ){
-                                    contactData = new ContactData();
-                                    contactData.setId(Now_ContactList.get(pos).getId());//id
-                                    contactData.setName(Now_ContactList.get(pos).getName());//名字
-                                    contactData.setPhoneNum(CommonUtil.getFormatPhone(Now_ContactList.get(pos).getPhoneNum()));//電話
-                                    contactData.setNumber(Now_ContactList.get(pos).getNumber());//編號
-                                    byte[] bytes = Now_ContactList.get(pos).getImg_avatar();
-                                    if(bytes != null && bytes.length>0){
-                                    Bitmap avatar_bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                                    contactData.setImg_avatar(avatar_bitmap);
-                                    }
-                                    contactData.isFavor(true);
-                                    contactData.setImg_favor(new ImageView(ContactsPageActivity.this));
+                                if(!CommonUtil.favorIdSet.contains(id) ){
 
-                                    favorList.add(contactData);
-                                    //把id存起來
-                                    favorIdSet.add(id);
+                                    addContactToFavorList(Now_ContactList,favorList,pos,favorIdSet);
                                     //更新當前清單
                                     Now_ContactList.get(pos).setImg_favor(new ImageView(ContactsPageActivity.this));
                                     Now_ContactList.get(pos).isFavor(true);
                                     //refresh
                                     CommonUtil.setContactList(ContactsPageActivity.this,contact_RecyclerView, adapter, Now_ContactList);
-                                    CommonUtil.isDataChanged = true;//通知有更新
 
                                     toast.setText(R.string.favorDone);toast.show();
                                 }else {
@@ -193,18 +178,40 @@ public class ContactsPageActivity extends AppCompatActivity{
         });
 
     }
+    //加入常用清單
+    private void addContactToFavorList( ArrayList<ContactData> now_contactList, ArrayList<ContactData> favorList, int pos, Set<String> favorIdSet) {
+
+        ContactData contactData = new ContactData();
+        contactData.setId(now_contactList.get(pos).getId());//id
+        contactData.setName(now_contactList.get(pos).getName());//名字
+        contactData.setPhoneNum(CommonUtil.getFormatPhone(now_contactList.get(pos).getPhoneNum()));//電話
+        contactData.setNumber(now_contactList.get(pos).getNumber());//編號
+        byte[] bytes = now_contactList.get(pos).getImg_avatar();
+        if(bytes != null && bytes.length>0){
+            Bitmap avatar_bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+            contactData.setImg_avatar(avatar_bitmap);
+        }
+        contactData.isFavor(true);
+        contactData.setImg_favor(new ImageView(ContactsPageActivity.this));
+
+        favorList.add(contactData);
+        //把id存起來
+        CommonUtil.favorIdSet.add(String.valueOf(now_contactList.get(pos).getId()));
+        //通知有更新
+        CommonUtil.isDataChanged = true;//通知有更新
+    }
 
     @Override
     protected void onStop() {
         super.onStop();
-        sp.edit().putStringSet("favorTags",favorIdSet).commit();
+        sp.edit().putStringSet("favorTags",CommonUtil.favorIdSet).commit();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         //儲存最愛清單
-        sp.edit().putStringSet("favorTags",favorIdSet).commit();
+        sp.edit().putStringSet("favorTags",CommonUtil.favorIdSet).commit();
     }
 
     private void putIntentExtraAndStart(Intent intent, ArrayList<ContactData> list, int pos) {
@@ -223,7 +230,7 @@ public class ContactsPageActivity extends AppCompatActivity{
         super.onResume();
         searchList.clear();
         //資料有更新時，要更新nowlist，無更新時丟回原本的
-        if(CommonUtil.isDataChanged || favorIdSet.size()>0){
+        if(CommonUtil.isDataChanged || CommonUtil.favorIdSet.size()>0){
             Now_ContactList = getContactList(CommonUtil.ALL_CONTACTS_URI,CommonUtil.phoneNumberProjection);
             CommonUtil.setContactList(ContactsPageActivity.this,contact_RecyclerView,adapter,
                     Now_ContactList);
@@ -237,7 +244,7 @@ public class ContactsPageActivity extends AppCompatActivity{
 
         myDBHelper = MyDBHelper.getInstance(this);
         sp = getSharedPreferences("favorTags",MODE_PRIVATE);
-        favorIdSet = sp.getStringSet("favorTags",new HashSet<String>());
+        CommonUtil.favorIdSet = sp.getStringSet("favorTags",new HashSet<String>());
         resolver = this.getContentResolver();
         toast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
         contact_RecyclerView = (SwipeMenuRecyclerView) findViewById(R.id.contact_RecyclerView);
@@ -353,7 +360,7 @@ public class ContactsPageActivity extends AppCompatActivity{
                         continue;
                     } else {
                         number = number+1;
-                        addContactToList(number,id,mobileNum,name, CommonUtil.get_Avatar(resolver,id), favorIdSet, list);
+                        addContactToList(number,id,mobileNum,name, CommonUtil.get_Avatar(resolver,id), CommonUtil.favorIdSet, list);
                     }
                 }
                 cursor.close();

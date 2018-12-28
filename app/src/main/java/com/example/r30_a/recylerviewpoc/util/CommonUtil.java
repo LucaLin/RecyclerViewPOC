@@ -36,6 +36,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -50,6 +52,7 @@ public class CommonUtil {
     public static boolean isDataChanged = false;
     public static Uri ALL_CONTACTS_URI = ContactsContract.CommonDataKinds.Phone.CONTENT_URI;
     public static final Uri SIM_URI = Uri.parse("content://icc/adn");//讀取sim卡資料的uri string
+    public static Set<String> favorIdSet = new HashSet();;
 
     public static String[] phoneNumberProjection = new String[]{//欲搜尋的欄位區塊
             ContactsContract.CommonDataKinds.Phone.CONTACT_ID, ContactsContract.CommonDataKinds.Phone.NUMBER,
