@@ -2,11 +2,16 @@ package com.example.r30_a.recylerviewpoc.util;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.provider.ContactsContract;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
@@ -25,8 +30,10 @@ import com.example.r30_a.recylerviewpoc.controller.ContactsPageActivity;
 import com.example.r30_a.recylerviewpoc.model.ContactData;
 import com.yanzhenjie.recyclerview.swipe.SwipeMenuItem;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
@@ -41,6 +48,13 @@ public class CommonUtil {
     private static final String MY_TEST_PREF = "MY_TEST_PREF";
     private static final String FIRST_USE = "FIRST_USE";
     public static boolean isDataChanged = false;
+    public static Uri ALL_CONTACTS_URI = ContactsContract.CommonDataKinds.Phone.CONTENT_URI;
+    public static final Uri SIM_URI = Uri.parse("content://icc/adn");//讀取sim卡資料的uri string
+
+    public static String[] phoneNumberProjection = new String[]{//欲搜尋的欄位區塊
+            ContactsContract.CommonDataKinds.Phone.CONTACT_ID, ContactsContract.CommonDataKinds.Phone.NUMBER,
+            ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME, ContactsContract.CommonDataKinds.Photo.PHOTO_ID
+    };
 
     /*簡單判斷字串是否為電話號碼格式*/
     public static boolean isCellPhoneNumber(String cellphone) {
@@ -154,5 +168,31 @@ public class CommonUtil {
                 .setBackgroundColor(color);
 
         return item;
+    }
+
+    //取得聯絡人大頭照資料
+    public static Bitmap get_Avatar(ContentResolver resolver, long contact_ID){
+        Bitmap bitmap = null;
+
+        Uri contactUri = ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI,contact_ID);
+        Uri phontUri = Uri.withAppendedPath(contactUri, ContactsContract.Contacts.Photo.CONTENT_DIRECTORY);
+        Cursor cursor = resolver.query(phontUri,new String[]{ContactsContract.CommonDataKinds.Photo.PHOTO},null,null,null);
+
+        if(cursor == null){
+            return null;
+        }
+        try {
+            if(cursor.moveToNext()){
+                byte[] data = cursor.getBlob(0);
+                if(data != null){
+                    InputStream inputStream = new ByteArrayInputStream(data);
+                    bitmap = BitmapFactory.decodeStream(inputStream);
+                }
+            }
+        }finally {
+            cursor.close();
+        }
+        return bitmap;
+
     }
 }
