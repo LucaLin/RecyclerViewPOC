@@ -1,6 +1,8 @@
 package com.example.r30_a.recylerviewpoc.controller;
 
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
@@ -12,6 +14,7 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -21,6 +24,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.widget.Toast;
 
 import com.example.r30_a.recylerviewpoc.R;
 import com.example.r30_a.recylerviewpoc.adapter.MyAdapter;
@@ -29,6 +33,8 @@ import com.example.r30_a.recylerviewpoc.helper.MyDBHelper;
 import com.example.r30_a.recylerviewpoc.model.ContactData;
 import com.example.r30_a.recylerviewpoc.util.CommonUtil;
 import com.google.gson.JsonObject;
+import com.yanzhenjie.recyclerview.swipe.Closeable;
+import com.yanzhenjie.recyclerview.swipe.OnSwipeMenuItemClickListener;
 import com.yanzhenjie.recyclerview.swipe.SwipeMenu;
 import com.yanzhenjie.recyclerview.swipe.SwipeMenuCreator;
 import com.yanzhenjie.recyclerview.swipe.SwipeMenuItem;
@@ -38,6 +44,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 public class FavorListPageActivity extends AppCompatActivity {
 
@@ -52,8 +59,10 @@ public class FavorListPageActivity extends AppCompatActivity {
     private DrawerLayout drawerLayout;//側邊選單
     private NavigationView navigationView;
     private Toolbar toolbar;
+    Toast toast;
     View headerView;
     MyDecoration decoration;
+    SharedPreferences sp;
 
     private RecyclerView.ItemDecoration itemDecoration;
 
@@ -66,6 +75,9 @@ public class FavorListPageActivity extends AppCompatActivity {
     }
 
     private void initView() {
+        sp = getSharedPreferences("favorTags",MODE_PRIVATE);
+        CommonUtil.favorIdSet = sp.getStringSet("favorTags",new HashSet<String>());
+        toast = Toast.makeText(this,"",Toast.LENGTH_SHORT);
 
         myDBHelper = MyDBHelper.getInstance(this);
         db = myDBHelper.getReadableDatabase();
@@ -98,6 +110,7 @@ public class FavorListPageActivity extends AppCompatActivity {
         if(cursor.getCount() != 0){
             while (cursor.moveToNext()){
                 ContactData  data = new ContactData();
+                data.setId(cursor.getLong(cursor.getColumnIndex(MyDBHelper.CONTACT_ID)));
                 data.setNumber( Integer.parseInt(cursor.getString(cursor.getColumnIndex(MyDBHelper.NUMBER))));
                 data.setName(cursor.getString(cursor.getColumnIndex(MyDBHelper.NAME)));
                 data.setPhoneNum(cursor.getString(cursor.getColumnIndex(MyDBHelper.PHONE_NUMBER)));
@@ -123,6 +136,29 @@ public class FavorListPageActivity extends AppCompatActivity {
                 //建立右菜單刪除按鈕
                 SwipeMenuItem delete_item = CommonUtil.setMenuItem(FavorListPageActivity.this,200,300,R.drawable.icons8_trash_48,16, Color.parseColor("#dd0000"));
                 swipeRightMenu.addMenuItem(delete_item);
+            }
+        });
+        contact_RecyclerView.setSwipeMenuItemClickListener(new OnSwipeMenuItemClickListener() {
+            @Override
+            public void onItemClick(Closeable closeable, final int adapterPosition, int menuPosition, int direction) {
+                if(direction == -1){
+                    switch (menuPosition){
+                        case 0:
+
+                            String s = String.valueOf(favorList.get(adapterPosition).getId());
+                            CommonUtil.favorIdSet.remove(String.valueOf(favorList.get(adapterPosition).getId()));
+                            favorList.remove(favorList.get(adapterPosition));
+                            adapter = new MyAdapter(FavorListPageActivity.this,favorList);
+                            CommonUtil.setContactList(FavorListPageActivity.this,contact_RecyclerView,adapter,favorList);
+                            CommonUtil.isDataChanged = true;
+                            toast.setText(R.string.deleteOK);toast.show();
+                            //刪除最愛清單
+                            //myDBHelper.getWritableDatabase().delete(MyDBHelper.TABLE_NAME,)
+
+                            break;
+                    }
+
+                };
             }
         });
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {

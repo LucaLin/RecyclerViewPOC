@@ -15,7 +15,7 @@ public class MyDBHelper extends SQLiteOpenHelper {
     private static final int DB_VERSION=1;//資料庫版本
     public static final String TABLE_NAME="FAVORLIST";//資料表名稱
     public static final String id = "_id";
-    public static final String ID = "ID";
+    public static final String CONTACT_ID = "ID";
     public static final String NUMBER = "NUMBER";
     public static final String NAME = "NAME";
     public static final String PHONE_NUMBER = "PHONENUMBER";
@@ -26,6 +26,7 @@ public class MyDBHelper extends SQLiteOpenHelper {
     private static final String createTable = "CREATE TABLE IF NOT EXISTS "
             +TABLE_NAME+" ( "
             +id+" INTEGER PRIMARY KEY AUTOINCREMENT, "
+            +CONTACT_ID+" TEXT, "
             +NAME+" TEXT, "
             +NUMBER+" TEXT, "
             +PHONE_NUMBER+" TEXT, "

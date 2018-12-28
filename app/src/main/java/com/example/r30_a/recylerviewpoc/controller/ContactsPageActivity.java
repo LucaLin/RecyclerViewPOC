@@ -313,7 +313,7 @@ public class ContactsPageActivity extends AppCompatActivity{
 
                         for(int i = 0;i<favorList.size();i++){
                         ContentValues values = new ContentValues(5);
-//                        values.put("id",String.valueOf(favorList.get(i).getId()));
+                        values.put(MyDBHelper.CONTACT_ID,String.valueOf(favorList.get(i).getId()));
                         values.put(MyDBHelper.NUMBER,String.valueOf(favorList.get(i).getNumber()));
                         values.put(MyDBHelper.NAME,favorList.get(i).getName());
                         values.put(MyDBHelper.PHONE_NUMBER,favorList.get(i).getPhoneNum());

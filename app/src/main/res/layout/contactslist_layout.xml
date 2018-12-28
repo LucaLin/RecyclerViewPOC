@@ -3,7 +3,6 @@
     android:id="@+id/contactData_layout"
     android:layout_width="match_parent"
     android:layout_height="100dp"
-    android:layout_margin="10dp"
     android:background="@drawable/contact_background"
     android:fitsSystemWindows="false"
     android:orientation="horizontal">
