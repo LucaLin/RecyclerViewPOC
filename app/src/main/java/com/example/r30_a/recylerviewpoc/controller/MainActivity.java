@@ -86,7 +86,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         switch (v.getId()){
             case R.id.btnContactPage:
-                startActivity(new Intent(this,ContactsPageActivity.class));
+                //startActivity(new Intent(this,ContactsPageActivity.class));
+                startActivity(new Intent(this,TestActivity.class));
                 break;
 
             case R.id.btnSettingPage:

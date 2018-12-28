@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:background="#bbbbbb"
     android:fitsSystemWindows="true"
-    tools:context="com.example.r30_a.recylerviewpoc.controller.ContactsPageActivity">
+    tools:context="com.example.r30_a.recylerviewpoc.controller.TestActivity">
 
     <RelativeLayout
         android:id="@+id/main_layout"
@@ -16,26 +16,27 @@
         android:focusable="true"
         android:focusableInTouchMode="true">
 
+        <FrameLayout
+            android:id="@+id/frameLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/toolbar">
+
+        </FrameLayout>
+
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="@color/colorPrimary"
-            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
-            <EditText
-                android:id="@+id/edt_search"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:hint="@string/typeDataHere"
-                />
-        </android.support.v7.widget.Toolbar>
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"></android.support.v7.widget.Toolbar>
 
-        <com.yanzhenjie.recyclerview.swipe.SwipeMenuRecyclerView
-            android:id="@+id/contact_RecyclerView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_above="@+id/txvrunrun"
-            android:layout_below="@+id/toolbar" />
+        <!--<com.yanzhenjie.recyclerview.swipe.SwipeMenuRecyclerView-->
+            <!--android:id="@+id/contact_RecyclerView"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="match_parent"-->
+            <!--android:layout_above="@+id/txvrunrun"-->
+            <!--android:layout_below="@+id/toolbar" />-->
 
     </RelativeLayout>
 
@@ -51,6 +52,5 @@
 
 
     </android.support.design.widget.NavigationView>
-
 
 </android.support.v4.widget.DrawerLayout>

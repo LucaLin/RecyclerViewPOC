@@ -132,13 +132,11 @@ public class ContactsPageActivity extends AppCompatActivity{
                     case 1:
                         deleteContact(Now_ContactList.get(pos).getId(),CommonUtil.phoneNumberProjection);
                         break;
-
                     }
                 }else {
                     switch (menuPosition){//向左滑動
                         //加入最愛
                         case 0:
-
                             if(favorList != null ){
                                 String id = String.valueOf(Now_ContactList.get(pos).getId());
                                 if(!CommonUtil.favorIdSet.contains(id) ){
@@ -299,6 +297,21 @@ public class ContactsPageActivity extends AppCompatActivity{
             }
             @Override
             public void afterTextChanged(Editable s) {}
+        });
+        toolbar.inflateMenu(R.menu.toolbar_menu);
+        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                switch (item.getItemId()){
+                    case R.id.toolbar_add:
+
+                        break;
+
+
+                }
+
+                return true;
+            }
         });
 
         //--------滑動菜單設定-------------//

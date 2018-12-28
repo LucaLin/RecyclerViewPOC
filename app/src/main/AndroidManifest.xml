@@ -32,7 +32,8 @@
         <activity android:name=".controller.UpdateDataActivity" />
         <activity android:name=".controller.FavorListPageActivity" />
         <activity android:name=".controller.WelcomeActivity" />
-        <activity android:name=".controller.DetailPageActivity"></activity>
+        <activity android:name=".controller.DetailPageActivity" />
+        <activity android:name=".controller.TestActivity"></activity>
     </application>
 
 </manifest>
