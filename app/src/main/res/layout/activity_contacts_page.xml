@@ -12,7 +12,9 @@
     <RelativeLayout
         android:id="@+id/main_layout"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:focusable="true"
+        android:focusableInTouchMode="true">
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
@@ -20,7 +22,12 @@
             android:layout_height="?attr/actionBarSize"
             android:background="@color/colorPrimary"
             android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
-
+            <EditText
+                android:id="@+id/edt_search"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:hint="@string/typeDataHere"
+                />
         </android.support.v7.widget.Toolbar>
 
         <SearchView

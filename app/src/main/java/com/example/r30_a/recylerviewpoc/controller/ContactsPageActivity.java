@@ -29,10 +29,13 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
+import android.text.Editable;
 import android.text.TextUtils;
 
+import android.text.TextWatcher;
 import android.util.ArraySet;
 import android.util.Base64;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
@@ -98,6 +101,7 @@ public class ContactsPageActivity extends AppCompatActivity{
     private DrawerLayout drawerLayout;//側邊選單
     private NavigationView navigationView;
     private Toolbar toolbar;
+    private EditText edt_search;
     private RecyclerView.ItemDecoration itemDecoration;
     MyDBHelper myDBHelper;
     SharedPreferences sp;
@@ -108,23 +112,6 @@ public class ContactsPageActivity extends AppCompatActivity{
         setContentView(R.layout.activity_contacts_page);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         initView();
-        contact_RecyclerView.setSwipeMenuCreator(new SwipeMenuCreator() {
-            @Override
-            public void onCreateMenu(SwipeMenu swipeLeftMenu, SwipeMenu swipeRightMenu, int viewType) {
-
-                //建立右菜單更新按鈕
-                SwipeMenuItem update_item = CommonUtil.setMenuItem(ContactsPageActivity.this, 200,300,R.drawable.icons8_restart_72,16, Color.parseColor("#00dd00"));
-                //建立右菜單刪除按鈕
-                SwipeMenuItem delete_item = CommonUtil.setMenuItem(ContactsPageActivity.this,200,300,R.drawable.icons8_trash_72,16,Color.parseColor("#dd0000"));
-                //建立左菜單加入最愛按鈕
-                SwipeMenuItem favor_item = CommonUtil.setMenuItem(ContactsPageActivity.this, 200, 300,R.drawable.icons8_heart_48,16,Color.parseColor("#00dd00"));
-
-                swipeRightMenu.addMenuItem(update_item);
-                swipeRightMenu.addMenuItem(delete_item);
-                swipeLeftMenu.addMenuItem(favor_item);
-
-            }
-        });
 
         contact_RecyclerView.setSwipeMenuItemClickListener(new OnSwipeMenuItemClickListener() {
             @Override
@@ -200,7 +187,8 @@ public class ContactsPageActivity extends AppCompatActivity{
         //儲存最愛清單
         sp.edit().putStringSet("favorTags",CommonUtil.favorIdSet).commit();
     }
-    
+
+
 
     private void putIntentExtraAndStart(Intent intent, ArrayList<ContactData> list, int pos) {
         intent.putExtra("id",String.valueOf(list.get(pos).getId()));
@@ -254,37 +242,9 @@ public class ContactsPageActivity extends AppCompatActivity{
         //增加群組分類抬頭
         contact_RecyclerView.addItemDecoration(itemDecoration);
 
-        //------快速搜尋功能設定--------//
-        searchView = (SearchView)findViewById(R.id.searchView);
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {return false;}
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                //根據搜尋結果顯示欲搜尋資料
-                if(newText.length()>0){
-                    contact_RecyclerView.removeItemDecoration(itemDecoration);
-                    searchList.clear();
-                    for(int i = 0;i< Now_ContactList.size();i++){
-                        String num = Now_ContactList.get(i).getPhoneNum().substring(0,newText.length());
-                        String name = Now_ContactList.get(i).getName();
-                        if(num.equals(newText) || (name.length() >= newText.length() &&
-                                                  name.substring(0,newText.length()).equals(newText))  ){
-                            searchList.add(Now_ContactList.get(i));
-                        }
-                        CommonUtil.setContactList(ContactsPageActivity.this,contact_RecyclerView,adapter,searchList);
-                    }
-                }else {
-                    contact_RecyclerView.addItemDecoration(itemDecoration);
-                    searchList.clear();
-                    CommonUtil.setContactList(ContactsPageActivity.this,contact_RecyclerView, adapter, Now_ContactList);
-                }
-                return true;
-            }
-        });
-
         //----------抽屜設定-----------//
         toolbar = (Toolbar) findViewById(R.id.toolbar);
+        edt_search = (EditText)findViewById(R.id.edt_search);
         navigationView = (NavigationView)findViewById(R.id.navigationView);
         drawerLayout = (DrawerLayout)findViewById(R.id.drawerLayout);
         CommonUtil.setDrawer(ContactsPageActivity.this,drawerLayout,toolbar,R.layout.drawer_header,navigationView);
@@ -310,10 +270,56 @@ public class ContactsPageActivity extends AppCompatActivity{
                 return true;
             }
         });
+        //------快速搜尋功能設定--------//
+        edt_search.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
+            @Override
+            public void onTextChanged(CharSequence newText, int start, int before, int count) {
+                //根據搜尋結果顯示欲搜尋資料
+                String searchText = String.valueOf( newText);
+                if(searchText.length()>0){
+                    contact_RecyclerView.removeItemDecoration(itemDecoration);
+                    searchList.clear();
+                    for(int i = 0;i< Now_ContactList.size();i++){
+                        String num = Now_ContactList.get(i).getPhoneNum().substring(0,searchText.length());
+                        String name = Now_ContactList.get(i).getName();
+                        if(num.equals(searchText) || (name.length() >= searchText.length() &&
+                                name.substring(0,searchText.length()).equals(searchText))  ){
+                            searchList.add(Now_ContactList.get(i));
+                        }
+                        CommonUtil.setContactList(ContactsPageActivity.this,contact_RecyclerView,adapter,searchList);
+                    }
+                }else {
+                    contact_RecyclerView.addItemDecoration(itemDecoration);
+                    searchList.clear();
+                    CommonUtil.setContactList(ContactsPageActivity.this,contact_RecyclerView, adapter, Now_ContactList);
+                }
+            }
+            @Override
+            public void afterTextChanged(Editable s) {}
+        });
+
+        //--------滑動菜單設定-------------//
+        contact_RecyclerView.setSwipeMenuCreator(new SwipeMenuCreator() {
+            @Override
+            public void onCreateMenu(SwipeMenu swipeLeftMenu, SwipeMenu swipeRightMenu, int viewType) {
+                //建立右菜單更新按鈕
+                SwipeMenuItem update_item = CommonUtil.setMenuItem(ContactsPageActivity.this, 200,300,R.drawable.icons8_restart_72,16, Color.parseColor("#00dd00"));
+                //建立右菜單刪除按鈕
+                SwipeMenuItem delete_item = CommonUtil.setMenuItem(ContactsPageActivity.this,200,300,R.drawable.icons8_trash_72,16,Color.parseColor("#dd0000"));
+                //建立左菜單加入最愛按鈕
+                SwipeMenuItem favor_item = CommonUtil.setMenuItem(ContactsPageActivity.this, 200, 300,R.drawable.icons8_heart_48,16,Color.parseColor("#00dd00"));
+
+                swipeRightMenu.addMenuItem(update_item);
+                swipeRightMenu.addMenuItem(delete_item);
+                swipeLeftMenu.addMenuItem(favor_item);
+
+            }
+        });
 
     }
-
 
     public ArrayList<ContactData> getContactList( Uri uri, String[] projection){
         ArrayList<ContactData> list = new ArrayList<>();

@@ -38,6 +38,7 @@
     <string name="noUpdate">未有更新資料！請重新輸入</string>
     <string name="wrongInput">"oops!名稱或電話格式有誤喔！"</string>
     <string name="hint">提示</string>
+    <string name="typeDataHere">點此搜尋指定聯絡人</string>
     <string name="sureToUpdate">確定要更新嗎?</string>
     <string name="updateDataOK">更新成功</string>
     <string name="yes">確定</string>
