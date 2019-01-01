@@ -11,6 +11,8 @@ import android.graphics.BitmapFactory;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AlertDialog;
@@ -25,6 +27,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.r30_a.recylerviewpoc.R;
+import com.example.r30_a.recylerviewpoc.fragment.DetailPageFragment;
+import com.example.r30_a.recylerviewpoc.fragment.UpdateContactFragment;
 import com.example.r30_a.recylerviewpoc.helper.MyDBHelper;
 import com.example.r30_a.recylerviewpoc.util.CommonUtil;
 
@@ -46,6 +50,7 @@ public class DetailPageActivity extends AppCompatActivity {
     Toast toast;
     SharedPreferences sp;
     MyDBHelper myDBHelper;
+    byte[] bytes;
 
 
     @Override
@@ -61,9 +66,9 @@ public class DetailPageActivity extends AppCompatActivity {
     private void initView() {
         myDBHelper = MyDBHelper.getInstance(this);
 
-        txvName = (TextView)findViewById(R.id.txv_detailName);
-        txvPhoneNumber = (TextView)findViewById(R.id.txv_detailPhone);
-        img_avatar = (ImageView)findViewById(R.id.detail_img_avatar);
+//        txvName = (TextView)findViewById(R.id.txv_detailName);
+//        txvPhoneNumber = (TextView)findViewById(R.id.txv_detailPhone);
+//        img_avatar = (ImageView)findViewById(R.id.detail_img_avatar);
         context = DetailPageActivity.this;
         toast = Toast.makeText(context,"",Toast.LENGTH_SHORT);
         final Intent intent = getIntent();
@@ -71,14 +76,19 @@ public class DetailPageActivity extends AppCompatActivity {
         name = intent.getStringExtra("name");
         number = String.valueOf(intent.getIntExtra("number",0));
         phoneNumber = intent.getStringExtra("phoneNumber");
-        final byte[] bytes = intent.getByteArrayExtra("avatar");
-        if(bytes != null && bytes.length>0){
-            Bitmap bitmap = BitmapFactory.decodeByteArray(bytes,0,bytes.length);
-            img_avatar.setImageBitmap(bitmap);
-        }
+        bytes = intent.getByteArrayExtra("avatar");
+//        if(bytes != null && bytes.length>0){
+//            Bitmap bitmap = BitmapFactory.decodeByteArray(bytes,0,bytes.length);
+//            img_avatar.setImageBitmap(bitmap);
+//        }
 
-        txvName.setText(name);
-        txvPhoneNumber.setText(phoneNumber);
+//        txvName.setText(name);
+//        txvPhoneNumber.setText(phoneNumber);
+
+        Fragment fragment = DetailPageFragment.newInstance(String.valueOf(id),number,name,phoneNumber,bytes);
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.frameLayout,fragment);
+        transaction.commit();
 
         navigationView = (NavigationView)findViewById(R.id.navigationView);
         drawerLayout = (DrawerLayout)findViewById(R.id.drawerLayout);
@@ -118,15 +128,19 @@ public class DetailPageActivity extends AppCompatActivity {
 
                 switch (item.getItemId()){
                     case R.id.p1_update:
-                        Intent intent_update = new Intent(DetailPageActivity.this, UpdateDataActivity.class);
-                        intent_update.putExtra("id",String.valueOf(id));
-                        intent_update.putExtra("name", name);
-                        intent_update.putExtra("phone", phoneNumber);
-                        intent_update.putExtra("avatar", bytes);
-                        //intent.putExtra("note",list.get(pos).getNote());
-
-                        //startActivityForResult(intent, ContactsPageActivity.REQUEST_CODE);
-                        startActivity(intent_update);
+                        Fragment fragment = UpdateContactFragment.newInstance(String.valueOf(id),name,phoneNumber,bytes);
+                        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+                        transaction.replace(R.id.frameLayout,fragment);
+                        transaction.commit();
+//                        Intent intent_update = new Intent(DetailPageActivity.this, UpdateDataActivity.class);
+//                        intent_update.putExtra("id",String.valueOf(id));
+//                        intent_update.putExtra("name", name);
+//                        intent_update.putExtra("phone", phoneNumber);
+//                        intent_update.putExtra("avatar", bytes);
+//                        //intent.putExtra("note",list.get(pos).getNote());
+//
+//                        //startActivityForResult(intent, ContactsPageActivity.REQUEST_CODE);
+//                        startActivity(intent_update);
                         break;
                     case R.id.p2_addFavor:
                         if(!CommonUtil.favorIdSet.contains(String.valueOf(id))) {

@@ -33,8 +33,7 @@ import android.widget.Toast;
 import com.example.r30_a.recylerviewpoc.R;
 import com.example.r30_a.recylerviewpoc.adapter.MyAdapter;
 import com.example.r30_a.recylerviewpoc.adapter.MyDecoration;
-import com.example.r30_a.recylerviewpoc.controller.ContactsPageActivity;
-import com.example.r30_a.recylerviewpoc.controller.UpdateDataActivity;
+
 import com.example.r30_a.recylerviewpoc.helper.MyDBHelper;
 import com.example.r30_a.recylerviewpoc.model.ContactData;
 import com.example.r30_a.recylerviewpoc.util.CommonUtil;
@@ -317,16 +316,7 @@ public class ContactPageFragment extends Fragment {
 
     }
 
-    private void putIntentExtraAndStart(Intent intent, ArrayList<ContactData> list, int pos) {
-        intent.putExtra("id",String.valueOf(list.get(pos).getId()));
-        intent.putExtra("name", list.get(pos).getName());
-        intent.putExtra("phone", list.get(pos).getPhoneNum());
-        intent.putExtra("avatar", list.get(pos).getImg_avatar());
-        intent.putExtra("note",list.get(pos).getNote());
-        intent.setClass(context, UpdateDataActivity.class);
-        startActivityForResult(intent, ContactsPageActivity.REQUEST_CODE);
 
-    }
 
     /*刪除聯絡人*/
     private void deleteContact(final long id, final String[] projection) {

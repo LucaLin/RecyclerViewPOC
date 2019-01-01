@@ -13,6 +13,7 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.RecyclerView;
 import android.util.Base64;
@@ -40,18 +41,20 @@ public class MyAdapter extends SwipeMenuAdapter<MyAdapter.MainViewHolder> implem
 
     ArrayList<ContactData> list = new ArrayList();
     Context context;
-    Activity activity;
 
-    public MyAdapter(Context context, ArrayList<ContactData> list, Activity activity) {
+
+    public MyAdapter(Context context, ArrayList<ContactData> list) {
         this.list = list;
         this.context = context;
-        this.activity = activity;
+
     }
 
     @Override
     public View onCreateContentView(ViewGroup parent, int viewType) {
 
+
         View v = LayoutInflater.from(context).inflate(R.layout.contactslist_layout,parent,false);
+
         return v;
     }
 
@@ -120,27 +123,27 @@ public class MyAdapter extends SwipeMenuAdapter<MyAdapter.MainViewHolder> implem
             @Override
             public void onClick(View v) {
 
-                Fragment fragment = DetailPageFragment.newInstance(
-                        String.valueOf(list.get(position).getId()),
-                        String.valueOf(list.get(position).getNumber()),
-                        list.get(position).getName(),
-                        list.get(position).getPhoneNum(),
-                        list.get(position).getImg_avatar());
+//                Fragment fragment = DetailPageFragment.newInstance(
+//                        String.valueOf(list.get(position).getId()),
+//                        String.valueOf(list.get(position).getNumber()),
+//                        list.get(position).getName(),
+//                        list.get(position).getPhoneNum(),
+//                        list.get(position).getImg_avatar());
+//                FragmentActivity fragmentActivity = new FragmentActivity();
+//                FragmentTransaction transaction = fragmentActivity.getSupportFragmentManager().beginTransaction();
+//                transaction.replace(R.id.frameLayout,fragment);
+//                transaction.commit();
 
-                FragmentTransaction transaction = activity.getFragmentManager().beginTransaction();
-                transaction.replace(R.id.frameLayout,fragment);
-                transaction.commit();
 
 
-
-//                Intent intent = new Intent(context, DetailPageActivity.class);
-//                intent.putExtra("id",list.get(position).getId());
-//                intent.putExtra("number",list.get(position).getNumber());
-//                intent.putExtra("name",list.get(position).getName());
-//                intent.putExtra("phoneNumber",list.get(position).getPhoneNum());
-//                //bytes[] to base64
-//                intent.putExtra("avatar",list.get(position).getImg_avatar());
-//                context.startActivity(intent);
+                Intent intent = new Intent(context, DetailPageActivity.class);
+                intent.putExtra("id",list.get(position).getId());
+                intent.putExtra("number",list.get(position).getNumber());
+                intent.putExtra("name",list.get(position).getName());
+                intent.putExtra("phoneNumber",list.get(position).getPhoneNum());
+                //bytes[] to base64
+                intent.putExtra("avatar",list.get(position).getImg_avatar());
+                context.startActivity(intent);
             }
         });
 

@@ -29,7 +29,7 @@ import android.view.View;
 
 import com.example.r30_a.recylerviewpoc.R;
 import com.example.r30_a.recylerviewpoc.adapter.MyAdapter;
-import com.example.r30_a.recylerviewpoc.controller.ContactsPageActivity;
+
 import com.example.r30_a.recylerviewpoc.model.ContactData;
 import com.yanzhenjie.recyclerview.swipe.SwipeMenuItem;
 
@@ -148,6 +148,7 @@ public class CommonUtil {
         recyclerView.setAdapter(adapter);
 
     }
+
 
 
 

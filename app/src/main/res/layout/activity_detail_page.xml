@@ -9,7 +9,7 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
@@ -20,67 +20,94 @@
 
         </android.support.v7.widget.Toolbar>
 
-        <ImageView
-            android:id="@+id/detail_img_avatar"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:layout_below="@+id/toolbar"
-            android:layout_centerHorizontal="true"
-            android:layout_centerInParent="false"
-            android:layout_marginTop="20dp"
-            android:background="@drawable/iconfinder_man_196742" />
-
-        <LinearLayout
-            android:id="@+id/layout_nameColumn"
+        <RelativeLayout
+            android:id="@+id/datalayout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/detail_img_avatar"
-            android:layout_marginTop="20dp"
-            android:orientation="horizontal">
+            android:layout_height="match_parent"
+            android:layout_below="@+id/toolbar">
 
-            <TextView
-                android:id="@+id/textView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:text="@string/ContactName" />
 
-            <TextView
-                android:id="@+id/txv_detailName"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="2"
-                android:gravity="center"
-                android:text="TextView" />
-        </LinearLayout>
+            <FrameLayout
+                android:id="@+id/frameLayout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
-        <LinearLayout
-            android:id="@+id/layout_phoneColumn"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/layout_nameColumn"
-            android:layout_marginTop="20dp"
-            android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/textView2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:text="@string/ContactPhone" />
+                <!--<RelativeLayout-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="match_parent">-->
 
-            <TextView
-                android:id="@+id/txv_detailPhone"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="2"
-                android:gravity="center"
-                android:text="TextView" />
-        </LinearLayout>
+                    <!--<LinearLayout-->
+                        <!--android:id="@+id/layout_nameColumn"-->
+                        <!--android:layout_width="match_parent"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:layout_below="@+id/detail_img_avatar"-->
+                        <!--android:layout_marginTop="20dp"-->
+                        <!--android:orientation="horizontal">-->
+
+                        <!--<TextView-->
+                            <!--android:id="@+id/textView"-->
+                            <!--android:layout_width="wrap_content"-->
+                            <!--android:layout_height="wrap_content"-->
+                            <!--android:layout_weight="1"-->
+                            <!--android:gravity="center"-->
+                            <!--android:text="@string/ContactName" />-->
+
+                        <!--<TextView-->
+                            <!--android:id="@+id/txv_detailName"-->
+                            <!--android:layout_width="wrap_content"-->
+                            <!--android:layout_height="wrap_content"-->
+                            <!--android:layout_weight="2"-->
+                            <!--android:gravity="center"-->
+                            <!--android:text="TextView" />-->
+                    <!--</LinearLayout>-->
+
+                    <!--<LinearLayout-->
+                        <!--android:id="@+id/layout_phoneColumn"-->
+                        <!--android:layout_width="match_parent"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:layout_below="@+id/layout_nameColumn"-->
+                        <!--android:layout_marginTop="20dp"-->
+                        <!--android:orientation="horizontal">-->
+
+                        <!--<TextView-->
+                            <!--android:id="@+id/textView2"-->
+                            <!--android:layout_width="wrap_content"-->
+                            <!--android:layout_height="wrap_content"-->
+                            <!--android:layout_weight="1"-->
+                            <!--android:gravity="center"-->
+                            <!--android:text="@string/ContactPhone" />-->
+
+                        <!--<TextView-->
+                            <!--android:id="@+id/txv_detailPhone"-->
+                            <!--android:layout_width="wrap_content"-->
+                            <!--android:layout_height="wrap_content"-->
+                            <!--android:layout_weight="2"-->
+                            <!--android:gravity="center"-->
+                            <!--android:text="TextView" />-->
+                    <!--</LinearLayout>-->
+
+                    <!--<ImageView-->
+                        <!--android:id="@+id/detail_img_avatar"-->
+                        <!--android:layout_width="100dp"-->
+                        <!--android:layout_height="100dp"-->
+                        <!--android:layout_centerHorizontal="true"-->
+                        <!--android:layout_centerInParent="false"-->
+                        <!--android:layout_gravity="center_horizontal"-->
+                        <!--android:layout_marginTop="20dp"-->
+                        <!--android:background="@drawable/iconfinder_man_196742" />-->
+                <!--</RelativeLayout>-->
+
+
+            </FrameLayout>
+        </RelativeLayout>
 
     </RelativeLayout>
+
+
+
+
+
 
 
     <android.support.design.widget.NavigationView
