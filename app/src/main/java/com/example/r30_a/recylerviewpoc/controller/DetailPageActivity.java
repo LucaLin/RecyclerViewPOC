@@ -132,15 +132,7 @@ public class DetailPageActivity extends AppCompatActivity {
                         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
                         transaction.replace(R.id.frameLayout,fragment);
                         transaction.commit();
-//                        Intent intent_update = new Intent(DetailPageActivity.this, UpdateDataActivity.class);
-//                        intent_update.putExtra("id",String.valueOf(id));
-//                        intent_update.putExtra("name", name);
-//                        intent_update.putExtra("phone", phoneNumber);
-//                        intent_update.putExtra("avatar", bytes);
-//                        //intent.putExtra("note",list.get(pos).getNote());
-//
-//                        //startActivityForResult(intent, ContactsPageActivity.REQUEST_CODE);
-//                        startActivity(intent_update);
+
                         break;
                     case R.id.p2_addFavor:
                         if(!CommonUtil.favorIdSet.contains(String.valueOf(id))) {

@@ -14,6 +14,7 @@ import android.view.MenuItem;
 import com.example.r30_a.recylerviewpoc.R;
 import com.example.r30_a.recylerviewpoc.fragment.AddContactFragment;
 import com.example.r30_a.recylerviewpoc.fragment.ContactPageFragment;
+import com.example.r30_a.recylerviewpoc.fragment.FavorListFragment;
 import com.example.r30_a.recylerviewpoc.util.CommonUtil;
 
 public class ContactPageActivity extends AppCompatActivity {
@@ -25,7 +26,7 @@ public class ContactPageActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_test);
+        setContentView(R.layout.activity_contact_page);
         showFrag(new ContactPageFragment());
         //----------抽屜設定-----------//
         toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -43,8 +44,8 @@ public class ContactPageActivity extends AppCompatActivity {
                     case R.id.allContact:break;
                     //常用清單
                     case R.id.favorContact:
-
-                        startActivity(new Intent(ContactPageActivity.this,FavorListPageActivity.class));
+                        showFrag(new FavorListFragment());
+                        //startActivity(new Intent(ContactPageActivity.this,FavorListPageActivity.class));
                         break;
                     //更多設定
                     case R.id.settings:

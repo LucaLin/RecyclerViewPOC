@@ -110,6 +110,7 @@ public class ContactPageFragment extends Fragment {
         context = getContext();
         myDBHelper = MyDBHelper.getInstance(context);
         sp = context.getSharedPreferences("favorTags",Context.MODE_PRIVATE);
+        CommonUtil.favorIdSet = sp.getStringSet("favorTags",new HashSet<String>());
         resolver = context.getContentResolver();
         toast = Toast.makeText(context, "", Toast.LENGTH_SHORT);
         Now_ContactList = getContactList(CommonUtil.ALL_CONTACTS_URI,CommonUtil.phoneNumberProjection);
@@ -200,6 +201,7 @@ public class ContactPageFragment extends Fragment {
                                     myDBHelper.getWritableDatabase().insert(MyDBHelper.TABLE_NAME,null,values);
 
                                     CommonUtil.favorIdSet.add(id);
+                                    sp.edit().putStringSet("favorTags",CommonUtil.favorIdSet).commit();
                                     CommonUtil.isDataChanged =true;
 
                                     //更新當前清單
