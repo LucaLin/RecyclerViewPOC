@@ -1,6 +1,5 @@
 package com.example.r30_a.recylerviewpoc.fragment;
 
-
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
@@ -9,9 +8,14 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
+
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.PopupMenu;
 import android.text.TextUtils;
@@ -27,10 +31,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.r30_a.recylerviewpoc.R;
-import com.example.r30_a.recylerviewpoc.controller.ContactsPageActivity;
-import com.example.r30_a.recylerviewpoc.controller.UpdateDataActivity;
-import com.example.r30_a.recylerviewpoc.util.CommonUtil;
 
+import com.example.r30_a.recylerviewpoc.util.CommonUtil;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 
 import static android.app.Activity.RESULT_OK;
@@ -43,8 +46,16 @@ public class UpdateContactFragment extends Fragment implements View.OnClickListe
     private static final String USER_AVATAR = "avatar";
     private static final String CONTACT_ID = "contact_id";
 
+    //取得結果用的Request Code
+    private final int CAMERA_REQUEST = 1;
+    private final int ALBUM_REQUEST = 2;
+    private final int CROP_REQUEST = 3;
+
+    Uri album_uri,camera_uri;
+
     String oldname,oldphoneNumber,contact_id;
     byte[] img_avatar_bytes;
+    byte[] bytes;
 
     TextView txvDataName, txvDataPhone;
     Button btnUpdate;
@@ -58,12 +69,15 @@ public class UpdateContactFragment extends Fragment implements View.OnClickListe
 
     ContentResolver resolver;
     ContentValues values;
-    Bitmap update_avatar;
+    Bitmap update_avatar=null;
     File temp_file;
 
+    View v;
     public UpdateContactFragment() {
 
     }
+
+
 
 
     public static UpdateContactFragment newInstance(String contact_id,String name, String phoneNumber, byte[] img_avatar_bytes) {
@@ -89,6 +103,7 @@ public class UpdateContactFragment extends Fragment implements View.OnClickListe
             img_avatar_bytes = getArguments().getByteArray(USER_AVATAR);
             temp_file = new File("/sdcard/a.jpg");
             toast = Toast.makeText(context,"",Toast.LENGTH_SHORT);
+
         }
     }
 
@@ -96,7 +111,7 @@ public class UpdateContactFragment extends Fragment implements View.OnClickListe
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View v = inflater.inflate(R.layout.fragment_update_contact, container, false);
+        v = inflater.inflate(R.layout.fragment_update_contact, container, false);
 
 
         txvDataName = (TextView)v.findViewById(R.id.txvDataName);
@@ -118,6 +133,9 @@ public class UpdateContactFragment extends Fragment implements View.OnClickListe
         if(img_avatar_bytes != null && img_avatar_bytes.length>0){
             old_avatar = BitmapFactory.decodeByteArray(img_avatar_bytes,0,img_avatar_bytes.length);
             img_avatar.setImageBitmap(old_avatar);
+            if(update_avatar != null){
+                img_avatar.setImageBitmap(update_avatar);
+            }
         }
 
 
@@ -180,7 +198,13 @@ public class UpdateContactFragment extends Fragment implements View.OnClickListe
                                         CommonUtil.isDataChanged = true;
                                         toast.setText(R.string.updateDataOK);
                                         toast.show();
-                                    
+
+
+//                                    Fragment fragment = new ContactPageFragment();
+//                                    FragmentTransaction transaction = getFragmentManager().beginTransaction();
+//                                    transaction.replace(R.id.frameLayout,fragment);
+//                                    transaction.commit();
+
                                 }
                             }).setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
                         @Override
@@ -209,10 +233,10 @@ public class UpdateContactFragment extends Fragment implements View.OnClickListe
             public boolean onMenuItemClick(MenuItem item) {
                 switch (item.getItemId()){
                     case R.id.item_camera:
-                        //cameraStart();
+                        cameraStart();
                         break;
                     case R.id.item_picture:
-                       // albumStart();
+                       albumStart();
                         break;
                 }
                 return true;
@@ -220,6 +244,156 @@ public class UpdateContactFragment extends Fragment implements View.OnClickListe
         });
         popupMenu.show();
 
+
+
     }
 
+    private void cameraStart() {
+
+        //API < 23的版本使用原來的方法
+        if(Build.VERSION.SDK_INT <= 23){
+            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);//使用拍照
+
+            //拍完的照片做成暫存檔
+//                String folderPath = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "Test";//取得目標folder
+//                File folder = new File(folderPath);
+//                //如果裝置沒有此folder，建立一個新的
+//                if (!folder.exists()) {
+//                    if (!folder.mkdir()) {
+//                    }
+//                }
+//                //組合成輸出路徑
+//                String filePath = folderPath + File.separator + "temp.png";
+//                camera_uri = Uri.fromFile(new File(filePath));
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+//                intent.putExtra(MediaStore.EXTRA_OUTPUT, camera_uri);//將拍照的檔案放入暫存檔路徑
+            getActivity().setResult(RESULT_OK,intent);
+            startActivityForResult(intent, CAMERA_REQUEST);
+
+
+        }else if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N){
+//                String filePath = Environment.getExternalStorageDirectory()+ "/images/"+System.currentTimeMillis() + ".jpg";
+//                File file = new File(getFilesDir() + "/images",System.currentTimeMillis() + ".jpg");
+//                if(!file.getParentFile().exists()){
+//                    file.getParentFile().mkdir();
+//                }
+//
+//
+//                camera_uri = FileProvider.getUriForFile(UpdateDataActivity.this,getPackageName()+".fireprovider" ,file);
+            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            //intent.setType("image/*");
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, camera_uri);
+            getActivity().setResult(RESULT_OK,intent);
+            //intent.setDataAndType(uri, MediaStore.Images.Media.MIME_TYPE);
+            startActivityForResult(intent,CAMERA_REQUEST);
+
+        }
+    }
+
+    private void albumStart() {
+
+        Intent albumIntent = new Intent();
+        albumIntent.setType("image/*");//設定只顯示圖片區，不要秀其它的資料夾
+        albumIntent.setAction(Intent.ACTION_GET_CONTENT);//取得本機相簿的action
+        startActivityForResult(albumIntent, ALBUM_REQUEST);
+
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(resultCode == RESULT_OK){
+
+            if(requestCode == ALBUM_REQUEST || requestCode == CAMERA_REQUEST){
+
+                if(data != null && data.getData() != null){
+                    album_uri = data.getData();
+                    doCropPhoto(album_uri);
+                }else {
+                    doCropPhoto(camera_uri);
+                }
+            }else if(requestCode == CROP_REQUEST){
+
+                try{
+                    //設定縮圖大頭貼
+                    setChangedAvatar(temp_file,img_avatar);
+                    img_avatar.setImageDrawable(Drawable.createFromPath(temp_file.getAbsolutePath()));
+
+                    Cursor cursor  = resolver.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,null, ContactsContract.CommonDataKinds.Phone.CONTACT_ID+" = " + contact_id,null,null);
+                    if(cursor != null && cursor.moveToNext()){
+
+                        Long photo_ID = cursor.getLong(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.PHOTO_ID));
+                        cursor.close();
+
+                        cursor = resolver.query(ContactsContract.Data.CONTENT_URI, new String[]{ContactsContract.Data.RAW_CONTACT_ID},
+                                ContactsContract.Contacts.DISPLAY_NAME + " =?", new String[]{ txvDataName.getText().toString() },null);
+                        if(cursor.moveToFirst()){
+                            String raw_contact_id = cursor.getString(cursor.getColumnIndex(ContactsContract.Data.RAW_CONTACT_ID));
+
+                            if(photo_ID > 0){//已有設定大頭貼時
+
+                                values = new ContentValues();
+                                values.put(ContactsContract.CommonDataKinds.Photo.PHOTO,bytes);
+                                resolver.update(ContactsContract.Data.CONTENT_URI,values, ContactsContract.Data.RAW_CONTACT_ID+ "=? AND "
+                                        + ContactsContract.Data.MIMETYPE+ "=?", new String[]{raw_contact_id, ContactsContract.CommonDataKinds.Photo.CONTENT_ITEM_TYPE});
+                            }else {//尚未有大頭貼時
+                                values = new ContentValues();
+                                values.put(ContactsContract.Data.RAW_CONTACT_ID,raw_contact_id);
+                                values.put(ContactsContract.CommonDataKinds.Photo.PHOTO,bytes);
+                                values.put(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Photo.CONTENT_ITEM_TYPE);
+                                resolver.insert(ContactsContract.Data.CONTENT_URI,values);
+                            }
+                            CommonUtil.isDataChanged = true;
+                        }
+                    }
+
+                }catch (Exception e){
+                    e.getMessage();
+                }
+            }
+        }
+    }
+
+    private void doCropPhoto(Uri uri) {
+        Intent intent = getCropImageIntent(uri);
+        startActivityForResult(intent,CROP_REQUEST);
+    }
+    //呼叫裁切圖片介面
+    private Intent getCropImageIntent(Uri uri) {
+
+        Intent intent = new Intent("com.android.camera.action.CROP");
+        intent.setDataAndType(uri,"image/*");
+        intent.putExtra("crop","true");
+        intent.putExtra("scale",true);
+        intent.putExtra("aspectX", 1);// 这兩項為裁剪框的比例.
+        intent.putExtra("aspectY", 1);// x:y=1:1
+        intent.putExtra("outputX", 200);//回傳照片比例X
+        intent.putExtra("outputY", 200);//回傳照片比例Y
+        intent.putExtra(MediaStore.EXTRA_OUTPUT,Uri.fromFile(temp_file));
+        intent.putExtra("outputFormat","JPEG");
+
+        return intent;
+
+    }
+
+    private void   setChangedAvatar(File file,ImageView img_avatar) {
+        try {
+
+            update_avatar = BitmapFactory.decodeFile(file.getAbsolutePath());
+            //bitmap to byte[]
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            update_avatar.compress(Bitmap.CompressFormat.PNG,100,outputStream);
+            bytes = outputStream.toByteArray();
+            outputStream.close();
+
+
+
+            img_avatar.setImageBitmap(update_avatar);
+
+        }catch (Exception e){
+            e.getMessage();
+        }
+    }
 }

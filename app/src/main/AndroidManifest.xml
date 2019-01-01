@@ -33,7 +33,7 @@
         <activity android:name=".controller.FavorListPageActivity" />
         <activity android:name=".controller.WelcomeActivity" />
         <activity android:name=".controller.DetailPageActivity" />
-        <activity android:name=".controller.TestActivity"></activity>
+        <activity android:name=".controller.ContactPageActivity"></activity>
     </application>
 
 </manifest>

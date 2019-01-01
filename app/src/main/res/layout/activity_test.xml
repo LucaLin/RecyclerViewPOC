@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:background="#bbbbbb"
     android:fitsSystemWindows="true"
-    tools:context="com.example.r30_a.recylerviewpoc.controller.TestActivity">
+    tools:context="com.example.r30_a.recylerviewpoc.controller.ContactPageActivity">
 
     <RelativeLayout
         android:id="@+id/main_layout"

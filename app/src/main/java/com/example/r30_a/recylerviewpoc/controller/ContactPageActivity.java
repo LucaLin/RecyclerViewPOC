@@ -10,21 +10,17 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
-import android.widget.EditText;
 
 import com.example.r30_a.recylerviewpoc.R;
 import com.example.r30_a.recylerviewpoc.fragment.AddContactFragment;
 import com.example.r30_a.recylerviewpoc.fragment.ContactPageFragment;
 import com.example.r30_a.recylerviewpoc.util.CommonUtil;
 
-public class TestActivity extends AppCompatActivity {
+public class ContactPageActivity extends AppCompatActivity {
     //------抽屜元件--------//
     private DrawerLayout drawerLayout;//側邊選單
     private NavigationView navigationView;
     private Toolbar toolbar;
-    private EditText edt_search;
-
-    android.support.v4.app.Fragment fragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,10 +29,9 @@ public class TestActivity extends AppCompatActivity {
         showFrag(new ContactPageFragment());
         //----------抽屜設定-----------//
         toolbar = (Toolbar) findViewById(R.id.toolbar);
-        edt_search = (EditText)findViewById(R.id.edt_search);
         navigationView = (NavigationView)findViewById(R.id.navigationView);
         drawerLayout = (DrawerLayout)findViewById(R.id.drawerLayout);
-        CommonUtil.setDrawer(TestActivity.this,drawerLayout,toolbar,R.layout.drawer_header,navigationView);
+        CommonUtil.setDrawer(ContactPageActivity.this,drawerLayout,toolbar,R.layout.drawer_header,navigationView);
         //----------抽屜動作----------//
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -49,11 +44,11 @@ public class TestActivity extends AppCompatActivity {
                     //常用清單
                     case R.id.favorContact:
 
-                        startActivity(new Intent(TestActivity.this,FavorListPageActivity.class));
+                        startActivity(new Intent(ContactPageActivity.this,FavorListPageActivity.class));
                         break;
                     //更多設定
                     case R.id.settings:
-                        startActivity(new Intent(TestActivity.this,SettingPageActivity.class));
+                        startActivity(new Intent(ContactPageActivity.this,SettingPageActivity.class));
                         break;
                 }
                 return true;
@@ -75,12 +70,6 @@ public class TestActivity extends AppCompatActivity {
                 return true;
             }
         });
-
-
-
-
-
-
 
     }
 

@@ -9,10 +9,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ProgressBar;
 
 import com.example.r30_a.recylerviewpoc.R;
-import com.example.r30_a.recylerviewpoc.fragment.WelcomeFragment;
 import com.example.r30_a.recylerviewpoc.util.CommonUtil;
 import com.github.dfqin.grantor.PermissionListener;
 import com.github.dfqin.grantor.PermissionsUtil;
@@ -87,7 +85,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         switch (v.getId()){
             case R.id.btnContactPage:
                 //startActivity(new Intent(this,ContactsPageActivity.class));
-                startActivity(new Intent(this,TestActivity.class));
+                startActivity(new Intent(this,ContactPageActivity.class));
                 break;
 
             case R.id.btnSettingPage:

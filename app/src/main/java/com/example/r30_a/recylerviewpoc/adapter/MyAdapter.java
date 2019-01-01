@@ -1,6 +1,7 @@
 package com.example.r30_a.recylerviewpoc.adapter;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -11,7 +12,10 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.RecyclerView;
+import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +25,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import com.example.r30_a.recylerviewpoc.R;
 import com.example.r30_a.recylerviewpoc.controller.DetailPageActivity;
+import com.example.r30_a.recylerviewpoc.fragment.DetailPageFragment;
 import com.example.r30_a.recylerviewpoc.model.ContactData;
 import com.yanzhenjie.recyclerview.swipe.SwipeMenuAdapter;
 
@@ -35,10 +40,12 @@ public class MyAdapter extends SwipeMenuAdapter<MyAdapter.MainViewHolder> implem
 
     ArrayList<ContactData> list = new ArrayList();
     Context context;
+    Activity activity;
 
-    public MyAdapter(Context context, ArrayList<ContactData> list) {
+    public MyAdapter(Context context, ArrayList<ContactData> list, Activity activity) {
         this.list = list;
         this.context = context;
+        this.activity = activity;
     }
 
     @Override
@@ -112,13 +119,28 @@ public class MyAdapter extends SwipeMenuAdapter<MyAdapter.MainViewHolder> implem
         holder.infoZone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(context, DetailPageActivity.class);
-                intent.putExtra("id",list.get(position).getId());
-                intent.putExtra("number",list.get(position).getNumber());
-                intent.putExtra("name",list.get(position).getName());
-                intent.putExtra("phoneNumber",list.get(position).getPhoneNum());
-                intent.putExtra("avatar",list.get(position).getImg_avatar());
-                context.startActivity(intent);
+
+                Fragment fragment = DetailPageFragment.newInstance(
+                        String.valueOf(list.get(position).getId()),
+                        String.valueOf(list.get(position).getNumber()),
+                        list.get(position).getName(),
+                        list.get(position).getPhoneNum(),
+                        list.get(position).getImg_avatar());
+
+                FragmentTransaction transaction = activity.getFragmentManager().beginTransaction();
+                transaction.replace(R.id.frameLayout,fragment);
+                transaction.commit();
+
+
+
+//                Intent intent = new Intent(context, DetailPageActivity.class);
+//                intent.putExtra("id",list.get(position).getId());
+//                intent.putExtra("number",list.get(position).getNumber());
+//                intent.putExtra("name",list.get(position).getName());
+//                intent.putExtra("phoneNumber",list.get(position).getPhoneNum());
+//                //bytes[] to base64
+//                intent.putExtra("avatar",list.get(position).getImg_avatar());
+//                context.startActivity(intent);
             }
         });
 
