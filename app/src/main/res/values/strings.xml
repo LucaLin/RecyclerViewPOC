@@ -30,6 +30,7 @@
     <string name="welcome_page4">等不及開始用了吧！！</string>
     <string name="noData">無資料可顯示喔！</string>
     <string name="permissonRequest">請先開啟使用者權限</string>
+    <string name="addSuccess">新增成功</string>
     <string name="deleteOK">刪除成功</string>
     <string name="noFavorData">您目前無常用清單</string>
     <string name="noUpdate">未有更新資料！請重新輸入</string>

@@ -4,10 +4,46 @@
     android:layout_height="match_parent"
     tools:context="com.example.r30_a.recylerviewpoc.fragment.AddContactFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <LinearLayout
+        android:id="@+id/ContactLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_alignParentBottom="false"
+        android:layout_centerHorizontal="false"
+        android:layout_marginBottom="10dp"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="visible">
+
+        <EditText
+            android:id="@+id/edtContactName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/edtPhoneNumber"
+            android:layout_alignParentEnd="false"
+            android:ems="10"
+            android:hint="輸入姓名"
+            android:inputType="textPersonName" />
+
+        <EditText
+            android:id="@+id/edtPhoneNumber"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/btnUpdate"
+            android:layout_alignParentStart="false"
+            android:ems="10"
+            android:maxLength="10"
+            android:hint="輸入電話"
+            android:inputType="phone" />
+
+        <Button
+            android:id="@+id/btnUpdate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="false"
+            android:layout_centerHorizontal="false"
+            android:text="新增" />
+    </LinearLayout>
+
 
 </FrameLayout>

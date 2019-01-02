@@ -106,7 +106,7 @@ public class DetailPageActivity extends AppCompatActivity {
                         break;
 
                     case R.id.favorContact:
-                        startActivity(new Intent(context,FavorListPageActivity.class));
+
                         finish();
                         break;
 
