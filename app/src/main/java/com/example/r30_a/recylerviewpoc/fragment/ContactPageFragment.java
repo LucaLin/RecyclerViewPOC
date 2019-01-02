@@ -168,6 +168,7 @@ public class ContactPageFragment extends Fragment {
 
                                 Fragment fragment = UpdateContactFragment.newInstance(String.valueOf(data.getId()),data.getName(),data.getPhoneNum(),data.getImg_avatar());
                                 FragmentTransaction transaction = getFragmentManager().beginTransaction();
+                                transaction.setCustomAnimations(R.anim.slide_right_in,R.anim.slide_left_out,R.anim.slide_left_in,R.anim.slide_right_out);
                                 transaction.replace(R.id.frameLayout,fragment);
                                 transaction.commit();
 

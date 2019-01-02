@@ -98,7 +98,7 @@ public class AddContactFragment extends Fragment {
                 showPopupMenu(v);
             }
         });
-        
+
         btnAddContact.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

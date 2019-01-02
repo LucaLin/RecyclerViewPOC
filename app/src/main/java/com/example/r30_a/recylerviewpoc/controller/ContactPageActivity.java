@@ -41,11 +41,13 @@ public class ContactPageActivity extends AppCompatActivity {
 
                 switch (item.getItemId()){
                     //全部清單
-                    case R.id.allContact:break;
+                    case R.id.allContact:
+                        showFrag(new ContactPageFragment());
+                        break;
                     //常用清單
                     case R.id.favorContact:
                         showFrag(new FavorListFragment());
-                        //startActivity(new Intent(ContactPageActivity.this,FavorListPageActivity.class));
+                       
                         break;
                     //更多設定
                     case R.id.settings:
@@ -64,8 +66,6 @@ public class ContactPageActivity extends AppCompatActivity {
 
                         showFrag(new AddContactFragment());
                         break;
-
-
                 }
 
                 return true;
@@ -77,6 +77,7 @@ public class ContactPageActivity extends AppCompatActivity {
     private void showFrag(android.support.v4.app.Fragment fragment) {
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.setCustomAnimations(R.anim.slide_right_in,R.anim.slide_left_out,R.anim.slide_left_in,R.anim.slide_right_out);
         transaction.replace(R.id.frameLayout,fragment);
         transaction.commit();
     }
