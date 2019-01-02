@@ -64,7 +64,6 @@ public class AddContactFragment extends Fragment {
 
     }
 
-
     public static AddContactFragment newInstance(String param1, String param2) {
         AddContactFragment fragment = new AddContactFragment();
         Bundle args = new Bundle();

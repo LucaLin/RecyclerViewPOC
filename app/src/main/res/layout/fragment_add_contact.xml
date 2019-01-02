@@ -4,85 +4,98 @@
     android:layout_height="match_parent"
     tools:context="com.example.r30_a.recylerviewpoc.fragment.AddContactFragment">
 
-    <FrameLayout
-        android:id="@+id/pickUserPhoto"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="80dp"
-        android:clickable="true">
-
-        <ImageView
-            android:id="@+id/userPhoto"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-
-            android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true"
-            android:layout_gravity="center"
-            android:src="@drawable/iconfinder_man_196742" />
-
-        <ImageView
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_alignBottom="@+id/pickUserPhoto"
-            android:layout_alignEnd="@+id/pickUserPhoto"
-            android:layout_gravity="right|bottom"
-            android:src="@drawable/icons8_camera_24" />
-
-    </FrameLayout>
-
-
-    <LinearLayout
-        android:id="@+id/ContactLayout"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_alignParentBottom="false"
-        android:layout_centerHorizontal="false"
-        android:layout_marginBottom="10dp"
-        android:gravity="center"
-        android:orientation="vertical"
-        android:visibility="visible">
+        android:layout_height="match_parent">
 
         <TextView
-            android:id="@+id/textView4"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:paddingBottom="20dp"
-            android:text="@string/addAvatarOrNot" />
-
-        <EditText
-            android:id="@+id/edtContactName"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_above="@+id/edtPhoneNumber"
-            android:layout_alignParentEnd="false"
-            android:ems="10"
-            android:hint="輸入姓名"
-            android:inputType="textPersonName" />
-
-        <EditText
-            android:id="@+id/edtPhoneNumber"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_above="@+id/btnUpdate"
-            android:layout_alignParentStart="false"
-            android:ems="10"
-            android:maxLength="10"
-            android:hint="輸入電話"
-            android:inputType="phone" />
-
-        <Button
-            android:id="@+id/btnUpdate"
+            android:id="@+id/txv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="40dp"
+            android:text="@string/addContact"
+            android:textSize="20sp" />
+
+        <LinearLayout
+            android:id="@+id/ContactLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:layout_alignParentBottom="false"
             android:layout_centerHorizontal="false"
-            android:text="新增" />
-    </LinearLayout>
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="visible">
+
+            <FrameLayout
+                android:id="@+id/pickUserPhoto"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="false"
+                android:layout_centerHorizontal="false"
+                android:layout_marginBottom="80dp"
+                android:clickable="true">
+
+                <ImageView
+                    android:id="@+id/userPhoto"
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
+
+                    android:layout_alignParentTop="true"
+                    android:layout_centerHorizontal="true"
+                    android:layout_gravity="center"
+                    android:src="@drawable/iconfinder_man_196742" />
+
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_alignBottom="@+id/pickUserPhoto"
+                    android:layout_alignEnd="@+id/pickUserPhoto"
+                    android:layout_gravity="right|bottom"
+                    android:src="@drawable/icons8_camera_24" />
+
+            </FrameLayout>
+
+            <TextView
+                android:id="@+id/textView4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:paddingBottom="20dp"
+                android:text="@string/addAvatarOrNot" />
+
+            <EditText
+                android:id="@+id/edtContactName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_above="@+id/edtPhoneNumber"
+                android:layout_alignParentEnd="false"
+                android:ems="10"
+                android:hint="輸入姓名"
+                android:inputType="textPersonName" />
+
+            <EditText
+                android:id="@+id/edtPhoneNumber"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_above="@+id/btnUpdate"
+                android:layout_alignParentStart="false"
+                android:ems="10"
+                android:hint="輸入電話"
+                android:inputType="phone"
+                android:maxLength="10" />
+
+            <Button
+                android:id="@+id/btnUpdate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="false"
+                android:layout_centerHorizontal="false"
+                android:text="新增" />
+        </LinearLayout>
+
+    </RelativeLayout>
+
 
 
 </FrameLayout>

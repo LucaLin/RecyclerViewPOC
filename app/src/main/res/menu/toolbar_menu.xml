@@ -3,10 +3,28 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/toolbar_favor"
+        android:icon="@drawable/heart"
+        android:title="favor"
+        app:showAsAction="always">
+
+    </item>
+
+    <item
+        android:id="@+id/toolbar_allContact"
+        android:icon="@drawable/contacts"
+        android:title="allcontact"
+        app:showAsAction="always">
+
+    </item>
+
+    <item
         android:id="@+id/toolbar_add"
-        android:icon="@android:drawable/ic_input_add"
+        android:icon="@drawable/add"
         android:title="add"
         app:showAsAction="always">
 
     </item>
+
+
 </menu>

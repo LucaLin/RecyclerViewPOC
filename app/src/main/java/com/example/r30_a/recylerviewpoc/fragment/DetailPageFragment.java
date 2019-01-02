@@ -1,15 +1,21 @@
 package com.example.r30_a.recylerviewpoc.fragment;
 
 
+import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -45,6 +51,7 @@ public class DetailPageFragment extends Fragment {
     private String name;
     private String phoneNumber;
     private byte[] img_avatar_bytes;
+    ImageButton ibt_toDial,ibt_toSMS;
 
 
     public DetailPageFragment() {
@@ -95,12 +102,36 @@ public class DetailPageFragment extends Fragment {
         txvName = (TextView)v.findViewById(R.id.txv_detailName);
         txvPhoneNumber = (TextView)v.findViewById(R.id.txv_detailPhone);
         img_avatar = (ImageView)v.findViewById(R.id.detail_img_avatar);
+        ibt_toDial = (ImageButton)v.findViewById(R.id.ib_toCall);
+        ibt_toSMS = (ImageButton)v.findViewById(R.id.ib_toMsg);
 
         txvName.setText(name);
         txvPhoneNumber.setText(phoneNumber);
         if(img_bitmap != null){
         img_avatar.setImageBitmap(img_bitmap);
         }
+
+        ibt_toDial.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent_dial = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + phoneNumber));
+                if (ActivityCompat.checkSelfPermission(context, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+                    return;
+                }
+                context.startActivity(intent_dial);
+            }
+        });
+
+        ibt_toSMS.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent_sms = new Intent(Intent.ACTION_SENDTO,Uri.parse("smsto:"+ phoneNumber));
+                if (ActivityCompat.checkSelfPermission(context, Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED) {
+                    return;
+                }
+                context.startActivity(intent_sms);
+            }
+        });
 
         return v;
     }

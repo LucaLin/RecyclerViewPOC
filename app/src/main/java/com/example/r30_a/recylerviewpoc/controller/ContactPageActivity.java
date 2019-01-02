@@ -47,7 +47,7 @@ public class ContactPageActivity extends AppCompatActivity {
                     //常用清單
                     case R.id.favorContact:
                         showFrag(new FavorListFragment());
-                       
+
                         break;
                     //更多設定
                     case R.id.settings:
@@ -63,8 +63,15 @@ public class ContactPageActivity extends AppCompatActivity {
             public boolean onMenuItemClick(MenuItem item) {
                 switch (item.getItemId()){
                     case R.id.toolbar_add:
-
                         showFrag(new AddContactFragment());
+                        break;
+
+                    case R.id.toolbar_allContact:
+                        showFrag(new ContactPageFragment());
+                        break;
+
+                    case R.id.toolbar_favor:
+                        showFrag(new FavorListFragment());
                         break;
                 }
 

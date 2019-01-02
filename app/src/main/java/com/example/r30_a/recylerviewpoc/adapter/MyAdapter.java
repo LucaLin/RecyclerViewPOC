@@ -88,28 +88,28 @@ public class MyAdapter extends SwipeMenuAdapter<MyAdapter.MainViewHolder> implem
             holder.img_favor.setVisibility(View.VISIBLE);
         }
 
-        holder.imgbtn_dial.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent_dial = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + list.get(position).getPhoneNum()));
-                if (ActivityCompat.checkSelfPermission(context, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
-                    return;
-                }
-                context.startActivity(intent_dial);
-
-            }
-        });
-
-        holder.imgbtn_sms.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent_sms = new Intent(Intent.ACTION_SENDTO,Uri.parse("smsto:"+ list.get(position).getPhoneNum()));
-                if (ActivityCompat.checkSelfPermission(context, Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED) {
-                    return;
-                }
-                context.startActivity(intent_sms);
-            }
-        });
+//        holder.imgbtn_dial.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Intent intent_dial = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + list.get(position).getPhoneNum()));
+//                if (ActivityCompat.checkSelfPermission(context, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+//                    return;
+//                }
+//                context.startActivity(intent_dial);
+//
+//            }
+//        });
+//
+//        holder.imgbtn_sms.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Intent intent_sms = new Intent(Intent.ACTION_SENDTO,Uri.parse("smsto:"+ list.get(position).getPhoneNum()));
+//                if (ActivityCompat.checkSelfPermission(context, Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED) {
+//                    return;
+//                }
+//                context.startActivity(intent_sms);
+//            }
+//        });
 
         holder.txvrunrun.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -182,8 +182,8 @@ public class MyAdapter extends SwipeMenuAdapter<MyAdapter.MainViewHolder> implem
             contactData_layout = v.findViewById(R.id.contactData_layout);
             img_favor = v.findViewById(R.id.img_favor);
             number = v.findViewById(R.id.number);
-            imgbtn_dial = v.findViewById(R.id.imgbtn_dial);
-            imgbtn_sms = v.findViewById(R.id.imgbtn_sms);
+//            imgbtn_dial = v.findViewById(R.id.imgbtn_dial);
+//            imgbtn_sms = v.findViewById(R.id.imgbtn_sms);
             txvrunrun = v.findViewById(R.id.txvrunrun);
             infoZone = v.findViewById(R.id.info_zone);
 
