@@ -244,8 +244,6 @@ public class UpdateContactFragment extends Fragment implements View.OnClickListe
         });
         popupMenu.show();
 
-
-
     }
 
     private void cameraStart() {
