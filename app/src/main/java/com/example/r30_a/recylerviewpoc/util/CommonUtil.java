@@ -59,7 +59,8 @@ public class CommonUtil {
 
     public static String[] phoneNumberProjection = new String[]{//欲搜尋的欄位區塊
             ContactsContract.CommonDataKinds.Phone.CONTACT_ID, ContactsContract.CommonDataKinds.Phone.NUMBER,
-            ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME, ContactsContract.CommonDataKinds.Photo.PHOTO_ID
+            ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME, ContactsContract.CommonDataKinds.Photo.PHOTO_ID,
+
     };
 
     /*簡單判斷字串是否為電話號碼格式*/

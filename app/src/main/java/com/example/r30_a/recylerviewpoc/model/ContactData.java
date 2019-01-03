@@ -26,7 +26,7 @@ public class ContactData {
     private Bitmap img_avatar ;//大頭照
     private ImageView img_favor;//是否為常用清單的圖
     private String note;//記事
-
+    private boolean isFavor = false;
 
 
 
@@ -49,7 +49,7 @@ public class ContactData {
         isFavor = favor;
     }
 
-    private boolean isFavor = false;
+
 
     public ImageView getImg_favor() {
 

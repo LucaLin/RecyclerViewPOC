@@ -46,15 +46,11 @@ public class MyAdapter extends SwipeMenuAdapter<MyAdapter.MainViewHolder> implem
     public MyAdapter(Context context, ArrayList<ContactData> list) {
         this.list = list;
         this.context = context;
-
     }
-
     @Override
     public View onCreateContentView(ViewGroup parent, int viewType) {
 
-
         View v = LayoutInflater.from(context).inflate(R.layout.contactslist_layout,parent,false);
-
         return v;
     }
 
@@ -87,60 +83,25 @@ public class MyAdapter extends SwipeMenuAdapter<MyAdapter.MainViewHolder> implem
             list.get(position).setImg_favor(holder.img_favor);
             holder.img_favor.setVisibility(View.VISIBLE);
         }
-
-//        holder.imgbtn_dial.setOnClickListener(new View.OnClickListener() {
+        //holder.txvrunrun.setText(list.get(position).getNote());
+//        holder.txvrunrun.setOnClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View v) {
-//                Intent intent_dial = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + list.get(position).getPhoneNum()));
-//                if (ActivityCompat.checkSelfPermission(context, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
-//                    return;
-//                }
-//                context.startActivity(intent_dial);
-//
+//                holder.txvrunrun.performClick();
 //            }
 //        });
-//
-//        holder.imgbtn_sms.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Intent intent_sms = new Intent(Intent.ACTION_SENDTO,Uri.parse("smsto:"+ list.get(position).getPhoneNum()));
-//                if (ActivityCompat.checkSelfPermission(context, Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED) {
-//                    return;
-//                }
-//                context.startActivity(intent_sms);
-//            }
-//        });
-
-        holder.txvrunrun.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                holder.txvrunrun.performClick();
-            }
-        });
 
         //點擊進入detail頁面
         holder.infoZone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-//                Fragment fragment = DetailPageFragment.newInstance(
-//                        String.valueOf(list.get(position).getId()),
-//                        String.valueOf(list.get(position).getNumber()),
-//                        list.get(position).getName(),
-//                        list.get(position).getPhoneNum(),
-//                        list.get(position).getImg_avatar());
-//                FragmentActivity fragmentActivity = new FragmentActivity();
-//                FragmentTransaction transaction = fragmentActivity.getSupportFragmentManager().beginTransaction();
-//                transaction.replace(R.id.frameLayout,fragment);
-//                transaction.commit();
-
-
-
                 Intent intent = new Intent(context, DetailPageActivity.class);
                 intent.putExtra("id",list.get(position).getId());
                 intent.putExtra("number",list.get(position).getNumber());
                 intent.putExtra("name",list.get(position).getName());
                 intent.putExtra("phoneNumber",list.get(position).getPhoneNum());
+               // intent.putExtra("note",list.get(position).getNote());
                 //bytes[] to base64
                 intent.putExtra("avatar",list.get(position).getImg_avatar());
                 context.startActivity(intent);
@@ -171,8 +132,7 @@ public class MyAdapter extends SwipeMenuAdapter<MyAdapter.MainViewHolder> implem
         ImageView img_avatar;//大頭貼
         RelativeLayout contactData_layout;
         ImageView img_favor;//常用清單tag
-        ImageView imgbtn_dial,imgbtn_sms;
-        TextView txvrunrun;
+        //TextView txvrunrun;
         LinearLayout infoZone;
         public MainViewHolder(View v) {
             super(v);
@@ -182,12 +142,9 @@ public class MyAdapter extends SwipeMenuAdapter<MyAdapter.MainViewHolder> implem
             contactData_layout = v.findViewById(R.id.contactData_layout);
             img_favor = v.findViewById(R.id.img_favor);
             number = v.findViewById(R.id.number);
-//            imgbtn_dial = v.findViewById(R.id.imgbtn_dial);
-//            imgbtn_sms = v.findViewById(R.id.imgbtn_sms);
-            txvrunrun = v.findViewById(R.id.txvrunrun);
+           //txvrunrun = v.findViewById(R.id.txvrunrun);
             infoZone = v.findViewById(R.id.info_zone);
 
         }
-
     }
 }

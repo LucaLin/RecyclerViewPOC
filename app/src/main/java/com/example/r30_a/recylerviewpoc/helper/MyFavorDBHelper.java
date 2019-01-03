@@ -9,7 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
  */
 
 
-public class MyDBHelper extends SQLiteOpenHelper {
+public class MyFavorDBHelper extends SQLiteOpenHelper {
 
     private static final String DB_NAME="DB";//資料庫名稱
     private static final int DB_VERSION=1;//資料庫版本
@@ -34,17 +34,17 @@ public class MyDBHelper extends SQLiteOpenHelper {
             +IMG_AVATAR+" TEXT, "
             +NOTE+" NOTE); ";
 
-    private static MyDBHelper instance;
+    private static MyFavorDBHelper instance;
     //取得實體
-    public static MyDBHelper getInstance(Context context){
-        if(instance==null){instance= new MyDBHelper(context,DB_NAME,null,DB_VERSION);};
+    public static MyFavorDBHelper getInstance(Context context){
+        if(instance==null){instance= new MyFavorDBHelper(context,DB_NAME,null,DB_VERSION);};
         return instance;
     }
 
 
 
 
-    private MyDBHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version){
+    private MyFavorDBHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version){
         super(context,name,factory,version);
     }
     @Override

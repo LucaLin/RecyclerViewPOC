@@ -47,7 +47,6 @@ public class ContactPageActivity extends AppCompatActivity {
                     //常用清單
                     case R.id.favorContact:
                         showFrag(new FavorListFragment());
-
                         break;
                     //更多設定
                     case R.id.settings:

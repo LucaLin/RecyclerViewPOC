@@ -11,7 +11,7 @@
     <LinearLayout
         android:id="@+id/avatar_layout"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_centerHorizontal="false"
         android:layout_centerInParent="false"
         android:layout_centerVertical="false"
@@ -29,8 +29,8 @@
 
         <ImageView
             android:id="@+id/img_avatar"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
             android:layout_weight="1" />
     </LinearLayout>
 
@@ -44,37 +44,38 @@
         android:layout_toRightOf="@+id/avatar_layout"
         android:orientation="horizontal">
 
-        <LinearLayout
-            android:id="@+id/runrun_layout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/info_zone"
-            android:layout_toLeftOf="@+id/avatar_layout"
-            android:background="#bbbbbb"
-            android:orientation="horizontal">
+        <!--<LinearLayout-->
+            <!--android:id="@+id/runrun_layout"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_below="@+id/info_zone"-->
+            <!--android:layout_marginLeft="10dp"-->
+            <!--android:layout_toLeftOf="@+id/avatar_layout"-->
+            <!--android:background="#bbbbbb"-->
+            <!--android:orientation="horizontal">-->
 
-            <TextView
-                android:id="@+id/txvrunrun"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_alignParentBottom="true"
-                android:ellipsize="marquee"
-                android:focusable="true"
-                android:focusableInTouchMode="true"
-                android:marqueeRepeatLimit="marquee_forever"
-                android:scrollHorizontally="true"
-                android:singleLine="true"
-                android:text="這是跑馬燈，可以把它當做重要記事使用，只是現在還不知道要怎麼樣用較短的文字讓它跑的動，所以現在先打一個很長的測試"
-                android:textColor="@android:color/white"
-                android:textSize="12sp" />
+            <!--<TextView-->
+                <!--android:id="@+id/txvrunrun"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="match_parent"-->
+                <!--android:layout_alignParentBottom="true"-->
+                <!--android:ellipsize="marquee"-->
+                <!--android:focusable="true"-->
+                <!--android:focusableInTouchMode="true"-->
+                <!--android:marqueeRepeatLimit="marquee_forever"-->
+                <!--android:scrollHorizontally="true"-->
+                <!--android:singleLine="true"-->
+                <!--android:text="這是跑馬燈，可以把它當做重要記事使用，只是現在還不知道要怎麼樣用較短的文字讓它跑的動，所以現在先打一個很長的測試"-->
+                <!--android:textColor="@android:color/white"-->
+                <!--android:textSize="12sp" />-->
 
 
-        </LinearLayout>
+        <!--</LinearLayout>-->
 
         <LinearLayout
             android:id="@+id/info_zone"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_alignParentBottom="false"
             android:layout_alignParentLeft="false"
             android:layout_alignParentStart="false"
@@ -93,6 +94,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
+                android:paddingBottom="10dp"
                 android:paddingLeft="10dp">
 
                 <ImageView
@@ -160,6 +162,7 @@
                 android:id="@+id/img_favor"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:layout_weight="1"
                 android:background="@android:drawable/btn_star_big_on"
                 android:paddingRight="10dp" />

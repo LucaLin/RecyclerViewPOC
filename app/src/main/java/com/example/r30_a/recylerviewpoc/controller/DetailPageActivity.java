@@ -6,8 +6,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -20,7 +18,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Base64;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -29,19 +26,13 @@ import android.widget.Toast;
 import com.example.r30_a.recylerviewpoc.R;
 import com.example.r30_a.recylerviewpoc.fragment.DetailPageFragment;
 import com.example.r30_a.recylerviewpoc.fragment.UpdateContactFragment;
-import com.example.r30_a.recylerviewpoc.helper.MyDBHelper;
+import com.example.r30_a.recylerviewpoc.helper.MyFavorDBHelper;
 import com.example.r30_a.recylerviewpoc.util.CommonUtil;
-
-import java.util.HashSet;
-import java.util.Set;
 
 public class DetailPageActivity extends AppCompatActivity {
 
-    String name,number,phoneNumber;
-    ImageView img_avatar;
+    String name,number,phoneNumber,note;
     long id;
-
-    TextView txvName,txvPhoneNumber;
 
     private DrawerLayout drawerLayout;//側邊選單
     private NavigationView navigationView;
@@ -49,9 +40,8 @@ public class DetailPageActivity extends AppCompatActivity {
     Context context;
     Toast toast;
     SharedPreferences sp;
-    MyDBHelper myDBHelper;
+    MyFavorDBHelper myFavorDBHelper;
     byte[] bytes;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,16 +49,11 @@ public class DetailPageActivity extends AppCompatActivity {
         setContentView(R.layout.activity_detail_page);
 
         initView();
-
     }
 
-
     private void initView() {
-        myDBHelper = MyDBHelper.getInstance(this);
+        myFavorDBHelper = MyFavorDBHelper.getInstance(this);
 
-//        txvName = (TextView)findViewById(R.id.txv_detailName);
-//        txvPhoneNumber = (TextView)findViewById(R.id.txv_detailPhone);
-//        img_avatar = (ImageView)findViewById(R.id.detail_img_avatar);
         context = DetailPageActivity.this;
         toast = Toast.makeText(context,"",Toast.LENGTH_SHORT);
         final Intent intent = getIntent();
@@ -77,13 +62,7 @@ public class DetailPageActivity extends AppCompatActivity {
         number = String.valueOf(intent.getIntExtra("number",0));
         phoneNumber = intent.getStringExtra("phoneNumber");
         bytes = intent.getByteArrayExtra("avatar");
-//        if(bytes != null && bytes.length>0){
-//            Bitmap bitmap = BitmapFactory.decodeByteArray(bytes,0,bytes.length);
-//            img_avatar.setImageBitmap(bitmap);
-//        }
-
-//        txvName.setText(name);
-//        txvPhoneNumber.setText(phoneNumber);
+        note = intent.getStringExtra("note");
 
         Fragment fragment = DetailPageFragment.newInstance(String.valueOf(id),number,name,phoneNumber,bytes);
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
@@ -138,16 +117,16 @@ public class DetailPageActivity extends AppCompatActivity {
                         if(!CommonUtil.favorIdSet.contains(String.valueOf(id))) {
                             ContentValues values = new ContentValues(5);
 
-                            values.put(MyDBHelper.NUMBER,number);
-                            values.put(MyDBHelper.NAME,name);
-                            values.put(MyDBHelper.PHONE_NUMBER,phoneNumber);
+                            values.put(MyFavorDBHelper.NUMBER,number);
+                            values.put(MyFavorDBHelper.NAME,name);
+                            values.put(MyFavorDBHelper.PHONE_NUMBER,phoneNumber);
                             if(bytes != null && bytes.length >0){
                                 String img_base64 = Base64.encodeToString(bytes,Base64.DEFAULT);
-                                values.put(MyDBHelper.IMG_AVATAR,img_base64);
+                                values.put(MyFavorDBHelper.IMG_AVATAR,img_base64);
                             } else {
-                                values.put(MyDBHelper.IMG_AVATAR,"");
+                                values.put(MyFavorDBHelper.IMG_AVATAR,"");
                             }
-                            myDBHelper.getWritableDatabase().insert(MyDBHelper.TABLE_NAME,null,values);
+                            myFavorDBHelper.getWritableDatabase().insert(MyFavorDBHelper.TABLE_NAME,null,values);
                             CommonUtil.isDataChanged = true;
                             CommonUtil.favorIdSet.add(String.valueOf(id));
                             toast.setText(R.string.favorDone);toast.show();

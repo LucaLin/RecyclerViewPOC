@@ -1,11 +1,11 @@
 package com.example.r30_a.recylerviewpoc.fragment;
 
-
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -18,6 +18,7 @@ import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.PopupMenu;
 import android.text.TextUtils;
+import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -29,7 +30,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.r30_a.recylerviewpoc.R;
-import com.example.r30_a.recylerviewpoc.model.ContactData;
+import com.example.r30_a.recylerviewpoc.helper.MyContactDBHelper;
 import com.example.r30_a.recylerviewpoc.util.CommonUtil;
 
 import java.io.ByteArrayOutputStream;
@@ -37,7 +38,6 @@ import java.io.File;
 
 import static android.app.Activity.RESULT_OK;
 import static com.example.r30_a.recylerviewpoc.util.CommonUtil.isCellPhoneNumber;
-
 
 public class AddContactFragment extends Fragment {
 
@@ -54,20 +54,20 @@ public class AddContactFragment extends Fragment {
 
     Uri album_uri,camera_uri;
     byte[] img_avatar_bytes;
+    String img_avatar_base64;
     File temp_file;
     ImageView img_avatar;
     FrameLayout pickUserPhoto;
     Bitmap update_avatar=null;
     ContentValues values;
+    MyContactDBHelper myContactDBHelper;
+    SharedPreferences sp;
 
-    public AddContactFragment() {
-
-    }
+    public AddContactFragment() {}
 
     public static AddContactFragment newInstance(String param1, String param2) {
         AddContactFragment fragment = new AddContactFragment();
         Bundle args = new Bundle();
-
         fragment.setArguments(args);
         return fragment;
     }
@@ -79,7 +79,8 @@ public class AddContactFragment extends Fragment {
         toast = Toast.makeText(context, "",Toast.LENGTH_SHORT);
         resolver = context.getContentResolver();
         temp_file = new File("/sdcard/a.jpg");
-
+        myContactDBHelper = MyContactDBHelper.getInstance(context);
+        sp = context.getSharedPreferences("favorTags",Context.MODE_PRIVATE);
     }
 
     @Override
@@ -146,41 +147,17 @@ public class AddContactFragment extends Fragment {
         //API < 23的版本使用原來的方法
         if(Build.VERSION.SDK_INT <= 23){
             Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);//使用拍照
-
-            //拍完的照片做成暫存檔
-//                String folderPath = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "Test";//取得目標folder
-//                File folder = new File(folderPath);
-//                //如果裝置沒有此folder，建立一個新的
-//                if (!folder.exists()) {
-//                    if (!folder.mkdir()) {
-//                    }
-//                }
-//                //組合成輸出路徑
-//                String filePath = folderPath + File.separator + "temp.png";
-//                camera_uri = Uri.fromFile(new File(filePath));
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-//                intent.putExtra(MediaStore.EXTRA_OUTPUT, camera_uri);//將拍照的檔案放入暫存檔路徑
             getActivity().setResult(RESULT_OK,intent);
             startActivityForResult(intent, CAMERA_REQUEST);
 
-
         }else if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N){
-//                String filePath = Environment.getExternalStorageDirectory()+ "/images/"+System.currentTimeMillis() + ".jpg";
-//                File file = new File(getFilesDir() + "/images",System.currentTimeMillis() + ".jpg");
-//                if(!file.getParentFile().exists()){
-//                    file.getParentFile().mkdir();
-//                }
-//
-//
-//                camera_uri = FileProvider.getUriForFile(UpdateDataActivity.this,getPackageName()+".fireprovider" ,file);
+
             Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            //intent.setType("image/*");
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             intent.putExtra(MediaStore.EXTRA_OUTPUT, camera_uri);
             getActivity().setResult(RESULT_OK,intent);
-            //intent.setDataAndType(uri, MediaStore.Images.Media.MIME_TYPE);
             startActivityForResult(intent,CAMERA_REQUEST);
-
         }
     }
 
@@ -190,7 +167,6 @@ public class AddContactFragment extends Fragment {
         albumIntent.setType("image/*");//設定只顯示圖片區，不要秀其它的資料夾
         albumIntent.setAction(Intent.ACTION_GET_CONTENT);//取得本機相簿的action
         startActivityForResult(albumIntent, ALBUM_REQUEST);
-
     }
 
     @Override
@@ -281,6 +257,7 @@ public class AddContactFragment extends Fragment {
                     ContactsContract.CommonDataKinds.Phone.NUMBER, phoneNum, ContactsContract.Data.CONTENT_URI, values);
 
             if(img_avatar_bytes != null && img_avatar_bytes.length>0){
+                img_avatar_base64 = Base64.encodeToString(img_avatar_bytes,Base64.DEFAULT);
                 Cursor cursor = resolver.query(ContactsContract.Data.CONTENT_URI, new String[]{ContactsContract.Data.RAW_CONTACT_ID},
                         ContactsContract.Contacts.DISPLAY_NAME + " =?", new String[]{ name },null);
                 if(cursor != null && cursor.moveToFirst()){
@@ -294,6 +271,17 @@ public class AddContactFragment extends Fragment {
                     resolver.insert(ContactsContract.Data.CONTENT_URI,values);
                     }
             }
+            //加入DB
+            values = new ContentValues();
+            values.put(MyContactDBHelper.CONTACT_ID,contactId);
+            values.put(MyContactDBHelper.NAME,name);
+            values.put(MyContactDBHelper.PHONE_NUMBER,phoneNum);
+            if(img_avatar_base64 != null && img_avatar_base64.length()>0){
+                values.put(MyContactDBHelper.IMG_AVATAR,img_avatar_base64);
+            }
+            values.put(MyContactDBHelper.NUMBER,(sp.getInt("listSize",0))+1);
+
+            myContactDBHelper.getWritableDatabase().insert(MyContactDBHelper.TABLE_NAME,null,values);
             CommonUtil.isDataChanged = true;
         }catch (Exception e){
             e.getMessage();
@@ -328,6 +316,7 @@ public class AddContactFragment extends Fragment {
         values.put(MIMETYPE_column,Content_Item_Type);
         values.put(dataColumn, data);
         resolver.insert(uri,values);
+
         return true;
     }
 

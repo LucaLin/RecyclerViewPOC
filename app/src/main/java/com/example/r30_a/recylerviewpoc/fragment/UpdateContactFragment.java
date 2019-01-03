@@ -19,6 +19,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.PopupMenu;
 import android.text.TextUtils;
+import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -32,12 +33,12 @@ import android.widget.Toast;
 
 import com.example.r30_a.recylerviewpoc.R;
 
+import com.example.r30_a.recylerviewpoc.helper.MyContactDBHelper;
 import com.example.r30_a.recylerviewpoc.util.CommonUtil;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 
 import static android.app.Activity.RESULT_OK;
-
 
 public class UpdateContactFragment extends Fragment implements View.OnClickListener{
 
@@ -60,25 +61,23 @@ public class UpdateContactFragment extends Fragment implements View.OnClickListe
     TextView txvDataName, txvDataPhone;
     Button btnUpdate;
     EditText edtName, edtPhone,edtNote;
+    String updateName;
+    String updatePhone;
     Toast toast;
     String dataId;
     ImageView img_avatar;
     FrameLayout pickUserPhoto;
     Bitmap old_avatar;
     Context context;
-
     ContentResolver resolver;
     ContentValues values;
     Bitmap update_avatar=null;
     File temp_file;
 
+    MyContactDBHelper myContactDBHelper;
+
     View v;
-    public UpdateContactFragment() {
-
-    }
-
-
-
+    public UpdateContactFragment() {}
 
     public static UpdateContactFragment newInstance(String contact_id,String name, String phoneNumber, byte[] img_avatar_bytes) {
         UpdateContactFragment fragment = new UpdateContactFragment();
@@ -87,6 +86,7 @@ public class UpdateContactFragment extends Fragment implements View.OnClickListe
         args.putString(USER_OLD_NAME, name);
         args.putString(USER_OLD_PHONE, phoneNumber);
         args.putByteArray(USER_AVATAR,img_avatar_bytes);
+
         fragment.setArguments(args);
         return fragment;
     }
@@ -103,6 +103,7 @@ public class UpdateContactFragment extends Fragment implements View.OnClickListe
             img_avatar_bytes = getArguments().getByteArray(USER_AVATAR);
             temp_file = new File("/sdcard/a.jpg");
             toast = Toast.makeText(context,"",Toast.LENGTH_SHORT);
+            myContactDBHelper = MyContactDBHelper.getInstance(context);
 
         }
     }
@@ -112,7 +113,6 @@ public class UpdateContactFragment extends Fragment implements View.OnClickListe
                              Bundle savedInstanceState) {
 
         v = inflater.inflate(R.layout.fragment_update_contact, container, false);
-
 
         txvDataName = (TextView)v.findViewById(R.id.txvDataName);
         txvDataPhone = (TextView)v.findViewById(R.id.txvDataPhone);
@@ -138,7 +138,6 @@ public class UpdateContactFragment extends Fragment implements View.OnClickListe
             }
         }
 
-
         return v;
     }
 
@@ -146,8 +145,8 @@ public class UpdateContactFragment extends Fragment implements View.OnClickListe
     public void onClick(View v) {
         if(v.getId() == R.id.btnUpdate) {
 
-            final String updateName = edtName.getText().toString();
-            final String updatePhone = edtPhone.getText().toString();
+            updateName = edtName.getText().toString();
+            updatePhone = edtPhone.getText().toString();
 
             if (updateName.equals(txvDataName.getText()) && updatePhone.equals(txvDataPhone.getText())
                     && old_avatar == update_avatar) {
@@ -164,8 +163,6 @@ public class UpdateContactFragment extends Fragment implements View.OnClickListe
                             .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-
-                                        //newinstance or 直接做更新的動作並通知有通新
 
                                         Cursor c = resolver.query(ContactsContract.Data.CONTENT_URI,
                                                 new String[]{ContactsContract.Data.RAW_CONTACT_ID},
@@ -195,15 +192,26 @@ public class UpdateContactFragment extends Fragment implements View.OnClickListe
                                             e.getMessage();
                                         }
 
+                                    values = new ContentValues();
+                                    values.put(MyContactDBHelper.NAME,updateName);
+                                    values.put(MyContactDBHelper.PHONE_NUMBER,updatePhone);
+                                    if(bytes != null && bytes.length>0){
+                                        String img_base64 = Base64.encodeToString(bytes,Base64.DEFAULT);
+                                        values.put(MyContactDBHelper.IMG_AVATAR,img_base64);
+                                    }else {
+
+                                    }
+                                    try {
+
+                                        myContactDBHelper.getWritableDatabase().update(MyContactDBHelper.TABLE_NAME,values,
+                                                MyContactDBHelper.CONTACT_ID+"="+contact_id,null);
+                                    }catch (Exception e){
+                                        e.getMessage();
+                                    }
                                         CommonUtil.isDataChanged = true;
                                         toast.setText(R.string.updateDataOK);
                                         toast.show();
 
-
-//                                    Fragment fragment = new ContactPageFragment();
-//                                    FragmentTransaction transaction = getFragmentManager().beginTransaction();
-//                                    transaction.replace(R.id.frameLayout,fragment);
-//                                    transaction.commit();
 
                                 }
                             }).setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
@@ -221,7 +229,6 @@ public class UpdateContactFragment extends Fragment implements View.OnClickListe
         }else if((v.getId() ==  R.id.userPhoto) || (v.getId() ==R.id.pickUserPhoto)){
             showPopupMenu(v);
         }
-
 
     }
     private void showPopupMenu(View v) {
@@ -250,42 +257,19 @@ public class UpdateContactFragment extends Fragment implements View.OnClickListe
 
         //API < 23的版本使用原來的方法
         if(Build.VERSION.SDK_INT <= 23){
-            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);//使用拍照
 
-            //拍完的照片做成暫存檔
-//                String folderPath = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "Test";//取得目標folder
-//                File folder = new File(folderPath);
-//                //如果裝置沒有此folder，建立一個新的
-//                if (!folder.exists()) {
-//                    if (!folder.mkdir()) {
-//                    }
-//                }
-//                //組合成輸出路徑
-//                String filePath = folderPath + File.separator + "temp.png";
-//                camera_uri = Uri.fromFile(new File(filePath));
+            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);//使用拍照
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-//                intent.putExtra(MediaStore.EXTRA_OUTPUT, camera_uri);//將拍照的檔案放入暫存檔路徑
             getActivity().setResult(RESULT_OK,intent);
             startActivityForResult(intent, CAMERA_REQUEST);
 
-
         }else if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N){
-//                String filePath = Environment.getExternalStorageDirectory()+ "/images/"+System.currentTimeMillis() + ".jpg";
-//                File file = new File(getFilesDir() + "/images",System.currentTimeMillis() + ".jpg");
-//                if(!file.getParentFile().exists()){
-//                    file.getParentFile().mkdir();
-//                }
-//
-//
-//                camera_uri = FileProvider.getUriForFile(UpdateDataActivity.this,getPackageName()+".fireprovider" ,file);
+
             Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            //intent.setType("image/*");
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             intent.putExtra(MediaStore.EXTRA_OUTPUT, camera_uri);
             getActivity().setResult(RESULT_OK,intent);
-            //intent.setDataAndType(uri, MediaStore.Images.Media.MIME_TYPE);
             startActivityForResult(intent,CAMERA_REQUEST);
-
         }
     }
 
@@ -375,7 +359,6 @@ public class UpdateContactFragment extends Fragment implements View.OnClickListe
         return intent;
 
     }
-
     private void   setChangedAvatar(File file,ImageView img_avatar) {
         try {
 
@@ -385,9 +368,6 @@ public class UpdateContactFragment extends Fragment implements View.OnClickListe
             update_avatar.compress(Bitmap.CompressFormat.PNG,100,outputStream);
             bytes = outputStream.toByteArray();
             outputStream.close();
-
-
-
             img_avatar.setImageBitmap(update_avatar);
 
         }catch (Exception e){

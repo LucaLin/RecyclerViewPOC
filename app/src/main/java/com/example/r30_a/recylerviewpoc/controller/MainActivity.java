@@ -19,7 +19,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     Button btn_toContactPage, btn_toSettingPage;
     AlertDialog.Builder builder;
-    ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,7 +30,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             startActivity(intent);
             finish();
         }
-
         initView();
     }
 
@@ -84,7 +82,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         switch (v.getId()){
             case R.id.btnContactPage:
-                //startActivity(new Intent(this,ContactsPageActivity.class));
                 startActivity(new Intent(this,ContactPageActivity.class));
                 break;
 
@@ -93,7 +90,5 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
 
             }
-
-
     }
 }

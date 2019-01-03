@@ -21,7 +21,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.r30_a.recylerviewpoc.R;
-import com.example.r30_a.recylerviewpoc.helper.MyDBHelper;
+import com.example.r30_a.recylerviewpoc.helper.MyFavorDBHelper;
 import com.example.r30_a.recylerviewpoc.util.CommonUtil;
 
 import static android.content.Context.MODE_PRIVATE;
@@ -34,31 +34,27 @@ public class DetailPageFragment extends Fragment {
     private static final String NAME = "name";
     private static final String PHONE_NUMBER = "phoneNumber";
     private static final String AVATAR = "avatar_base64";
+    private static final String NOTE = "note";
 
     ImageView img_avatar;
-    TextView txvName,txvPhoneNumber;
+    TextView txvName,txvPhoneNumber,txvNote;
     SharedPreferences sp;
-    MyDBHelper myDBHelper;
+    MyFavorDBHelper myFavorDBHelper;
 
     Context context;
     Toast toast;
     Bitmap img_bitmap;
 
-
-
     private String contact_id;
     private String number;
     private String name;
     private String phoneNumber;
+    private String note;
     private byte[] img_avatar_bytes;
     ImageButton ibt_toDial,ibt_toSMS;
 
+    public DetailPageFragment() {}
 
-    public DetailPageFragment() {
-
-    }
-
-    // TODO: Rename and change types and number of parameters
     public static DetailPageFragment newInstance(String contact_id, String number,String name,String phoneNumber,byte[] img_avatar_bytes) {
         DetailPageFragment fragment = new DetailPageFragment();
         Bundle args = new Bundle();
@@ -67,6 +63,7 @@ public class DetailPageFragment extends Fragment {
         args.putString(NAME,name);
         args.putString(PHONE_NUMBER,phoneNumber);
         args.putByteArray(AVATAR,img_avatar_bytes);
+        //args.putString(NOTE,note);
         fragment.setArguments(args);
         return fragment;
     }
@@ -83,10 +80,10 @@ public class DetailPageFragment extends Fragment {
            if(img_avatar_bytes != null && img_avatar_bytes.length>0){
            img_bitmap = BitmapFactory.decodeByteArray(img_avatar_bytes,0,img_avatar_bytes.length);
            }
-
+           //note = getArguments().getString(NOTE);
 
            context = getContext();
-            myDBHelper = MyDBHelper.getInstance(context);
+            myFavorDBHelper = MyFavorDBHelper.getInstance(context);
             toast = Toast.makeText(context,"",Toast.LENGTH_SHORT);
 
             sp = context.getSharedPreferences("favorTags",MODE_PRIVATE);
@@ -104,11 +101,18 @@ public class DetailPageFragment extends Fragment {
         img_avatar = (ImageView)v.findViewById(R.id.detail_img_avatar);
         ibt_toDial = (ImageButton)v.findViewById(R.id.ib_toCall);
         ibt_toSMS = (ImageButton)v.findViewById(R.id.ib_toMsg);
+//        txvNote = (TextView)v.findViewById(R.id.txv_detailNote);
+//
+//        if(!TextUtils.isEmpty(note)){
+//            txvNote.setText(note);
+//        }else {
+//            txvNote.setText(R.string.none);
+//        }
 
         txvName.setText(name);
         txvPhoneNumber.setText(phoneNumber);
         if(img_bitmap != null){
-        img_avatar.setImageBitmap(img_bitmap);
+            img_avatar.setImageBitmap(img_bitmap);
         }
 
         ibt_toDial.setOnClickListener(new View.OnClickListener() {
