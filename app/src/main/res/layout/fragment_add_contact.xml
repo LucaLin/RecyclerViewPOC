@@ -71,7 +71,7 @@
                 android:layout_above="@+id/edtPhoneNumber"
                 android:layout_alignParentEnd="false"
                 android:ems="10"
-                android:hint="輸入姓名"
+                android:hint="@string/addName"
                 android:inputType="textPersonName" />
 
             <EditText
@@ -81,10 +81,17 @@
                 android:layout_above="@+id/btnUpdate"
                 android:layout_alignParentStart="false"
                 android:ems="10"
-                android:hint="輸入電話"
+                android:hint="@string/addPhone"
                 android:inputType="phone"
                 android:maxLength="10" />
-
+            <EditText
+                android:id="@+id/edtNote"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_above="@+id/btnUpdate"
+                android:layout_alignParentStart="false"
+                android:hint="@string/note"
+                android:inputType="textPersonName" />
             <Button
                 android:id="@+id/btnUpdate"
                 android:layout_width="wrap_content"

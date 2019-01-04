@@ -42,7 +42,7 @@ import static com.example.r30_a.recylerviewpoc.util.CommonUtil.isCellPhoneNumber
 public class AddContactFragment extends Fragment {
 
     Toast toast;
-    EditText edtName, edtPhomeNumber;//使用者編輯區
+    EditText edtName, edtPhomeNumber,edtNote;//使用者編輯區
     Button btnAddContact;
     ContentResolver resolver;
     Context context;
@@ -90,6 +90,7 @@ public class AddContactFragment extends Fragment {
 
         edtName = (EditText)v.findViewById(R.id.edtContactName);
         edtPhomeNumber = (EditText)v.findViewById(R.id.edtPhoneNumber);
+        edtNote = (EditText)v.findViewById(R.id.edtNote);
         btnAddContact = (Button)v.findViewById(R.id.btnUpdate);
         img_avatar = (ImageView)v.findViewById(R.id.userPhoto);
         img_avatar.setOnClickListener(new View.OnClickListener() {
@@ -105,11 +106,12 @@ public class AddContactFragment extends Fragment {
 
                 String name = edtName.getText().toString();
                 String phoneNum = edtPhomeNumber.getText().toString();
+                String note = edtNote.getText().toString();
                 if(TextUtils.isEmpty(name) || !isCellPhoneNumber(phoneNum)){
                     toast.setText(R.string.wrongInput);
                     toast.show();
                 }else {
-                    insertContact(name, phoneNum);
+                    insertContact(name, phoneNum,note);
                     toast.setText(R.string.addSuccess);
                     toast.show();
 
@@ -235,7 +237,7 @@ public class AddContactFragment extends Fragment {
         }
     }
 
-    public boolean insertContact(String name, String phoneNum) {
+    public boolean insertContact(String name, String phoneNum,String note) {
 
         try {
             ContentValues values = new ContentValues();
@@ -256,6 +258,11 @@ public class AddContactFragment extends Fragment {
                     ContactsContract.CommonDataKinds.Phone.TYPE, ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE,
                     ContactsContract.CommonDataKinds.Phone.NUMBER, phoneNum, ContactsContract.Data.CONTENT_URI, values);
 
+            values = new ContentValues();
+            values.put(ContactsContract.CommonDataKinds.Note.NOTE,note);
+            values.put(ContactsContract.Data.RAW_CONTACT_ID,contactId);
+            values.put(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Note.CONTENT_ITEM_TYPE);
+            resolver.insert(ContactsContract.Data.CONTENT_URI,values);
             if(img_avatar_bytes != null && img_avatar_bytes.length>0){
                 img_avatar_base64 = Base64.encodeToString(img_avatar_bytes,Base64.DEFAULT);
                 Cursor cursor = resolver.query(ContactsContract.Data.CONTENT_URI, new String[]{ContactsContract.Data.RAW_CONTACT_ID},
@@ -276,6 +283,7 @@ public class AddContactFragment extends Fragment {
             values.put(MyContactDBHelper.CONTACT_ID,contactId);
             values.put(MyContactDBHelper.NAME,name);
             values.put(MyContactDBHelper.PHONE_NUMBER,phoneNum);
+            values.put(MyContactDBHelper.NOTE,note);
             if(img_avatar_base64 != null && img_avatar_base64.length()>0){
                 values.put(MyContactDBHelper.IMG_AVATAR,img_avatar_base64);
             }

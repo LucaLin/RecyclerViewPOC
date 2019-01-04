@@ -59,7 +59,7 @@ public class UpdateContactFragment extends Fragment implements View.OnClickListe
     byte[] img_avatar_bytes;
     byte[] bytes;
 
-    TextView txvDataName, txvDataPhone;
+    TextView txvDataName, txvDataPhone,txvDataNote;
     Button btnUpdate;
     EditText edtName, edtPhone,edtNote;
     String updateName,updatePhone,updateNote;
@@ -119,6 +119,7 @@ public class UpdateContactFragment extends Fragment implements View.OnClickListe
 
         txvDataName = (TextView)v.findViewById(R.id.txvDataName);
         txvDataPhone = (TextView)v.findViewById(R.id.txvDataPhone);
+        txvDataNote = (TextView)v.findViewById(R.id.txvDataNote);
         btnUpdate = (Button)v.findViewById(R.id.btnUpdate);
         btnUpdate.setOnClickListener(this);
         img_avatar = (ImageView)v.findViewById(R.id.userPhoto);
@@ -129,12 +130,7 @@ public class UpdateContactFragment extends Fragment implements View.OnClickListe
         edtName = (EditText)v.findViewById(R.id.edtContactName);
         edtPhone = (EditText)v.findViewById(R.id.edtPhoneNumber);
         edtNote = (EditText)v.findViewById(R.id.edtNote);
-        edtName.setText(oldname);
-        edtPhone.setText(oldphoneNumber);
-        edtNote.setText(oldNote);
-
-        txvDataName.setText(oldname);
-        txvDataPhone.setText(oldphoneNumber);
+        setOldinfo(oldname,oldphoneNumber,oldNote);
 
         if(img_avatar_bytes != null && img_avatar_bytes.length>0){
             old_avatar = BitmapFactory.decodeByteArray(img_avatar_bytes,0,img_avatar_bytes.length);
@@ -196,7 +192,7 @@ public class UpdateContactFragment extends Fragment implements View.OnClickListe
                                                     values, ContactsContract.Data.CONTACT_ID+" =?",
                                                     new String[]{contact_id});
                                             //更新備註
-                                            if(!updateNote.equals(oldNote) && !TextUtils.isEmpty(updateNote)){
+                                            if(!updateNote.equals(oldNote) ){
                                                 values = new ContentValues();
                                                 values.put(ContactsContract.CommonDataKinds.Note.NOTE,updateNote);
                                                 values.put(ContactsContract.Data._ID,contact_id);
@@ -208,7 +204,7 @@ public class UpdateContactFragment extends Fragment implements View.OnClickListe
                                         }catch (Exception e){
                                             e.getMessage();
                                         }
-
+                                    //更新資料庫
                                     values = new ContentValues();
                                     values.put(MyContactDBHelper.NAME,updateName);
                                     values.put(MyContactDBHelper.PHONE_NUMBER,updatePhone);
@@ -227,10 +223,9 @@ public class UpdateContactFragment extends Fragment implements View.OnClickListe
                                         e.getMessage();
                                     }
                                         CommonUtil.isDataChanged = true;
+                                        setOldinfo(updateName,updatePhone,updateNote);
                                         toast.setText(R.string.updateDataOK);
                                         toast.show();
-
-
                                 }
                             }).setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
                         @Override
@@ -249,6 +244,19 @@ public class UpdateContactFragment extends Fragment implements View.OnClickListe
         }
 
     }
+
+    private void setOldinfo(String name, String phone, String note) {
+
+        txvDataName.setText(name);
+        txvDataPhone.setText(phone);
+        txvDataNote.setText(note);
+
+        edtName.setText(name);
+        edtPhone.setText(phone);
+        edtNote.setText(note);
+
+    }
+
     private void showPopupMenu(View v) {
         PopupMenu popupMenu = new PopupMenu(context,v);
         popupMenu.inflate(R.menu.popupmenu_foravatar);
