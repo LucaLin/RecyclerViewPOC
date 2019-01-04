@@ -107,7 +107,7 @@ public class DetailPageActivity extends AppCompatActivity {
 
                 switch (item.getItemId()){
                     case R.id.p1_update:
-                        Fragment fragment = UpdateContactFragment.newInstance(String.valueOf(id),name,phoneNumber,bytes);
+                        Fragment fragment = UpdateContactFragment.newInstance(String.valueOf(id),name,phoneNumber,bytes,note);
                         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
                         transaction.replace(R.id.frameLayout,fragment);
                         transaction.commit();

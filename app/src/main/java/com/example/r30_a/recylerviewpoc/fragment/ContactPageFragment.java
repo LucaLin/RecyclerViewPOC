@@ -166,7 +166,7 @@ public class ContactPageFragment extends Fragment {
                         //更新
                         case 0:
 
-                                Fragment fragment = UpdateContactFragment.newInstance(String.valueOf(data.getId()),data.getName(),data.getPhoneNum(),data.getImg_avatar());
+                                Fragment fragment = UpdateContactFragment.newInstance(String.valueOf(data.getId()),data.getName(),data.getPhoneNum(),data.getImg_avatar(),data.getNote());
                                 FragmentTransaction transaction = getFragmentManager().beginTransaction();
                                 transaction.setCustomAnimations(R.anim.slide_right_in,R.anim.slide_left_out,R.anim.slide_left_in,R.anim.slide_right_out);
                                 transaction.replace(R.id.frameLayout,fragment);
@@ -192,6 +192,7 @@ public class ContactPageFragment extends Fragment {
                                     values.put(MyFavorDBHelper.NUMBER,String.valueOf(data.getNumber()));
                                     values.put(MyFavorDBHelper.NAME,data.getName());
                                     values.put(MyFavorDBHelper.PHONE_NUMBER,data.getPhoneNum());
+                                    values.put(MyFavorDBHelper.NOTE,data.getNote());
 
                                     if(data.getImg_avatar() != null && data.getImg_avatar().length >0){
                                         String img_base64 = Base64.encodeToString(data.getImg_avatar(),Base64.DEFAULT);

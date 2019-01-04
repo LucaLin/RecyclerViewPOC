@@ -46,6 +46,7 @@ public class UpdateContactFragment extends Fragment implements View.OnClickListe
     private static final String USER_OLD_PHONE = "phoneNumber";
     private static final String USER_AVATAR = "avatar";
     private static final String CONTACT_ID = "contact_id";
+    private static final String NOTE = "note";
 
     //取得結果用的Request Code
     private final int CAMERA_REQUEST = 1;
@@ -54,15 +55,15 @@ public class UpdateContactFragment extends Fragment implements View.OnClickListe
 
     Uri album_uri,camera_uri;
 
-    String oldname,oldphoneNumber,contact_id;
+    String oldname,oldphoneNumber,contact_id,oldNote;
     byte[] img_avatar_bytes;
     byte[] bytes;
 
     TextView txvDataName, txvDataPhone;
     Button btnUpdate;
     EditText edtName, edtPhone,edtNote;
-    String updateName;
-    String updatePhone;
+    String updateName,updatePhone,updateNote;
+
     Toast toast;
     String dataId;
     ImageView img_avatar;
@@ -79,13 +80,14 @@ public class UpdateContactFragment extends Fragment implements View.OnClickListe
     View v;
     public UpdateContactFragment() {}
 
-    public static UpdateContactFragment newInstance(String contact_id,String name, String phoneNumber, byte[] img_avatar_bytes) {
+    public static UpdateContactFragment newInstance(String contact_id,String name, String phoneNumber, byte[] img_avatar_bytes,String note) {
         UpdateContactFragment fragment = new UpdateContactFragment();
         Bundle args = new Bundle();
         args.putString(CONTACT_ID,contact_id);
         args.putString(USER_OLD_NAME, name);
         args.putString(USER_OLD_PHONE, phoneNumber);
         args.putByteArray(USER_AVATAR,img_avatar_bytes);
+        args.putString(NOTE,note);
 
         fragment.setArguments(args);
         return fragment;
@@ -100,6 +102,7 @@ public class UpdateContactFragment extends Fragment implements View.OnClickListe
             contact_id = getArguments().getString(CONTACT_ID);
             oldname = getArguments().getString(USER_OLD_NAME);
             oldphoneNumber = getArguments().getString(USER_OLD_PHONE);
+            oldNote =getArguments().getString(NOTE);
             img_avatar_bytes = getArguments().getByteArray(USER_AVATAR);
             temp_file = new File("/sdcard/a.jpg");
             toast = Toast.makeText(context,"",Toast.LENGTH_SHORT);
@@ -125,11 +128,14 @@ public class UpdateContactFragment extends Fragment implements View.OnClickListe
 
         edtName = (EditText)v.findViewById(R.id.edtContactName);
         edtPhone = (EditText)v.findViewById(R.id.edtPhoneNumber);
+        edtNote = (EditText)v.findViewById(R.id.edtNote);
         edtName.setText(oldname);
         edtPhone.setText(oldphoneNumber);
+        edtNote.setText(oldNote);
 
         txvDataName.setText(oldname);
         txvDataPhone.setText(oldphoneNumber);
+
         if(img_avatar_bytes != null && img_avatar_bytes.length>0){
             old_avatar = BitmapFactory.decodeByteArray(img_avatar_bytes,0,img_avatar_bytes.length);
             img_avatar.setImageBitmap(old_avatar);
@@ -142,11 +148,12 @@ public class UpdateContactFragment extends Fragment implements View.OnClickListe
     }
 
     @Override
-    public void onClick(View v) {
+    public void onClick(final View v) {
         if(v.getId() == R.id.btnUpdate) {
 
             updateName = edtName.getText().toString();
             updatePhone = edtPhone.getText().toString();
+            updateNote = edtNote.getText().toString();
 
             if (updateName.equals(txvDataName.getText()) && updatePhone.equals(txvDataPhone.getText())
                     && old_avatar == update_avatar) {
@@ -188,6 +195,16 @@ public class UpdateContactFragment extends Fragment implements View.OnClickListe
                                                     ContactsContract.RawContacts.CONTENT_URI,
                                                     values, ContactsContract.Data.CONTACT_ID+" =?",
                                                     new String[]{contact_id});
+                                            //更新備註
+                                            if(!updateNote.equals(oldNote) && !TextUtils.isEmpty(updateNote)){
+                                                values = new ContentValues();
+                                                values.put(ContactsContract.CommonDataKinds.Note.NOTE,updateNote);
+                                                values.put(ContactsContract.Data._ID,contact_id);
+                                                values.put(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Note.CONTENT_ITEM_TYPE);
+                                                resolver.update(ContactsContract.Data.CONTENT_URI,values,
+                                                        ContactsContract.Data.CONTACT_ID+"=?"+" AND " + ContactsContract.Data.MIMETYPE + "='" + ContactsContract.CommonDataKinds.Note.CONTENT_ITEM_TYPE + "'"
+                                                        ,new String[]{contact_id});
+                                            }
                                         }catch (Exception e){
                                             e.getMessage();
                                         }
@@ -195,6 +212,7 @@ public class UpdateContactFragment extends Fragment implements View.OnClickListe
                                     values = new ContentValues();
                                     values.put(MyContactDBHelper.NAME,updateName);
                                     values.put(MyContactDBHelper.PHONE_NUMBER,updatePhone);
+                                    values.put(MyContactDBHelper.NOTE,updateNote);
                                     if(bytes != null && bytes.length>0){
                                         String img_base64 = Base64.encodeToString(bytes,Base64.DEFAULT);
                                         values.put(MyContactDBHelper.IMG_AVATAR,img_base64);
