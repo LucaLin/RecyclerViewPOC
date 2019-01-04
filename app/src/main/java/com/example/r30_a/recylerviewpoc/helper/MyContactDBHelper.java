@@ -31,7 +31,7 @@ public class MyContactDBHelper extends SQLiteOpenHelper {
             +NUMBER+" TEXT, "
             +PHONE_NUMBER+" TEXT, "
             +IMG_AVATAR+" TEXT, "
-            +NOTE+" NOTE); ";
+            +NOTE+" TEXT ); ";
 
     private static MyContactDBHelper instance;
     //取得實體

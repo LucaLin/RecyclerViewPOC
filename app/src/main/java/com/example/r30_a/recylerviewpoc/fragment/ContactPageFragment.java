@@ -46,7 +46,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import android.provider.ContactsContract.CommonDataKinds.Phone;
-
+import android.provider.ContactsContract.Data;
+import android.provider.ContactsContract.CommonDataKinds.Note;
 import static com.example.r30_a.recylerviewpoc.util.CommonUtil.isCellPhoneNumber;
 
 
@@ -261,7 +262,8 @@ public class ContactPageFragment extends Fragment {
             String name;
             String mobileNum;
             String note = "";//備註欄
-
+            Cursor note_cursor = null;
+            String contact_id="";
             cursor = resolver.query(uri, projection, null, null, ContactsContract.Contacts.DISPLAY_NAME);
             //直接取contacts中的號碼資料區，再從號碼欄去抓對應的name跟number
             if (cursor != null) {
@@ -272,23 +274,25 @@ public class ContactPageFragment extends Fragment {
                     name = cursor.getString(cursor.getColumnIndex(Phone.DISPLAY_NAME));
                     mobileNum = cursor.getString(cursor.getColumnIndex(Phone.NUMBER));
 
-////                    //抓取備註欄
-//                    Cursor note_cursor = resolver.query(Data.CONTENT_URI,
-//                            new String[]{Data._ID, Note.NOTE},
-//                            Data.CONTACT_ID+"=?"+ " AND "+ Data.MIMETYPE+"='"+ Note.CONTENT_ITEM_TYPE+"'",
-//                            new String[]{String.valueOf(id)},null);
-//                    if(note_cursor != null && note_cursor.moveToFirst()){
-//                        note = note_cursor.getString(note_cursor.getColumnIndex(Note.NOTE));
-//
-//                    }
+
+//                    //抓取備註欄
+                        note_cursor = resolver.query(Data.CONTENT_URI,
+                                new String[]{Data._ID, Note.NOTE},
+                                Data.CONTACT_ID + "=?" + " AND " + Data.MIMETYPE + "='" + Note.CONTENT_ITEM_TYPE + "'",
+                                new String[]{String.valueOf(id)}, null);
+                        if (note_cursor != null && note_cursor.moveToFirst()) {
+                            note = note_cursor.getString(note_cursor.getColumnIndex(Note.NOTE));
+
+                        }
 
                     if (!TextUtils.isEmpty(mobileNum) && !isCellPhoneNumber(mobileNum)) {
                         continue;
                     } else {
                         number = number+1;
-                        addContactToList(number,id,mobileNum,name, CommonUtil.get_Avatar(resolver,id),note, CommonUtil.favorIdSet);
+                        addContactToList(number,id,mobileNum,name, CommonUtil.get_Avatar(resolver,id), CommonUtil.favorIdSet,note);
                     }
                 }
+                note_cursor.close();
                 cursor.close();
 
             } else {
@@ -302,7 +306,7 @@ public class ContactPageFragment extends Fragment {
     }
 
     /*新增聯絡人到手機清單*/
-    private void addContactToList(int number, long id, String phoneNumber, String name, Bitmap avatar,String note, Set<String> favorIdSet) {
+    private void addContactToList(int number, long id, String phoneNumber, String name, Bitmap avatar, Set<String> favorIdSet,String note) {
 
         if (!tempId.equals(String.valueOf(id))) {
 
@@ -311,6 +315,9 @@ public class ContactPageFragment extends Fragment {
             values.put(MyContactDBHelper.NAME,name);
             values.put(MyContactDBHelper.PHONE_NUMBER,CommonUtil.getFormatPhone(phoneNumber));
             values.put(MyContactDBHelper.NUMBER,number);
+            if(!TextUtils.isEmpty(note)){
+            values.put(MyContactDBHelper.NOTE,note);
+            }
 
             String img_avatar_base64 = "";
             if(avatar != null){
@@ -374,6 +381,7 @@ public class ContactPageFragment extends Fragment {
                 data.setName(c.getString(c.getColumnIndex(MyContactDBHelper.NAME)));
                 data.setPhoneNum(c.getString(c.getColumnIndex(MyContactDBHelper.PHONE_NUMBER)));
                 data.setNumber(Integer.parseInt(c.getString(c.getColumnIndex(MyContactDBHelper.NUMBER))));
+                data.setNote(c.getString(c.getColumnIndex(MyContactDBHelper.NOTE)));
 
                 String avatar_base64 = c.getString(c.getColumnIndex(MyContactDBHelper.IMG_AVATAR));
                 if(!TextUtils.isEmpty(avatar_base64)){

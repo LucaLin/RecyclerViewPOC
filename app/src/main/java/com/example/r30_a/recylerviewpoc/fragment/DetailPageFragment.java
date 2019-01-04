@@ -12,6 +12,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -55,7 +56,7 @@ public class DetailPageFragment extends Fragment {
 
     public DetailPageFragment() {}
 
-    public static DetailPageFragment newInstance(String contact_id, String number,String name,String phoneNumber,byte[] img_avatar_bytes) {
+    public static DetailPageFragment newInstance(String contact_id, String number,String name,String phoneNumber,byte[] img_avatar_bytes,String note) {
         DetailPageFragment fragment = new DetailPageFragment();
         Bundle args = new Bundle();
         args.putString(CONTACT_ID,contact_id );
@@ -63,7 +64,7 @@ public class DetailPageFragment extends Fragment {
         args.putString(NAME,name);
         args.putString(PHONE_NUMBER,phoneNumber);
         args.putByteArray(AVATAR,img_avatar_bytes);
-        //args.putString(NOTE,note);
+        args.putString(NOTE,note);
         fragment.setArguments(args);
         return fragment;
     }
@@ -80,7 +81,7 @@ public class DetailPageFragment extends Fragment {
            if(img_avatar_bytes != null && img_avatar_bytes.length>0){
            img_bitmap = BitmapFactory.decodeByteArray(img_avatar_bytes,0,img_avatar_bytes.length);
            }
-           //note = getArguments().getString(NOTE);
+           note = getArguments().getString(NOTE);
 
            context = getContext();
             myFavorDBHelper = MyFavorDBHelper.getInstance(context);
@@ -101,13 +102,13 @@ public class DetailPageFragment extends Fragment {
         img_avatar = (ImageView)v.findViewById(R.id.detail_img_avatar);
         ibt_toDial = (ImageButton)v.findViewById(R.id.ib_toCall);
         ibt_toSMS = (ImageButton)v.findViewById(R.id.ib_toMsg);
-//        txvNote = (TextView)v.findViewById(R.id.txv_detailNote);
-//
-//        if(!TextUtils.isEmpty(note)){
-//            txvNote.setText(note);
-//        }else {
-//            txvNote.setText(R.string.none);
-//        }
+        txvNote = (TextView)v.findViewById(R.id.txv_detailNote);
+
+        if(!TextUtils.isEmpty(note)){
+            txvNote.setText(note);
+        }else {
+            txvNote.setText(R.string.none);
+        }
 
         txvName.setText(name);
         txvPhoneNumber.setText(phoneNumber);

@@ -69,36 +69,36 @@
                 android:textSize="18sp" />
         </LinearLayout>
 
-        <!--<LinearLayout-->
-            <!--android:id="@+id/layout_noteColumn"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_below="@+id/layout_phoneColumn"-->
-            <!--android:layout_marginTop="20dp"-->
-            <!--android:orientation="vertical">-->
+        <LinearLayout
+            android:id="@+id/layout_noteColumn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/layout_phoneColumn"
+            android:layout_marginTop="20dp"
+            android:orientation="vertical">
 
-            <!--<TextView-->
-                <!--android:id="@+id/textView3"-->
-                <!--android:layout_width="wrap_content"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:layout_weight="1"-->
-                <!--android:gravity="center"-->
-                <!--android:paddingBottom="4dp"-->
-                <!--android:paddingLeft="10dp"-->
-                <!--android:text="@string/note"-->
-                <!--android:textSize="14sp" />-->
+            <TextView
+                android:id="@+id/textView3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:paddingBottom="4dp"
+                android:paddingLeft="10dp"
+                android:text="@string/note"
+                android:textSize="14sp" />
 
-            <!--<TextView-->
-                <!--android:id="@+id/txv_detailNote"-->
-                <!--android:layout_width="wrap_content"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:layout_weight="2"-->
-                <!--android:gravity="center"-->
-                <!--android:paddingLeft="10dp"-->
-                <!--android:text="TextView"-->
-                <!--android:textColor="@color/colorPrimary"-->
-                <!--android:textSize="18sp" />-->
-        <!--</LinearLayout>-->
+            <TextView
+                android:id="@+id/txv_detailNote"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:gravity="center"
+                android:paddingLeft="10dp"
+                android:text="TextView"
+                android:textColor="@color/colorPrimary"
+                android:textSize="18sp" />
+        </LinearLayout>
 
         <RelativeLayout
             android:layout_width="match_parent"

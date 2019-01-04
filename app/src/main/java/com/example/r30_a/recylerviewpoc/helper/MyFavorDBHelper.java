@@ -32,7 +32,7 @@ public class MyFavorDBHelper extends SQLiteOpenHelper {
             +NUMBER+" TEXT, "
             +PHONE_NUMBER+" TEXT, "
             +IMG_AVATAR+" TEXT, "
-            +NOTE+" NOTE); ";
+            +NOTE+" TEXT ); ";
 
     private static MyFavorDBHelper instance;
     //取得實體

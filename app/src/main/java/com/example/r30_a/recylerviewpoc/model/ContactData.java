@@ -29,8 +29,6 @@ public class ContactData {
     private boolean isFavor = false;
 
 
-
-
     public String getNote() {
         return note;
     }

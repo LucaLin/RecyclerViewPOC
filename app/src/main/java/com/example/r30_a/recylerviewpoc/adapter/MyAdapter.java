@@ -101,7 +101,7 @@ public class MyAdapter extends SwipeMenuAdapter<MyAdapter.MainViewHolder> implem
                 intent.putExtra("number",list.get(position).getNumber());
                 intent.putExtra("name",list.get(position).getName());
                 intent.putExtra("phoneNumber",list.get(position).getPhoneNum());
-               // intent.putExtra("note",list.get(position).getNote());
+                intent.putExtra("note",list.get(position).getNote());
                 //bytes[] to base64
                 intent.putExtra("avatar",list.get(position).getImg_avatar());
                 context.startActivity(intent);

@@ -64,7 +64,7 @@ public class DetailPageActivity extends AppCompatActivity {
         bytes = intent.getByteArrayExtra("avatar");
         note = intent.getStringExtra("note");
 
-        Fragment fragment = DetailPageFragment.newInstance(String.valueOf(id),number,name,phoneNumber,bytes);
+        Fragment fragment = DetailPageFragment.newInstance(String.valueOf(id),number,name,phoneNumber,bytes,note);
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.frameLayout,fragment);
         transaction.commit();
