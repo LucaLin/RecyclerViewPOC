@@ -61,6 +61,7 @@ public class ContactData {
 
     public void setImg_favor(ImageView img_favor) {
         this.img_favor = img_favor;
+        img_favor.setBackgroundResource(android.R.drawable.star_on);
 
     }
 

@@ -1,5 +1,6 @@
 package com.example.r30_a.recylerviewpoc.fragment;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -9,16 +10,19 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
 import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.example.r30_a.recylerviewpoc.R;
 import com.example.r30_a.recylerviewpoc.adapter.MyAdapter;
-import com.example.r30_a.recylerviewpoc.helper.MyFavorDBHelper;
+import com.example.r30_a.recylerviewpoc.helper.MyContactDBHelper;
+
 import com.example.r30_a.recylerviewpoc.model.ContactData;
 import com.example.r30_a.recylerviewpoc.util.CommonUtil;
 import com.yanzhenjie.recyclerview.swipe.Closeable;
@@ -35,8 +39,8 @@ import static android.content.Context.MODE_PRIVATE;
 
 public class FavorListFragment extends Fragment {
 
-    MyFavorDBHelper myFavorDBHelper;
-    SQLiteDatabase db;
+    MyContactDBHelper myContactDBHelper;
+
     ArrayList<ContactData> favorList = new ArrayList<>();
     SwipeMenuRecyclerView contact_RecyclerView;
     MyAdapter adapter;
@@ -61,30 +65,36 @@ public class FavorListFragment extends Fragment {
 
             context = getContext();
             sp = context.getSharedPreferences("favorTags",MODE_PRIVATE);
-
-            myFavorDBHelper = MyFavorDBHelper.getInstance(context);
+            myContactDBHelper = MyContactDBHelper.getInstance(context);
             CommonUtil.favorIdSet = sp.getStringSet("favorTags",new HashSet<String>());
             toast = Toast.makeText(context,"",Toast.LENGTH_SHORT);
-            Cursor cursor = myFavorDBHelper.getReadableDatabase().query(MyFavorDBHelper.TABLE_NAME,
-                    null,null,null,null,null, null);
 
-            if(cursor.getCount() != 0){
-                while (cursor.moveToNext()) {
-                    ContactData data = new ContactData();
-                    data.setId(cursor.getLong(cursor.getColumnIndex(MyFavorDBHelper.CONTACT_ID)));
-                    data.setNumber(Integer.parseInt(cursor.getString(cursor.getColumnIndex(MyFavorDBHelper.NUMBER))));
-                    data.setName(cursor.getString(cursor.getColumnIndex(MyFavorDBHelper.NAME)));
-                    data.setPhoneNum(cursor.getString(cursor.getColumnIndex(MyFavorDBHelper.PHONE_NUMBER)));
+        Cursor c = myContactDBHelper.getReadableDatabase().query(MyContactDBHelper.TABLE_NAME,null,null,null,null,null,null);
 
-                    String avatar_base64 = cursor.getString(cursor.getColumnIndex(MyFavorDBHelper.IMG_AVATAR));
-                    if (!avatar_base64.equals("")) {
+        if(c != null){
+            while (c.moveToNext()){
+
+                int count = c.getInt(c.getColumnIndex(MyContactDBHelper.FAVOR_TAG));
+                if(count == 1 ){
+                    ContactData data= new ContactData();
+                    data.setId(Long.valueOf(c.getString(c.getColumnIndex(MyContactDBHelper.CONTACT_ID))));
+                    data.setNumber(Integer.parseInt(c.getString(c.getColumnIndex(MyContactDBHelper.NUMBER))));
+                    data.setName(c.getString(c.getColumnIndex(MyContactDBHelper.NAME)));
+                    data.setPhoneNum(c.getString(c.getColumnIndex(MyContactDBHelper.PHONE_NUMBER)));
+                    data.setNote(c.getString(c.getColumnIndex(MyContactDBHelper.NOTE)));
+                    data.setImg_favor(new ImageView(context));
+                    String avatar_base64 = c.getString(c.getColumnIndex(MyContactDBHelper.IMG_AVATAR));
+                    if(!TextUtils.isEmpty(avatar_base64)){
                         byte[] bytes = Base64.decode(avatar_base64, Base64.DEFAULT);
                         Bitmap img_avatar = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
                         data.setImg_avatar(img_avatar);
-                    }
+                        }
                     favorList.add(data);
                     }
                 }
+
+            }
+
         }
 
 
@@ -121,14 +131,17 @@ public class FavorListFragment extends Fragment {
                             CommonUtil.favorIdSet.remove(String.valueOf(favorList.get(adapterPosition).getId()));
 
                             try{
-                                myFavorDBHelper.getWritableDatabase().delete(MyFavorDBHelper.TABLE_NAME, MyFavorDBHelper.CONTACT_ID + "=? ",new String[]{String.valueOf(favorList.get(adapterPosition).getId())});
+                                ContentValues values = new ContentValues();
+                                values.put(MyContactDBHelper.FAVOR_TAG,0);
+                                myContactDBHelper.getWritableDatabase().update(MyContactDBHelper.TABLE_NAME,
+                                        values,MyContactDBHelper.CONTACT_ID + "=? ",new String[]{String.valueOf(favorList.get(adapterPosition).getId())});
                             }catch (Exception e){
                                 e.getMessage();
                             }
                             favorList.remove(favorList.get(adapterPosition));
                             adapter = new MyAdapter(context,favorList);
                             CommonUtil.setContactList(context,contact_RecyclerView,adapter,favorList);
-                            CommonUtil.isDataChanged = true;
+
                             toast.setText(R.string.deleteOK);toast.show();
                             //刪除最愛清單
                             if(favorList.size() == 0){

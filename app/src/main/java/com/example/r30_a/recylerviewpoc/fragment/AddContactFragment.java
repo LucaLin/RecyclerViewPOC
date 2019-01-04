@@ -257,12 +257,13 @@ public class AddContactFragment extends Fragment {
                     ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE,
                     ContactsContract.CommonDataKinds.Phone.TYPE, ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE,
                     ContactsContract.CommonDataKinds.Phone.NUMBER, phoneNum, ContactsContract.Data.CONTENT_URI, values);
-
+            //新增備註
             values = new ContentValues();
             values.put(ContactsContract.CommonDataKinds.Note.NOTE,note);
             values.put(ContactsContract.Data.RAW_CONTACT_ID,contactId);
             values.put(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Note.CONTENT_ITEM_TYPE);
             resolver.insert(ContactsContract.Data.CONTENT_URI,values);
+
             if(img_avatar_bytes != null && img_avatar_bytes.length>0){
                 img_avatar_base64 = Base64.encodeToString(img_avatar_bytes,Base64.DEFAULT);
                 Cursor cursor = resolver.query(ContactsContract.Data.CONTENT_URI, new String[]{ContactsContract.Data.RAW_CONTACT_ID},
@@ -290,11 +291,12 @@ public class AddContactFragment extends Fragment {
             values.put(MyContactDBHelper.NUMBER,(sp.getInt("listSize",0))+1);
 
             myContactDBHelper.getWritableDatabase().insert(MyContactDBHelper.TABLE_NAME,null,values);
-            CommonUtil.isDataChanged = true;
+
         }catch (Exception e){
             e.getMessage();
             return false;
         }
+
         return true;
     }
 

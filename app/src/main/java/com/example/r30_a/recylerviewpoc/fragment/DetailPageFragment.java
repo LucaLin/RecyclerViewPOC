@@ -22,7 +22,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.r30_a.recylerviewpoc.R;
-import com.example.r30_a.recylerviewpoc.helper.MyFavorDBHelper;
+
 import com.example.r30_a.recylerviewpoc.util.CommonUtil;
 
 import static android.content.Context.MODE_PRIVATE;
@@ -40,7 +40,7 @@ public class DetailPageFragment extends Fragment {
     ImageView img_avatar;
     TextView txvName,txvPhoneNumber,txvNote;
     SharedPreferences sp;
-    MyFavorDBHelper myFavorDBHelper;
+
 
     Context context;
     Toast toast;
@@ -84,11 +84,9 @@ public class DetailPageFragment extends Fragment {
            note = getArguments().getString(NOTE);
 
            context = getContext();
-            myFavorDBHelper = MyFavorDBHelper.getInstance(context);
-            toast = Toast.makeText(context,"",Toast.LENGTH_SHORT);
-
-            sp = context.getSharedPreferences("favorTags",MODE_PRIVATE);
-            CommonUtil.favorIdSet = sp.getStringSet("favorTags",null);
+           toast = Toast.makeText(context,"",Toast.LENGTH_SHORT);
+           sp = context.getSharedPreferences("favorTags",MODE_PRIVATE);
+           CommonUtil.favorIdSet = sp.getStringSet("favorTags",null);
 
         }
     }

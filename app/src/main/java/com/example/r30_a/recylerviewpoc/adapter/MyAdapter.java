@@ -79,7 +79,7 @@ public class MyAdapter extends SwipeMenuAdapter<MyAdapter.MainViewHolder> implem
             holder.img_avatar.setBackgroundResource(R.drawable.iconfinder_man_196742);
         }
         //設定常用清單tag
-        if(list.get(position).getImg_favor() != null && list.get(position).getIsFavor()){
+        if(list.get(position).getImg_favor() != null){
             list.get(position).setImg_favor(holder.img_favor);
             holder.img_favor.setVisibility(View.VISIBLE);
         }

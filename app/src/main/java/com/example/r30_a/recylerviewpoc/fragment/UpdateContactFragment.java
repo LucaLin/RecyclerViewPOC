@@ -222,7 +222,7 @@ public class UpdateContactFragment extends Fragment implements View.OnClickListe
                                     }catch (Exception e){
                                         e.getMessage();
                                     }
-                                        CommonUtil.isDataChanged = true;
+
                                         setOldinfo(updateName,updatePhone,updateNote);
                                         toast.setText(R.string.updateDataOK);
                                         toast.show();
@@ -353,7 +353,7 @@ public class UpdateContactFragment extends Fragment implements View.OnClickListe
                                 values.put(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Photo.CONTENT_ITEM_TYPE);
                                 resolver.insert(ContactsContract.Data.CONTENT_URI,values);
                             }
-                            CommonUtil.isDataChanged = true;
+
                         }
                     }
 

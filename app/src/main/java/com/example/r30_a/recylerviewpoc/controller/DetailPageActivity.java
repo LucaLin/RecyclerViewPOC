@@ -17,16 +17,15 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.util.Base64;
 import android.view.MenuItem;
-import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.r30_a.recylerviewpoc.R;
 import com.example.r30_a.recylerviewpoc.fragment.DetailPageFragment;
+import com.example.r30_a.recylerviewpoc.fragment.FavorListFragment;
 import com.example.r30_a.recylerviewpoc.fragment.UpdateContactFragment;
-import com.example.r30_a.recylerviewpoc.helper.MyFavorDBHelper;
+import com.example.r30_a.recylerviewpoc.helper.MyContactDBHelper;
+
 import com.example.r30_a.recylerviewpoc.util.CommonUtil;
 
 public class DetailPageActivity extends AppCompatActivity {
@@ -40,7 +39,8 @@ public class DetailPageActivity extends AppCompatActivity {
     Context context;
     Toast toast;
     SharedPreferences sp;
-    MyFavorDBHelper myFavorDBHelper;
+
+    MyContactDBHelper myContactDBHelper;
     byte[] bytes;
 
     @Override
@@ -52,7 +52,8 @@ public class DetailPageActivity extends AppCompatActivity {
     }
 
     private void initView() {
-        myFavorDBHelper = MyFavorDBHelper.getInstance(this);
+
+        myContactDBHelper = MyContactDBHelper.getInstance(this);
 
         context = DetailPageActivity.this;
         toast = Toast.makeText(context,"",Toast.LENGTH_SHORT);
@@ -85,8 +86,10 @@ public class DetailPageActivity extends AppCompatActivity {
                         break;
 
                     case R.id.favorContact:
-
-                        finish();
+                        Fragment favorFragment = new FavorListFragment();
+                        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+                        transaction.replace(R.id.frameLayout,favorFragment);
+                        transaction.commit();
                         break;
 
                     case R.id.settings:
@@ -115,19 +118,12 @@ public class DetailPageActivity extends AppCompatActivity {
                         break;
                     case R.id.p2_addFavor:
                         if(!CommonUtil.favorIdSet.contains(String.valueOf(id))) {
-                            ContentValues values = new ContentValues(5);
 
-                            values.put(MyFavorDBHelper.NUMBER,number);
-                            values.put(MyFavorDBHelper.NAME,name);
-                            values.put(MyFavorDBHelper.PHONE_NUMBER,phoneNumber);
-                            if(bytes != null && bytes.length >0){
-                                String img_base64 = Base64.encodeToString(bytes,Base64.DEFAULT);
-                                values.put(MyFavorDBHelper.IMG_AVATAR,img_base64);
-                            } else {
-                                values.put(MyFavorDBHelper.IMG_AVATAR,"");
-                            }
-                            myFavorDBHelper.getWritableDatabase().insert(MyFavorDBHelper.TABLE_NAME,null,values);
-                            CommonUtil.isDataChanged = true;
+                            ContentValues values = new ContentValues();
+                            values.put(MyContactDBHelper.FAVOR_TAG,1);
+                            myContactDBHelper.getWritableDatabase().update(MyContactDBHelper.TABLE_NAME,values,
+                                    MyContactDBHelper.CONTACT_ID+"=?",new String[]{String.valueOf(id)});
+
                             CommonUtil.favorIdSet.add(String.valueOf(id));
                             toast.setText(R.string.favorDone);toast.show();
                             finish();
@@ -155,7 +151,6 @@ public class DetailPageActivity extends AppCompatActivity {
                                                 getContentResolver().delete(ContactsContract.RawContacts.CONTENT_URI, "contact_id =?", new String[]{String.valueOf(id)});
                                                 toast.setText(R.string.deleteOK);
                                                 toast.show();
-                                                CommonUtil.isDataChanged = true;
                                                 finish();
                                             }
                                         } catch (Exception e) {
@@ -168,7 +163,6 @@ public class DetailPageActivity extends AppCompatActivity {
 
                         break;
                 }
-
                 return true;
             }
         });

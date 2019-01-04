@@ -4,6 +4,7 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -30,7 +31,7 @@ import com.example.r30_a.recylerviewpoc.adapter.MyAdapter;
 import com.example.r30_a.recylerviewpoc.adapter.MyDecoration;
 
 import com.example.r30_a.recylerviewpoc.helper.MyContactDBHelper;
-import com.example.r30_a.recylerviewpoc.helper.MyFavorDBHelper;
+
 import com.example.r30_a.recylerviewpoc.model.ContactData;
 import com.example.r30_a.recylerviewpoc.util.CommonUtil;
 import com.yanzhenjie.recyclerview.swipe.Closeable;
@@ -72,7 +73,7 @@ public class ContactPageFragment extends Fragment {
     private SearchView searchView;
 
     private RecyclerView.ItemDecoration itemDecoration;
-    MyFavorDBHelper myFavorDBHelper;
+
     MyContactDBHelper myContactDBHelper;
 
     SharedPreferences sp;
@@ -107,7 +108,7 @@ public class ContactPageFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         context = getContext();
-        myFavorDBHelper = MyFavorDBHelper.getInstance(context);
+
         myContactDBHelper = MyContactDBHelper.getInstance(context);
         sp = context.getSharedPreferences("favorTags",Context.MODE_PRIVATE);
         CommonUtil.favorIdSet = sp.getStringSet("favorTags",new HashSet<String>());
@@ -186,31 +187,17 @@ public class ContactPageFragment extends Fragment {
                                 String id = String.valueOf(data.getId());
                                 if(!CommonUtil.favorIdSet.contains(id) ){
 
-                                    //寫入資料庫
-                                    ContentValues values = new ContentValues(5);
-                                    values.put(MyFavorDBHelper.CONTACT_ID,String.valueOf(data.getId()));
-                                    values.put(MyFavorDBHelper.NUMBER,String.valueOf(data.getNumber()));
-                                    values.put(MyFavorDBHelper.NAME,data.getName());
-                                    values.put(MyFavorDBHelper.PHONE_NUMBER,data.getPhoneNum());
-                                    values.put(MyFavorDBHelper.NOTE,data.getNote());
-
-                                    if(data.getImg_avatar() != null && data.getImg_avatar().length >0){
-                                        String img_base64 = Base64.encodeToString(data.getImg_avatar(),Base64.DEFAULT);
-                                        values.put(MyFavorDBHelper.IMG_AVATAR,img_base64);
-                                    } else {
-                                        values.put(MyFavorDBHelper.IMG_AVATAR,"");
-                                    }
-                                    myFavorDBHelper.getWritableDatabase().insert(MyFavorDBHelper.TABLE_NAME,null,values);
-
                                     CommonUtil.favorIdSet.add(id);
                                     sp.edit().putStringSet("favorTags",CommonUtil.favorIdSet).commit();
-                                    CommonUtil.isDataChanged =true;
-
                                     //更新當前清單
-                                    data.setImg_favor(new ImageView(context));
-                                    data.isFavor(true);
-                                    CommonUtil.setContactList(context,contact_RecyclerView, adapter, Now_ContactList);
+//
+                                    ContentValues values = new ContentValues();
+                                    values.put(MyContactDBHelper.FAVOR_TAG,1);
 
+                                    myContactDBHelper.getWritableDatabase().update(MyContactDBHelper.TABLE_NAME,values,
+                                            MyContactDBHelper.CONTACT_ID+"=?",new String[]{String.valueOf(data.getId())});
+                                    Now_ContactList = getList();
+                                    CommonUtil.setContactList(context,contact_RecyclerView, adapter, Now_ContactList);
                                     toast.setText(R.string.favorDone);toast.show();
                                 }else {
                                     toast.setText(R.string.alreadyaddfavor);toast.show();
@@ -320,6 +307,7 @@ public class ContactPageFragment extends Fragment {
             values.put(MyContactDBHelper.NOTE,note);
             }
 
+
             String img_avatar_base64 = "";
             if(avatar != null){
                 ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -359,7 +347,7 @@ public class ContactPageFragment extends Fragment {
                                 Now_ContactList.remove(number-1);
                                 toast.setText(R.string.deleteOK);
                                 toast.show();
-                                CommonUtil.isDataChanged = true;
+
                                 CommonUtil.setContactList(context,contact_RecyclerView,adapter,Now_ContactList);
                             }
                         } catch (Exception e) {
@@ -383,6 +371,11 @@ public class ContactPageFragment extends Fragment {
                 data.setPhoneNum(c.getString(c.getColumnIndex(MyContactDBHelper.PHONE_NUMBER)));
                 data.setNumber(Integer.parseInt(c.getString(c.getColumnIndex(MyContactDBHelper.NUMBER))));
                 data.setNote(c.getString(c.getColumnIndex(MyContactDBHelper.NOTE)));
+                int favor_tags = c.getInt(c.getColumnIndex(MyContactDBHelper.FAVOR_TAG));
+                if(favor_tags == 1){
+                    data.setImg_favor(new ImageView(context));
+                }
+
 
                 String avatar_base64 = c.getString(c.getColumnIndex(MyContactDBHelper.IMG_AVATAR));
                 if(!TextUtils.isEmpty(avatar_base64)){
