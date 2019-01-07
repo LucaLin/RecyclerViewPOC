@@ -278,6 +278,10 @@ public class ContactPageFragment extends Fragment {
                             address = info_cursor.getString(info_cursor.getColumnIndex(ContactsContract.CommonDataKinds.StructuredPostal.CITY))+
                                         info_cursor.getString(info_cursor.getColumnIndex(ContactsContract.CommonDataKinds.StructuredPostal.STREET));
                         }
+
+
+
+
                     if (!TextUtils.isEmpty(mobileNum) && !isCellPhoneNumber(mobileNum)) {
                         continue;
                     } else {

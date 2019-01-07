@@ -159,21 +159,26 @@ public class DetailPageFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 //GPS定位,抓地址的經緯度後傳給googlemap顯示
-                Intent intent = new Intent(context, MapsActivity.class);
-                Geocoder geocoder = new Geocoder(context, Locale.getDefault());
                 try {
-                    List<Address> location =  geocoder.getFromLocationName(address,1);
-                    double lat = location.get(0).getLatitude();
-                    double lng = location.get(0).getLongitude();
-                    intent.putExtra("lat",lat);
-                    intent.putExtra("lng",lng);
-                    intent.putExtra("address",address);
+                    if(!TextUtils.isEmpty(address)){
+                        Intent intent = new Intent(context, MapsActivity.class);
+                        Geocoder geocoder = new Geocoder(context, Locale.getDefault());
+                        List<Address> location =  geocoder.getFromLocationName(address,1);
+                        double lat = location.get(0).getLatitude();
+                        double lng = location.get(0).getLongitude();
+                        intent.putExtra("lat",lat);
+                        intent.putExtra("lng",lng);
+                        intent.putExtra("address",address);
+                        startActivity(intent);
+                    }else {
+                        toast.setText(R.string.noAddress);toast.show();
+                    }
 
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
 
-                startActivity(intent);
+
             }
         });
 
