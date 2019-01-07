@@ -26,8 +26,21 @@ public class ContactData {
     private Bitmap img_avatar ;//大頭照
     private ImageView img_favor;//是否為常用清單的圖
     private String note;//記事
-    private boolean isFavor = false;
+    private String address;//地址
 
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+
+
+
+    private boolean isFavor = false;
 
     public String getNote() {
         return note;
@@ -58,14 +71,11 @@ public class ContactData {
         img_favor.setVisibility(View.VISIBLE);
     };
 
-
     public void setImg_favor(ImageView img_favor) {
         this.img_favor = img_favor;
         img_favor.setBackgroundResource(android.R.drawable.star_on);
 
     }
-
-
 
     public int getNumber() {
         return number;
@@ -109,7 +119,6 @@ public class ContactData {
         }
 
     }
-
     public byte[] getImg_avatar() {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         if(img_avatar != null){

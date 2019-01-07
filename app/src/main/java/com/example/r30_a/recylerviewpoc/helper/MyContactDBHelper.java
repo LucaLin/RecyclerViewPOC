@@ -21,6 +21,7 @@ public class MyContactDBHelper extends SQLiteOpenHelper {
     public static final String IMG_AVATAR = "IMGAVATAR";
     public static final String FAVOR_TAG ="FAVOR_TAG";
     public static final String NOTE = "NOTE";
+    public static final String ADDRESS = "ADDRESS";
 
     //資料表參數
     private static final String createTable = "CREATE TABLE IF NOT EXISTS "
@@ -32,7 +33,8 @@ public class MyContactDBHelper extends SQLiteOpenHelper {
             +PHONE_NUMBER+" TEXT, "
             +IMG_AVATAR+" TEXT, "
             +FAVOR_TAG+" INTEGER, "
-            +NOTE+" TEXT ); ";
+            +NOTE+" TEXT, "
+            +ADDRESS+" TEXT ); ";
 
     private static MyContactDBHelper instance;
     //取得實體

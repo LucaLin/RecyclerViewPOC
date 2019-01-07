@@ -8,6 +8,8 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.location.Address;
+import android.location.Geocoder;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
@@ -23,7 +25,12 @@ import android.widget.Toast;
 
 import com.example.r30_a.recylerviewpoc.R;
 
+import com.example.r30_a.recylerviewpoc.controller.MapsActivity;
 import com.example.r30_a.recylerviewpoc.util.CommonUtil;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Locale;
 
 import static android.content.Context.MODE_PRIVATE;
 
@@ -36,9 +43,10 @@ public class DetailPageFragment extends Fragment {
     private static final String PHONE_NUMBER = "phoneNumber";
     private static final String AVATAR = "avatar_base64";
     private static final String NOTE = "note";
+    private static final String ADDRESS = "address";
 
     ImageView img_avatar;
-    TextView txvName,txvPhoneNumber,txvNote;
+    TextView txvName,txvPhoneNumber,txvNote,txv_detailAddress;
     SharedPreferences sp;
 
 
@@ -51,12 +59,14 @@ public class DetailPageFragment extends Fragment {
     private String name;
     private String phoneNumber;
     private String note;
+    private String address;
     private byte[] img_avatar_bytes;
     ImageButton ibt_toDial,ibt_toSMS;
+    ImageView btn_locate;
 
     public DetailPageFragment() {}
 
-    public static DetailPageFragment newInstance(String contact_id, String number,String name,String phoneNumber,byte[] img_avatar_bytes,String note) {
+    public static DetailPageFragment newInstance(String contact_id, String number,String name,String phoneNumber,byte[] img_avatar_bytes,String note,String address) {
         DetailPageFragment fragment = new DetailPageFragment();
         Bundle args = new Bundle();
         args.putString(CONTACT_ID,contact_id );
@@ -65,6 +75,7 @@ public class DetailPageFragment extends Fragment {
         args.putString(PHONE_NUMBER,phoneNumber);
         args.putByteArray(AVATAR,img_avatar_bytes);
         args.putString(NOTE,note);
+        args.putString(ADDRESS,address);
         fragment.setArguments(args);
         return fragment;
     }
@@ -82,6 +93,7 @@ public class DetailPageFragment extends Fragment {
            img_bitmap = BitmapFactory.decodeByteArray(img_avatar_bytes,0,img_avatar_bytes.length);
            }
            note = getArguments().getString(NOTE);
+           address = getArguments().getString(ADDRESS);
 
            context = getContext();
            toast = Toast.makeText(context,"",Toast.LENGTH_SHORT);
@@ -92,7 +104,7 @@ public class DetailPageFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(final LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_detail_page, container, false);
         txvName = (TextView)v.findViewById(R.id.txv_detailName);
@@ -101,7 +113,8 @@ public class DetailPageFragment extends Fragment {
         ibt_toDial = (ImageButton)v.findViewById(R.id.ib_toCall);
         ibt_toSMS = (ImageButton)v.findViewById(R.id.ib_toMsg);
         txvNote = (TextView)v.findViewById(R.id.txv_detailNote);
-
+        txv_detailAddress = (TextView)v.findViewById(R.id.txv_detailAddress);
+        btn_locate = (ImageView)v.findViewById(R.id.btn_locate);
         if(!TextUtils.isEmpty(note)){
             txvNote.setText(note);
         }else {
@@ -112,6 +125,12 @@ public class DetailPageFragment extends Fragment {
         txvPhoneNumber.setText(phoneNumber);
         if(img_bitmap != null){
             img_avatar.setImageBitmap(img_bitmap);
+        }
+
+        if(!TextUtils.isEmpty(address)){
+            txv_detailAddress.setText(address);
+        }else {
+            txv_detailAddress.setText(R.string.none);
         }
 
         ibt_toDial.setOnClickListener(new View.OnClickListener() {
@@ -133,6 +152,28 @@ public class DetailPageFragment extends Fragment {
                     return;
                 }
                 context.startActivity(intent_sms);
+            }
+        });
+
+        btn_locate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //GPS定位,抓地址的經緯度後傳給googlemap顯示
+                Intent intent = new Intent(context, MapsActivity.class);
+                Geocoder geocoder = new Geocoder(context, Locale.getDefault());
+                try {
+                    List<Address> location =  geocoder.getFromLocationName(address,1);
+                    double lat = location.get(0).getLatitude();
+                    double lng = location.get(0).getLongitude();
+                    intent.putExtra("lat",lat);
+                    intent.putExtra("lng",lng);
+                    intent.putExtra("address",address);
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                startActivity(intent);
             }
         });
 

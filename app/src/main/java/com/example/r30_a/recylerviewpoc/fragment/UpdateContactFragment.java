@@ -47,6 +47,7 @@ public class UpdateContactFragment extends Fragment implements View.OnClickListe
     private static final String USER_AVATAR = "avatar";
     private static final String CONTACT_ID = "contact_id";
     private static final String NOTE = "note";
+    private static final String Address = "address";
 
     //取得結果用的Request Code
     private final int CAMERA_REQUEST = 1;
@@ -55,7 +56,7 @@ public class UpdateContactFragment extends Fragment implements View.OnClickListe
 
     Uri album_uri,camera_uri;
 
-    String oldname,oldphoneNumber,contact_id,oldNote;
+    String oldname,oldphoneNumber,contact_id,oldNote,oldAddress;
     byte[] img_avatar_bytes;
     byte[] bytes;
 
@@ -80,7 +81,7 @@ public class UpdateContactFragment extends Fragment implements View.OnClickListe
     View v;
     public UpdateContactFragment() {}
 
-    public static UpdateContactFragment newInstance(String contact_id,String name, String phoneNumber, byte[] img_avatar_bytes,String note) {
+    public static UpdateContactFragment newInstance(String contact_id,String name, String phoneNumber, byte[] img_avatar_bytes,String note,String address) {
         UpdateContactFragment fragment = new UpdateContactFragment();
         Bundle args = new Bundle();
         args.putString(CONTACT_ID,contact_id);
@@ -88,6 +89,7 @@ public class UpdateContactFragment extends Fragment implements View.OnClickListe
         args.putString(USER_OLD_PHONE, phoneNumber);
         args.putByteArray(USER_AVATAR,img_avatar_bytes);
         args.putString(NOTE,note);
+        args.putString(Address,address);
 
         fragment.setArguments(args);
         return fragment;
@@ -103,6 +105,7 @@ public class UpdateContactFragment extends Fragment implements View.OnClickListe
             oldname = getArguments().getString(USER_OLD_NAME);
             oldphoneNumber = getArguments().getString(USER_OLD_PHONE);
             oldNote =getArguments().getString(NOTE);
+            oldAddress = getArguments().getString(Address);
             img_avatar_bytes = getArguments().getByteArray(USER_AVATAR);
             temp_file = new File("/sdcard/a.jpg");
             toast = Toast.makeText(context,"",Toast.LENGTH_SHORT);

@@ -11,6 +11,7 @@
     <string name="delete">刪除</string>
     <string name="ContactName">名字</string>
     <string name="ContactPhone">手機</string>
+    <string name="address">地址</string>
     <string name="none">無</string>
     <string name="dial">通話</string>
     <string name="smsto">簡訊</string>
@@ -59,6 +60,7 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_maps">Map</string>
 
 
 </resources>

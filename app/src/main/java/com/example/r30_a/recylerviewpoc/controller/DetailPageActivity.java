@@ -30,7 +30,7 @@ import com.example.r30_a.recylerviewpoc.util.CommonUtil;
 
 public class DetailPageActivity extends AppCompatActivity {
 
-    String name,number,phoneNumber,note;
+    String name,number,phoneNumber,note,address;
     long id;
 
     private DrawerLayout drawerLayout;//側邊選單
@@ -64,8 +64,9 @@ public class DetailPageActivity extends AppCompatActivity {
         phoneNumber = intent.getStringExtra("phoneNumber");
         bytes = intent.getByteArrayExtra("avatar");
         note = intent.getStringExtra("note");
+        address = intent.getStringExtra("address");
 
-        Fragment fragment = DetailPageFragment.newInstance(String.valueOf(id),number,name,phoneNumber,bytes,note);
+        Fragment fragment = DetailPageFragment.newInstance(String.valueOf(id),number,name,phoneNumber,bytes,note,address);
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.frameLayout,fragment);
         transaction.commit();
@@ -110,7 +111,7 @@ public class DetailPageActivity extends AppCompatActivity {
 
                 switch (item.getItemId()){
                     case R.id.p1_update:
-                        Fragment fragment = UpdateContactFragment.newInstance(String.valueOf(id),name,phoneNumber,bytes,note);
+                        Fragment fragment = UpdateContactFragment.newInstance(String.valueOf(id),name,phoneNumber,bytes,note,address);
                         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
                         transaction.replace(R.id.frameLayout,fragment);
                         transaction.commit();

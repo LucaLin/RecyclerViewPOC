@@ -56,7 +56,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 PermissionsUtil.hasPermission(this,Manifest.permission.WRITE_CONTACTS)&&
                 PermissionsUtil.hasPermission(this,Manifest.permission.CAMERA) &&
                 PermissionsUtil.hasPermission(this,Manifest.permission.READ_EXTERNAL_STORAGE)&&
-                PermissionsUtil.hasPermission(this,Manifest.permission.WRITE_EXTERNAL_STORAGE)){
+                PermissionsUtil.hasPermission(this,Manifest.permission.WRITE_EXTERNAL_STORAGE)&&
+                PermissionsUtil.hasPermission(this,Manifest.permission.ACCESS_FINE_LOCATION)&&
+                PermissionsUtil.hasPermission(this,Manifest.permission.ACCESS_COARSE_LOCATION)){
         }else {
             PermissionsUtil.requestPermission(this, new PermissionListener() {
                 @Override
@@ -69,7 +71,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     Manifest.permission.READ_EXTERNAL_STORAGE,
                     Manifest.permission.WRITE_EXTERNAL_STORAGE,
                     Manifest.permission.CALL_PHONE,
-                    Manifest.permission.SEND_SMS
+                    Manifest.permission.SEND_SMS,
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
 
             });
 

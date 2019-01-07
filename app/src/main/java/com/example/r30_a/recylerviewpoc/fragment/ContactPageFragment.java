@@ -4,7 +4,6 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -108,14 +107,13 @@ public class ContactPageFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         context = getContext();
-
+        resolver = context.getContentResolver();
         myContactDBHelper = MyContactDBHelper.getInstance(context);
         sp = context.getSharedPreferences("favorTags",Context.MODE_PRIVATE);
-        CommonUtil.favorIdSet = sp.getStringSet("favorTags",new HashSet<String>());
+//        CommonUtil.favorIdSet = sp.getStringSet("favorTags",new HashSet<String>());
 
-        resolver = context.getContentResolver();
         toast = Toast.makeText(context, "", Toast.LENGTH_SHORT);
-
+        //名稱分隔線
         itemDecoration = new MyDecoration(context, new MyDecoration.DecorationCallBack() {
             @Override
             public long getGroupId(int pos) {
@@ -167,7 +165,9 @@ public class ContactPageFragment extends Fragment {
                         //更新
                         case 0:
 
-                                Fragment fragment = UpdateContactFragment.newInstance(String.valueOf(data.getId()),data.getName(),data.getPhoneNum(),data.getImg_avatar(),data.getNote());
+                                Fragment fragment = UpdateContactFragment.newInstance(String.valueOf(data.getId()),data.getName(),
+                                        data.getPhoneNum(),data.getImg_avatar(),
+                                        data.getNote(),data.getAddress());
                                 FragmentTransaction transaction = getFragmentManager().beginTransaction();
                                 transaction.setCustomAnimations(R.anim.slide_right_in,R.anim.slide_left_out,R.anim.slide_left_in,R.anim.slide_right_out);
                                 transaction.replace(R.id.frameLayout,fragment);
@@ -250,37 +250,50 @@ public class ContactPageFragment extends Fragment {
             String name;
             String mobileNum;
             String note = "";//備註欄
-            Cursor note_cursor = null;
-            String contact_id="";
+            Cursor info_cursor = null;
+
             cursor = resolver.query(uri, projection, null, null, ContactsContract.Contacts.DISPLAY_NAME);
             //直接取contacts中的號碼資料區，再從號碼欄去抓對應的name跟number
             if (cursor != null) {
                 while (cursor != null && cursor.moveToNext()) {
-                    //抓取id用來判別是否有重覆資料抓取
-
-                    id =cursor.getLong(cursor.getColumnIndex(Phone.CONTACT_ID));
-                    name = cursor.getString(cursor.getColumnIndex(Phone.DISPLAY_NAME));
-                    mobileNum = cursor.getString(cursor.getColumnIndex(Phone.NUMBER));
 
 
-//                    //抓取備註欄
-                        note_cursor = resolver.query(Data.CONTENT_URI,
-                                new String[]{Data._ID, Note.NOTE},
-                                Data.CONTACT_ID + "=?" + " AND " + Data.MIMETYPE + "='" + Note.CONTENT_ITEM_TYPE + "'",
-                                new String[]{String.valueOf(id)}, null);
-                        if (note_cursor != null && note_cursor.moveToFirst()) {
-                            note = note_cursor.getString(note_cursor.getColumnIndex(Note.NOTE));
+                    id =cursor.getLong(cursor.getColumnIndex(Phone.CONTACT_ID));//id
+                    name = cursor.getString(cursor.getColumnIndex(Phone.DISPLAY_NAME));//名稱
+                    mobileNum = cursor.getString(cursor.getColumnIndex(Phone.NUMBER));//電話
 
+//                  //抓取備註欄
+                    info_cursor = resolver.query(Data.CONTENT_URI,
+                            new String[]{Data._ID, Note.NOTE},
+                            Data.CONTACT_ID + "=?" + " AND " + Data.MIMETYPE + "='" + Note.CONTENT_ITEM_TYPE + "'",
+                            new String[]{String.valueOf(id)}, null);
+                        if (info_cursor != null && info_cursor.moveToFirst()) {
+                            note = info_cursor.getString(info_cursor.getColumnIndex(Note.NOTE));
                         }
-
+                    String address="";
+                    //抓取地址
+                    info_cursor = resolver.query(ContactsContract.CommonDataKinds.StructuredPostal.CONTENT_URI,
+                            null,Phone.CONTACT_ID+" = " +id,null,null);
+                        if(info_cursor != null && info_cursor.moveToFirst()){
+                            address = info_cursor.getString(info_cursor.getColumnIndex(ContactsContract.CommonDataKinds.StructuredPostal.CITY))+
+                                        info_cursor.getString(info_cursor.getColumnIndex(ContactsContract.CommonDataKinds.StructuredPostal.STREET));
+                        }
                     if (!TextUtils.isEmpty(mobileNum) && !isCellPhoneNumber(mobileNum)) {
                         continue;
                     } else {
                         number = number+1;
-                        addContactToList(number,id,mobileNum,name, CommonUtil.get_Avatar(resolver,id), CommonUtil.favorIdSet,note);
+                        addContactToList(number,
+                                id,
+                                mobileNum,
+                                name,
+                                CommonUtil.get_Avatar(resolver,id),
+                                CommonUtil.favorIdSet,
+                                note,
+                                address);
+
                     }
                 }
-                note_cursor.close();
+                info_cursor.close();
                 cursor.close();
 
             } else {
@@ -294,7 +307,7 @@ public class ContactPageFragment extends Fragment {
     }
 
     /*新增聯絡人到手機清單*/
-    private void addContactToList(int number, long id, String phoneNumber, String name, Bitmap avatar, Set<String> favorIdSet,String note) {
+    private void addContactToList(int number, long id, String phoneNumber, String name, Bitmap avatar, Set<String> favorIdSet,String note,String address) {
 
         if (!tempId.equals(String.valueOf(id))) {
 
@@ -304,9 +317,12 @@ public class ContactPageFragment extends Fragment {
             values.put(MyContactDBHelper.PHONE_NUMBER,CommonUtil.getFormatPhone(phoneNumber));
             values.put(MyContactDBHelper.NUMBER,number);
             if(!TextUtils.isEmpty(note)){
-            values.put(MyContactDBHelper.NOTE,note);
+                values.put(MyContactDBHelper.NOTE,note);
             }
+            if(!TextUtils.isEmpty(address)){
+                values.put(MyContactDBHelper.ADDRESS,address);
 
+            }
 
             String img_avatar_base64 = "";
             if(avatar != null){
@@ -371,11 +387,11 @@ public class ContactPageFragment extends Fragment {
                 data.setPhoneNum(c.getString(c.getColumnIndex(MyContactDBHelper.PHONE_NUMBER)));
                 data.setNumber(Integer.parseInt(c.getString(c.getColumnIndex(MyContactDBHelper.NUMBER))));
                 data.setNote(c.getString(c.getColumnIndex(MyContactDBHelper.NOTE)));
+                data.setAddress(c.getString(c.getColumnIndex(MyContactDBHelper.ADDRESS)));
                 int favor_tags = c.getInt(c.getColumnIndex(MyContactDBHelper.FAVOR_TAG));
                 if(favor_tags == 1){
                     data.setImg_favor(new ImageView(context));
                 }
-
 
                 String avatar_base64 = c.getString(c.getColumnIndex(MyContactDBHelper.IMG_AVATAR));
                 if(!TextUtils.isEmpty(avatar_base64)){
