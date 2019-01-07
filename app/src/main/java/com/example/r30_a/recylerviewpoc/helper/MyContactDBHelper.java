@@ -14,14 +14,15 @@ public class MyContactDBHelper extends SQLiteOpenHelper {
     private static final int DB_VERSION=1;//資料庫版本
     public static final String TABLE_NAME="CONTACT_LIST";//資料表名稱
     public static final String id = "_id";
-    public static final String CONTACT_ID = "ID";
-    public static final String NUMBER = "NUMBER";
-    public static final String NAME = "NAME";
-    public static final String PHONE_NUMBER = "PHONENUMBER";
-    public static final String IMG_AVATAR = "IMGAVATAR";
-    public static final String FAVOR_TAG ="FAVOR_TAG";
-    public static final String NOTE = "NOTE";
-    public static final String ADDRESS = "ADDRESS";
+    public static final String CONTACT_ID = "ID";//聯絡人id編號
+    public static final String NUMBER = "NUMBER";//排序號
+    public static final String NAME = "NAME";//名字
+    public static final String PHONE_NUMBER = "PHONENUMBER";//手機號碼
+    public static final String IMG_AVATAR = "IMGAVATAR";//大頭照
+    public static final String FAVOR_TAG ="FAVOR_TAG";//最愛清單
+    public static final String NOTE = "NOTE";//備註
+    public static final String ADDRESS = "ADDRESS";//地址
+    public static final String EMAIL = "EMAIL";//電子郵件
 
     //資料表參數
     private static final String createTable = "CREATE TABLE IF NOT EXISTS "
@@ -34,7 +35,8 @@ public class MyContactDBHelper extends SQLiteOpenHelper {
             +IMG_AVATAR+" TEXT, "
             +FAVOR_TAG+" INTEGER, "
             +NOTE+" TEXT, "
-            +ADDRESS+" TEXT ); ";
+            +ADDRESS+" TEXT, "
+            +EMAIL+" TEXT ); ";
 
     private static MyContactDBHelper instance;
     //取得實體

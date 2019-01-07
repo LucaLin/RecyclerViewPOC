@@ -105,6 +105,7 @@ public class MyAdapter extends SwipeMenuAdapter<MyAdapter.MainViewHolder> implem
                 intent.putExtra("address",list.get(position).getAddress());
                 //bytes[] to base64
                 intent.putExtra("avatar",list.get(position).getImg_avatar());
+                intent.putExtra("email",list.get(position).getEmail());
                 context.startActivity(intent);
             }
         });

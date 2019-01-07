@@ -27,6 +27,17 @@ public class ContactData {
     private ImageView img_favor;//是否為常用清單的圖
     private String note;//記事
     private String address;//地址
+    private String email;//Email
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+
 
 
     public String getAddress() {

@@ -1,5 +1,7 @@
 package com.example.r30_a.recylerviewpoc.fragment;
 
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
@@ -114,10 +116,19 @@ public class AddContactFragment extends Fragment {
                 if(TextUtils.isEmpty(name) || !isCellPhoneNumber(phoneNum)){
                     toast.setText(R.string.wrongInput);
                     toast.show();
+
+
+
                 }else {
                     insertContact(name, phoneNum,note,city,street);
                     toast.setText(R.string.addSuccess);
                     toast.show();
+                    Fragment fragment = new ContactPageFragment();
+                    android.support.v4.app.FragmentManager manager = getFragmentManager();
+                    android.support.v4.app.FragmentTransaction transaction = manager.beginTransaction();
+                    transaction.replace(R.id.frameLayout,fragment);
+                    transaction.setCustomAnimations(R.anim.slide_right_in,R.anim.slide_left_out,R.anim.slide_left_in,R.anim.slide_right_out);
+                    transaction.commit();
 
                 }
             }
@@ -294,7 +305,8 @@ public class AddContactFragment extends Fragment {
                     resolver.insert(ContactsContract.Data.CONTENT_URI,values);
                     }
             }
-            //加入DB
+
+            //----------加入DB----------//
             values = new ContentValues();
             values.put(MyContactDBHelper.CONTACT_ID,contactId);
             values.put(MyContactDBHelper.NAME,name);

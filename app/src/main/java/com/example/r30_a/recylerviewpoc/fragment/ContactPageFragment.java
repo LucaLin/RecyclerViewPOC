@@ -167,7 +167,7 @@ public class ContactPageFragment extends Fragment {
 
                                 Fragment fragment = UpdateContactFragment.newInstance(String.valueOf(data.getId()),data.getName(),
                                         data.getPhoneNum(),data.getImg_avatar(),
-                                        data.getNote(),data.getAddress());
+                                        data.getNote(),data.getAddress(),data.getEmail());
                                 FragmentTransaction transaction = getFragmentManager().beginTransaction();
                                 transaction.setCustomAnimations(R.anim.slide_right_in,R.anim.slide_left_out,R.anim.slide_left_in,R.anim.slide_right_out);
                                 transaction.replace(R.id.frameLayout,fragment);
@@ -250,7 +250,8 @@ public class ContactPageFragment extends Fragment {
             String name;
             String mobileNum;
             String note = "";//備註欄
-            Cursor info_cursor = null;
+
+
 
             cursor = resolver.query(uri, projection, null, null, ContactsContract.Contacts.DISPLAY_NAME);
             //直接取contacts中的號碼資料區，再從號碼欄去抓對應的name跟number
@@ -263,7 +264,7 @@ public class ContactPageFragment extends Fragment {
                     mobileNum = cursor.getString(cursor.getColumnIndex(Phone.NUMBER));//電話
 
 //                  //抓取備註欄
-                    info_cursor = resolver.query(Data.CONTENT_URI,
+                    Cursor info_cursor = resolver.query(Data.CONTENT_URI,
                             new String[]{Data._ID, Note.NOTE},
                             Data.CONTACT_ID + "=?" + " AND " + Data.MIMETYPE + "='" + Note.CONTENT_ITEM_TYPE + "'",
                             new String[]{String.valueOf(id)}, null);
@@ -278,8 +279,17 @@ public class ContactPageFragment extends Fragment {
                             address = info_cursor.getString(info_cursor.getColumnIndex(ContactsContract.CommonDataKinds.StructuredPostal.CITY))+
                                         info_cursor.getString(info_cursor.getColumnIndex(ContactsContract.CommonDataKinds.StructuredPostal.STREET));
                         }
+                    info_cursor.close();
 
+                    String email = "";
 
+                    //抓取email資料
+                    Cursor email_cursor = resolver.query(ContactsContract.CommonDataKinds.Email.CONTENT_URI,
+                            null,Phone.CONTACT_ID+" = "+id,null,null);
+                    if(email_cursor != null && email_cursor.moveToFirst()){
+                        email = email_cursor.getString(email_cursor.getColumnIndex(ContactsContract.CommonDataKinds.Email.DATA));
+                    }
+                    email_cursor.close();
 
 
                     if (!TextUtils.isEmpty(mobileNum) && !isCellPhoneNumber(mobileNum)) {
@@ -291,13 +301,13 @@ public class ContactPageFragment extends Fragment {
                                 mobileNum,
                                 name,
                                 CommonUtil.get_Avatar(resolver,id),
-                                CommonUtil.favorIdSet,
                                 note,
-                                address);
+                                address,
+                                email);
 
                     }
                 }
-                info_cursor.close();
+
                 cursor.close();
 
             } else {
@@ -311,7 +321,7 @@ public class ContactPageFragment extends Fragment {
     }
 
     /*新增聯絡人到手機清單*/
-    private void addContactToList(int number, long id, String phoneNumber, String name, Bitmap avatar, Set<String> favorIdSet,String note,String address) {
+    private void addContactToList(int number, long id, String phoneNumber, String name, Bitmap avatar,String note,String address,String email) {
 
         if (!tempId.equals(String.valueOf(id))) {
 
@@ -320,6 +330,7 @@ public class ContactPageFragment extends Fragment {
             values.put(MyContactDBHelper.NAME,name);
             values.put(MyContactDBHelper.PHONE_NUMBER,CommonUtil.getFormatPhone(phoneNumber));
             values.put(MyContactDBHelper.NUMBER,number);
+            values.put(MyContactDBHelper.EMAIL,email);
             if(!TextUtils.isEmpty(note)){
                 values.put(MyContactDBHelper.NOTE,note);
             }
@@ -392,6 +403,7 @@ public class ContactPageFragment extends Fragment {
                 data.setNumber(Integer.parseInt(c.getString(c.getColumnIndex(MyContactDBHelper.NUMBER))));
                 data.setNote(c.getString(c.getColumnIndex(MyContactDBHelper.NOTE)));
                 data.setAddress(c.getString(c.getColumnIndex(MyContactDBHelper.ADDRESS)));
+                data.setEmail(c.getString(c.getColumnIndex(MyContactDBHelper.EMAIL)));
                 int favor_tags = c.getInt(c.getColumnIndex(MyContactDBHelper.FAVOR_TAG));
                 if(favor_tags == 1){
                     data.setImg_favor(new ImageView(context));

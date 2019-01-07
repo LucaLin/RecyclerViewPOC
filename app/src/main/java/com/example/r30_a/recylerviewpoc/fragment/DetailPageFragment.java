@@ -12,6 +12,7 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
@@ -44,9 +45,15 @@ public class DetailPageFragment extends Fragment {
     private static final String AVATAR = "avatar_base64";
     private static final String NOTE = "note";
     private static final String ADDRESS = "address";
+    private static final String EMAIL = "email";
 
     ImageView img_avatar;
-    TextView txvName,txvPhoneNumber,txvNote,txv_detailAddress;
+    TextView txvName;
+    TextView txvPhoneNumber;
+    TextView txvNote;
+    TextView txv_detailAddress;
+    TextView txv_detailEmail;
+
     SharedPreferences sp;
 
 
@@ -60,13 +67,14 @@ public class DetailPageFragment extends Fragment {
     private String phoneNumber;
     private String note;
     private String address;
+    private String email;
     private byte[] img_avatar_bytes;
     ImageButton ibt_toDial,ibt_toSMS;
     ImageView btn_locate;
 
     public DetailPageFragment() {}
 
-    public static DetailPageFragment newInstance(String contact_id, String number,String name,String phoneNumber,byte[] img_avatar_bytes,String note,String address) {
+    public static DetailPageFragment newInstance(String contact_id, String number,String name,String phoneNumber,byte[] img_avatar_bytes,String note,String address,String email) {
         DetailPageFragment fragment = new DetailPageFragment();
         Bundle args = new Bundle();
         args.putString(CONTACT_ID,contact_id );
@@ -76,6 +84,7 @@ public class DetailPageFragment extends Fragment {
         args.putByteArray(AVATAR,img_avatar_bytes);
         args.putString(NOTE,note);
         args.putString(ADDRESS,address);
+        args.putString(EMAIL,email);
         fragment.setArguments(args);
         return fragment;
     }
@@ -94,6 +103,7 @@ public class DetailPageFragment extends Fragment {
            }
            note = getArguments().getString(NOTE);
            address = getArguments().getString(ADDRESS);
+           email = getArguments().getString(EMAIL);
 
            context = getContext();
            toast = Toast.makeText(context,"",Toast.LENGTH_SHORT);
@@ -114,11 +124,15 @@ public class DetailPageFragment extends Fragment {
         ibt_toSMS = (ImageButton)v.findViewById(R.id.ib_toMsg);
         txvNote = (TextView)v.findViewById(R.id.txv_detailNote);
         txv_detailAddress = (TextView)v.findViewById(R.id.txv_detailAddress);
+        txv_detailEmail = (TextView)v.findViewById(R.id.txv_detailEmail);
         btn_locate = (ImageView)v.findViewById(R.id.btn_locate);
         if(!TextUtils.isEmpty(note)){
             txvNote.setText(note);
+        }
+        if(!TextUtils.isEmpty(address)){
+            txv_detailAddress.setText(address);
         }else {
-            txvNote.setText(R.string.none);
+            btn_locate.setVisibility(View.INVISIBLE);
         }
 
         txvName.setText(name);
@@ -126,12 +140,13 @@ public class DetailPageFragment extends Fragment {
         if(img_bitmap != null){
             img_avatar.setImageBitmap(img_bitmap);
         }
-
-        if(!TextUtils.isEmpty(address)){
-            txv_detailAddress.setText(address);
-        }else {
-            txv_detailAddress.setText(R.string.none);
+        if(!TextUtils.isEmpty(email)){
+            txv_detailEmail.setText(email);
         }
+
+
+
+
 
         ibt_toDial.setOnClickListener(new View.OnClickListener() {
             @Override
