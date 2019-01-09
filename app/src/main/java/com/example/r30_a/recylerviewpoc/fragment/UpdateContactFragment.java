@@ -1,5 +1,6 @@
 package com.example.r30_a.recylerviewpoc.fragment;
 
+import android.content.ContentProviderOperation;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
@@ -38,6 +39,7 @@ import com.example.r30_a.recylerviewpoc.model.EmailData;
 import com.example.r30_a.recylerviewpoc.util.CommonUtil;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.util.ArrayList;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -246,23 +248,21 @@ public class UpdateContactFragment extends Fragment implements View.OnClickListe
                                                         ContactsContract.Data.CONTACT_ID+"=?"+" AND " + ContactsContract.Data.MIMETYPE + "='" + ContactsContract.CommonDataKinds.Note.CONTENT_ITEM_TYPE + "'"
                                                         ,new String[]{contact_id});
                                             }
-//                                            //更新email
-                                            values = new ContentValues();
-                                            values.put(ContactsContract.CommonDataKinds.Email.DATA,updateEmail_home);
-                                            values.put(ContactsContract.Data._ID,contact_id);
-//                                            values.put(ContactsContract.CommonDataKinds.Email.TYPE,1);
-//                                            resolver.update(ContactsContract.Contacts.CONTENT_URI,values,
+                                            //更新email
+                                            updateEmail(contact_id,updateEmail_home,"1");
+                                            updateEmail(contact_id,updateEmail_company,"2");
+                                            updateEmail(contact_id,updateEmail_other,"3");
+                                            updateEmail(contact_id,updateEmail_custom,"0");
+//                                            values = new ContentValues();
+//                                            values.put(ContactsContract.CommonDataKinds.Email.DATA,updateEmail_home);
+//                                            values.put(ContactsContract.Data._ID,contact_id);
+////                                            values.put(ContactsContract.CommonDataKinds.Email.TYPE,1);
+//                                            resolver.update(ContactsContract.Data.CONTENT_URI,values,
 //                                                    ContactsContract.CommonDataKinds.Email.CONTACT_ID+"=?"+" AND "
 //                                                            + ContactsContract.CommonDataKinds.Email.MIMETYPE + "=?"+" AND "
 //                                                    + ContactsContract.CommonDataKinds.Email.TYPE +"=?",
 //                                                     new String[]{contact_id,ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE, "1"});
-//                                            if(!updateEmail.equals(oldEmail)){
-//                                                values = new ContentValues();
-//                                                values.put(ContactsContract.CommonDataKinds.Email.DATA,updateEmail);
-//                                                values.put(ContactsContract.Data._ID,contact_id);
-////                                                values.put(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Email.CONTENT_TYPE);
-//                                                //resolver
-//                                            }
+//
                                         }catch (Exception e){
                                             e.getMessage();
                                         }
@@ -272,6 +272,9 @@ public class UpdateContactFragment extends Fragment implements View.OnClickListe
                                     values.put(MyContactDBHelper.PHONE_NUMBER,updatePhone);
                                     values.put(MyContactDBHelper.NOTE,updateNote);
                                     values.put(MyContactDBHelper.EMAIL_DATA_HOME,updateEmail_home);
+                                    values.put(MyContactDBHelper.EMAIL_DATA_COM,updateEmail_company);
+                                    values.put(MyContactDBHelper.EMAIL_DATA_OTHER,updateEmail_other);
+                                    values.put(MyContactDBHelper.EMAIL_DATA_CUSTOM,updateEmail_custom);
                                     //values.put(MyContactDBHelper.EMAIL,updateEmail);
                                     if(bytes != null && bytes.length>0){
                                         String img_base64 = Base64.encodeToString(bytes,Base64.DEFAULT);
@@ -313,6 +316,21 @@ public class UpdateContactFragment extends Fragment implements View.OnClickListe
         }else if((v.getId() ==  R.id.userPhoto) || (v.getId() ==R.id.pickUserPhoto)){
             showPopupMenu(v);
         }
+
+    }
+
+    private void updateEmail(String contact_id, String updateEmail_home, String type) {
+        ContentValues v = new ContentValues();
+
+        v.put(ContactsContract.CommonDataKinds.Email.DATA,updateEmail_home);
+        v.put(ContactsContract.Data._ID,contact_id);
+        resolver.update(ContactsContract.Data.CONTENT_URI,
+                        v,
+                ContactsContract.CommonDataKinds.Email.CONTACT_ID+"=?"+" AND "
+                        + ContactsContract.CommonDataKinds.Email.MIMETYPE + "=?"+" AND "
+                        + ContactsContract.CommonDataKinds.Email.TYPE +"=?",
+                new String[]{contact_id,ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE, type});
+//
 
     }
 
