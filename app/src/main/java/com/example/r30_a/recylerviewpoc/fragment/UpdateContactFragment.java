@@ -34,6 +34,7 @@ import android.widget.Toast;
 import com.example.r30_a.recylerviewpoc.R;
 
 import com.example.r30_a.recylerviewpoc.helper.MyContactDBHelper;
+import com.example.r30_a.recylerviewpoc.model.EmailData;
 import com.example.r30_a.recylerviewpoc.util.CommonUtil;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -72,7 +73,7 @@ public class UpdateContactFragment extends Fragment implements View.OnClickListe
     Button btnUpdate;
     EditText edtName, edtPhone,edtNote,edtStreet,
             edtEmail_home,edtEmail_company,edtEmail_other,edtEmail_custom;
-    String updateName,updatePhone,updateNote,updateEmail;
+    String updateName,updatePhone,updateNote,updateEmail_home,updateEmail_company,updateEmail_other,updateEmail_custom;
 
     Toast toast;
     String dataId;
@@ -188,6 +189,11 @@ public class UpdateContactFragment extends Fragment implements View.OnClickListe
             updateName = edtName.getText().toString();
             updatePhone = edtPhone.getText().toString();
             updateNote = edtNote.getText().toString();
+            updateEmail_home = edtEmail_home.getText().toString();
+            updateEmail_company = edtEmail_company.getText().toString();
+            updateEmail_other = edtEmail_other.getText().toString();
+            updateEmail_custom = edtEmail_custom.getText().toString();
+
             //updateEmail = edtEmail.getText().toString();
 
             if (updateName.equals(oldname) && updatePhone.equals(oldphoneNumber)
@@ -241,6 +247,15 @@ public class UpdateContactFragment extends Fragment implements View.OnClickListe
                                                         ,new String[]{contact_id});
                                             }
 //                                            //更新email
+                                            values = new ContentValues();
+                                            values.put(ContactsContract.CommonDataKinds.Email.DATA,updateEmail_home);
+                                            values.put(ContactsContract.Data._ID,contact_id);
+//                                            values.put(ContactsContract.CommonDataKinds.Email.TYPE,1);
+//                                            resolver.update(ContactsContract.Contacts.CONTENT_URI,values,
+//                                                    ContactsContract.CommonDataKinds.Email.CONTACT_ID+"=?"+" AND "
+//                                                            + ContactsContract.CommonDataKinds.Email.MIMETYPE + "=?"+" AND "
+//                                                    + ContactsContract.CommonDataKinds.Email.TYPE +"=?",
+//                                                     new String[]{contact_id,ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE, "1"});
 //                                            if(!updateEmail.equals(oldEmail)){
 //                                                values = new ContentValues();
 //                                                values.put(ContactsContract.CommonDataKinds.Email.DATA,updateEmail);
@@ -256,6 +271,7 @@ public class UpdateContactFragment extends Fragment implements View.OnClickListe
                                     values.put(MyContactDBHelper.NAME,updateName);
                                     values.put(MyContactDBHelper.PHONE_NUMBER,updatePhone);
                                     values.put(MyContactDBHelper.NOTE,updateNote);
+                                    values.put(MyContactDBHelper.EMAIL_DATA_HOME,updateEmail_home);
                                     //values.put(MyContactDBHelper.EMAIL,updateEmail);
                                     if(bytes != null && bytes.length>0){
                                         String img_base64 = Base64.encodeToString(bytes,Base64.DEFAULT);

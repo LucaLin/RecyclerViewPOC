@@ -61,6 +61,8 @@
     <string name="note">備忘錄或介紹詞</string>
     <string name="attention">"注意"</string>
     <string name="deleteOrNot">此功能會永久刪除此聯絡人，確定要繼續嗎？</string>
+    <string name="chooseMail">請選擇要寄送的信箱</string>
+    <string name="noEmailData">您並無信箱資料喔！</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

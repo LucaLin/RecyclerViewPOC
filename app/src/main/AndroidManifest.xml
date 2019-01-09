@@ -47,7 +47,8 @@
 
         <activity android:name=".controller.SettingPageActivity" />
         <activity android:name=".controller.WelcomeActivity" />
-        <activity android:name=".controller.DetailPageActivity" />
+        <activity android:name=".controller.DetailPageActivity"
+            android:windowSoftInputMode="adjustPan"/>
         <activity android:name=".controller.ContactPageActivity"
             android:windowSoftInputMode="adjustPan"/>
         <!--

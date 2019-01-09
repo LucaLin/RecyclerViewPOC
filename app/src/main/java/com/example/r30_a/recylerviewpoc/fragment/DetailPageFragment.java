@@ -2,7 +2,9 @@ package com.example.r30_a.recylerviewpoc.fragment;
 
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -30,6 +32,7 @@ import com.example.r30_a.recylerviewpoc.controller.MapsActivity;
 import com.example.r30_a.recylerviewpoc.util.CommonUtil;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -69,7 +72,7 @@ public class DetailPageFragment extends Fragment {
     private String address;
     private String email_home,email_company,email_other,email_custom;
     private byte[] img_avatar_bytes;
-    ImageButton ibt_toDial,ibt_toSMS;
+    ImageButton ibt_toDial,ibt_toSMS,ibt_toEmail;
     ImageView btn_locate;
 
     public DetailPageFragment() {}
@@ -132,6 +135,7 @@ public class DetailPageFragment extends Fragment {
         img_avatar = (ImageView)v.findViewById(R.id.detail_img_avatar);
         ibt_toDial = (ImageButton)v.findViewById(R.id.ib_toCall);
         ibt_toSMS = (ImageButton)v.findViewById(R.id.ib_toMsg);
+        ibt_toEmail = (ImageButton)v.findViewById(R.id.ib_toEmail);
         txvNote = (TextView)v.findViewById(R.id.txv_detailNote);
         txv_detailAddress = (TextView)v.findViewById(R.id.txv_detailAddress);
         txv_email_home = (TextView)v.findViewById(R.id.txv_email_home);
@@ -179,6 +183,34 @@ public class DetailPageFragment extends Fragment {
                 context.startActivity(intent_sms);
             }
         });
+        //----------信箱----------//
+        ibt_toEmail.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final List<String> emailList = new ArrayList<>();
+                addMailToList(emailList,email_home);
+                addMailToList(emailList,email_company);
+                addMailToList(emailList,email_other);
+                addMailToList(emailList,email_custom);
+                if(emailList.size()>0) {
+                    new AlertDialog.Builder(context).setItems(emailList.toArray(new String[emailList.size()]), new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int pos) {
+                            Intent intent = new Intent(Intent.ACTION_SEND);
+                            intent.setData(Uri.parse("mailto:"));
+                            intent.setType("text/plant");
+                            intent.putExtra(Intent.EXTRA_EMAIL, emailList.get(pos));
+                            startActivity(intent);
+                        }
+                    }).setTitle(R.string.chooseMail)
+                            .show();
+
+
+                }else {
+                    toast.setText(R.string.noEmailData);toast.show();
+                }
+            }
+        });
         //----------定位----------//
         btn_locate.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -208,6 +240,13 @@ public class DetailPageFragment extends Fragment {
         });
 
         return v;
+    }
+
+    private void addMailToList(List<String> emailList, String email) {
+        if(!TextUtils.isEmpty(email)){
+            emailList.add(email);
+        }
+
     }
 
     private void setText(TextView txv,String data) {
