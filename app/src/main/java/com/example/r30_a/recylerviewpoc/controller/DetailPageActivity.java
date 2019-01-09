@@ -35,7 +35,9 @@ public class DetailPageActivity extends AppCompatActivity {
     String phoneNumber;
     String note;
     String address;
-    String email;
+    String city;
+    String street;
+    String email_home,email_company,email_other,email_custom;
     long id;
 
     private DrawerLayout drawerLayout;//側邊選單
@@ -69,10 +71,15 @@ public class DetailPageActivity extends AppCompatActivity {
         phoneNumber = intent.getStringExtra("phoneNumber");
         bytes = intent.getByteArrayExtra("avatar");
         note = intent.getStringExtra("note");
-        address = intent.getStringExtra("address");
-        email = intent.getStringExtra("email");
+        city = intent.getStringExtra("city");
+        street = intent.getStringExtra("street");
+        email_home = intent.getStringExtra("email_home");
+        email_company = intent.getStringExtra("email_company");
+        email_other = intent.getStringExtra("email_other");
+        email_custom = intent.getStringExtra("email_custom");
 
-        Fragment fragment = DetailPageFragment.newInstance(String.valueOf(id),number,name,phoneNumber,bytes,note,address,email);
+        Fragment fragment = DetailPageFragment.newInstance(String.valueOf(id),number,name,phoneNumber,bytes,note,city,street,
+                                                            email_home,email_company,email_other,email_custom);
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.frameLayout,fragment);
         transaction.commit();
@@ -117,7 +124,8 @@ public class DetailPageActivity extends AppCompatActivity {
 
                 switch (item.getItemId()){
                     case R.id.p1_update:
-                        Fragment fragment = UpdateContactFragment.newInstance(String.valueOf(id),name,phoneNumber,bytes,note,address,email);
+                        Fragment fragment = UpdateContactFragment.newInstance(String.valueOf(id),name,phoneNumber,bytes,note,city,street,
+                                                                                email_home,email_company,email_other,email_custom);
                         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
                         transaction.replace(R.id.frameLayout,fragment);
                         transaction.commit();

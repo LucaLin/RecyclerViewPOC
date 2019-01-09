@@ -312,7 +312,8 @@ public class AddContactFragment extends Fragment {
             values.put(MyContactDBHelper.NAME,name);
             values.put(MyContactDBHelper.PHONE_NUMBER,phoneNum);
             values.put(MyContactDBHelper.NOTE,note);
-            values.put(MyContactDBHelper.ADDRESS,city+street);
+            values.put(MyContactDBHelper.CITY,city);
+            values.put(MyContactDBHelper.STREET,street);
             if(img_avatar_base64 != null && img_avatar_base64.length()>0){
                 values.put(MyContactDBHelper.IMG_AVATAR,img_avatar_base64);
             }

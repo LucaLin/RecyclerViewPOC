@@ -47,8 +47,12 @@ public class UpdateContactFragment extends Fragment implements View.OnClickListe
     private static final String USER_AVATAR = "avatar";
     private static final String CONTACT_ID = "contact_id";
     private static final String NOTE = "note";
-    private static final String Address = "address";
-    private static final String EMAIL = "email";
+    private static final String CITY = "city";
+    private static final String STREET = "street";
+    private static final String EMAIL_HOME = "email_home";
+    private static final String EMAIL_COM = "email_com";
+    private static final String EMAIL_OTHER = "email_other";
+    private static final String EMAIL_CUSTOM = "email_custom";
 
     //取得結果用的Request Code
     private final int CAMERA_REQUEST = 1;
@@ -57,13 +61,17 @@ public class UpdateContactFragment extends Fragment implements View.OnClickListe
 
     Uri album_uri,camera_uri;
 
-    String oldname,oldphoneNumber,contact_id,oldNote,oldAddress,oldEmail;
+    String oldname,oldphoneNumber,contact_id,
+            oldNote,oldCity,oldStreet,
+            oldEmail_home,oldEmail_company,
+            oldEmail_other,oldEmail_custom;
     byte[] img_avatar_bytes;
     byte[] bytes;
 
 //    TextView txvDataName, txvDataPhone,txvDataNote,txvDataEmail;
     Button btnUpdate;
-    EditText edtName, edtPhone,edtNote,edtEmail;
+    EditText edtName, edtPhone,edtNote,edtStreet,
+            edtEmail_home,edtEmail_company,edtEmail_other,edtEmail_custom;
     String updateName,updatePhone,updateNote,updateEmail;
 
     Toast toast;
@@ -82,7 +90,11 @@ public class UpdateContactFragment extends Fragment implements View.OnClickListe
     View v;
     public UpdateContactFragment() {}
 
-    public static UpdateContactFragment newInstance(String contact_id,String name, String phoneNumber, byte[] img_avatar_bytes,String note,String address,String email) {
+    public static UpdateContactFragment newInstance(String contact_id,String name,
+                                                    String phoneNumber, byte[] img_avatar_bytes,
+                                                    String note,String city,String street,
+                                                    String email_home,String email_company,
+                                                    String email_other,String email_custom) {
         UpdateContactFragment fragment = new UpdateContactFragment();
         Bundle args = new Bundle();
         args.putString(CONTACT_ID,contact_id);
@@ -90,8 +102,13 @@ public class UpdateContactFragment extends Fragment implements View.OnClickListe
         args.putString(USER_OLD_PHONE, phoneNumber);
         args.putByteArray(USER_AVATAR,img_avatar_bytes);
         args.putString(NOTE,note);
-        args.putString(Address,address);
-        args.putString(EMAIL,email);
+        args.putString(CITY,city);
+        args.putString(STREET,street);
+        args.putString(EMAIL_HOME,email_home);
+        args.putString(EMAIL_COM,email_company);
+        args.putString(EMAIL_OTHER,email_other);
+        args.putString(EMAIL_CUSTOM,email_custom);
+
 
         fragment.setArguments(args);
         return fragment;
@@ -107,8 +124,15 @@ public class UpdateContactFragment extends Fragment implements View.OnClickListe
             oldname = getArguments().getString(USER_OLD_NAME);
             oldphoneNumber = getArguments().getString(USER_OLD_PHONE);
             oldNote =getArguments().getString(NOTE);
-            oldAddress = getArguments().getString(Address);
-            oldEmail = getArguments().getString(EMAIL);
+
+            oldCity = getArguments().getString(CITY);
+            oldStreet = getArguments().getString(STREET);
+            oldEmail_home = getArguments().getString(EMAIL_HOME);
+            oldEmail_company = getArguments().getString(EMAIL_COM);
+            oldEmail_other = getArguments().getString(EMAIL_OTHER);
+            oldEmail_custom = getArguments().getString(EMAIL_CUSTOM);
+
+
             img_avatar_bytes = getArguments().getByteArray(USER_AVATAR);
             temp_file = new File("/sdcard/a.jpg");
             toast = Toast.makeText(context,"",Toast.LENGTH_SHORT);
@@ -138,9 +162,13 @@ public class UpdateContactFragment extends Fragment implements View.OnClickListe
         edtName = (EditText)v.findViewById(R.id.edtDataName);
         edtPhone = (EditText)v.findViewById(R.id.edtDataPhone);
         edtNote = (EditText)v.findViewById(R.id.edtDataNote);
-        edtEmail = (EditText)v.findViewById(R.id.edtDataEmail);
+        edtStreet = (EditText)v.findViewById(R.id.edtDataStreet);
+        edtEmail_home = (EditText)v.findViewById(R.id.edtEmail_home);
+        edtEmail_company = (EditText)v.findViewById(R.id.edtEmail_company);
+        edtEmail_other = (EditText)v.findViewById(R.id.edtEmail_other);
+        edtEmail_custom = (EditText)v.findViewById(R.id.edtEmail_custom);
 
-        setOldinfo(oldname,oldphoneNumber,oldNote,oldEmail);
+        setOldinfo(oldname,oldphoneNumber,oldNote,oldEmail_home,oldEmail_company,oldEmail_other,oldEmail_custom,oldCity,oldStreet);
 
         if(img_avatar_bytes != null && img_avatar_bytes.length>0){
             old_avatar = BitmapFactory.decodeByteArray(img_avatar_bytes,0,img_avatar_bytes.length);
@@ -160,7 +188,7 @@ public class UpdateContactFragment extends Fragment implements View.OnClickListe
             updateName = edtName.getText().toString();
             updatePhone = edtPhone.getText().toString();
             updateNote = edtNote.getText().toString();
-            updateEmail = edtEmail.getText().toString();
+            //updateEmail = edtEmail.getText().toString();
 
             if (updateName.equals(oldname) && updatePhone.equals(oldphoneNumber)
                     && old_avatar == update_avatar) {
@@ -212,15 +240,14 @@ public class UpdateContactFragment extends Fragment implements View.OnClickListe
                                                         ContactsContract.Data.CONTACT_ID+"=?"+" AND " + ContactsContract.Data.MIMETYPE + "='" + ContactsContract.CommonDataKinds.Note.CONTENT_ITEM_TYPE + "'"
                                                         ,new String[]{contact_id});
                                             }
-                                            //更新email
-                                            if(!updateEmail.equals(oldEmail)){
-                                                values = new ContentValues();
-                                                values.put(ContactsContract.CommonDataKinds.Email.DATA,updateEmail);
-                                                values.put(ContactsContract.Data._ID,contact_id);
-                                                values.put(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE);
-                                                resolver.update(ContactsContract.CommonDataKinds.Email.CONTENT_URI,values,
-                                                        ContactsContract.Data.CONTACT_ID+" =?",new String[]{contact_id});
-                                            }
+//                                            //更新email
+//                                            if(!updateEmail.equals(oldEmail)){
+//                                                values = new ContentValues();
+//                                                values.put(ContactsContract.CommonDataKinds.Email.DATA,updateEmail);
+//                                                values.put(ContactsContract.Data._ID,contact_id);
+////                                                values.put(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Email.CONTENT_TYPE);
+//                                                //resolver
+//                                            }
                                         }catch (Exception e){
                                             e.getMessage();
                                         }
@@ -229,7 +256,7 @@ public class UpdateContactFragment extends Fragment implements View.OnClickListe
                                     values.put(MyContactDBHelper.NAME,updateName);
                                     values.put(MyContactDBHelper.PHONE_NUMBER,updatePhone);
                                     values.put(MyContactDBHelper.NOTE,updateNote);
-                                    values.put(MyContactDBHelper.EMAIL,updateEmail);
+                                    //values.put(MyContactDBHelper.EMAIL,updateEmail);
                                     if(bytes != null && bytes.length>0){
                                         String img_base64 = Base64.encodeToString(bytes,Base64.DEFAULT);
                                         values.put(MyContactDBHelper.IMG_AVATAR,img_base64);
@@ -273,7 +300,9 @@ public class UpdateContactFragment extends Fragment implements View.OnClickListe
 
     }
 
-    private void setOldinfo(String name, String phone, String note,String email) {
+    private void setOldinfo(String name, String phone, String note,
+                            String email_home,String email_company,String email_other,String email_custom,
+                            String city,String street) {
 
 //        txvDataName.setText(name);
 //        txvDataPhone.setText(phone);
@@ -283,7 +312,12 @@ public class UpdateContactFragment extends Fragment implements View.OnClickListe
         edtName.setText(name);
         edtPhone.setText(phone);
         edtNote.setText(note);
-        edtEmail.setText(email);
+        edtStreet.setText(city+street);
+
+        edtEmail_home.setText(email_home);
+        edtEmail_company.setText(email_company);
+        edtEmail_other.setText(email_other);
+        edtEmail_custom.setText(email_custom);
     }
 
     private void showPopupMenu(View v) {

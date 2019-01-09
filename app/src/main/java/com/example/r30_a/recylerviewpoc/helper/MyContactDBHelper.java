@@ -21,8 +21,19 @@ public class MyContactDBHelper extends SQLiteOpenHelper {
     public static final String IMG_AVATAR = "IMGAVATAR";//大頭照
     public static final String FAVOR_TAG ="FAVOR_TAG";//最愛清單
     public static final String NOTE = "NOTE";//備註
-    public static final String ADDRESS = "ADDRESS";//地址
-    public static final String EMAIL = "EMAIL";//電子郵件
+    //---------地址----------//
+    public static final String CITY = "CITY";//城市
+    public static final String STREET = "STREET";//街道名稱
+    //--------EMAIL---------//
+
+//    public static final String EMAIL_TYPE_HOME = "EMAIL_TYPE_HOME";
+//    public static final String EMAIL_TYPE_COM = "EMAIL_TYPE_COM";
+//    public static final String EMAIL_TYPE_OTHER = "EMAIL_TYPE_OTHER";
+//    public static final String EMAIL_TYPE_CUSTOM = "EMAIL_TYPE_CUSTOM";
+    public static final String EMAIL_DATA_HOME = "EMAIL_DATA_HOME";
+    public static final String EMAIL_DATA_COM = "EMAIL_DATA_COM";
+    public static final String EMAIL_DATA_OTHER = "EMAIL_DATA_OTHER";
+    public static final String EMAIL_DATA_CUSTOM = "EMAIL_DATA_CUSTOM";
 
     //資料表參數
     private static final String createTable = "CREATE TABLE IF NOT EXISTS "
@@ -35,8 +46,12 @@ public class MyContactDBHelper extends SQLiteOpenHelper {
             +IMG_AVATAR+" TEXT, "
             +FAVOR_TAG+" INTEGER, "
             +NOTE+" TEXT, "
-            +ADDRESS+" TEXT, "
-            +EMAIL+" TEXT ); ";
+            +CITY+" TEXT, "
+            +STREET+" TEXT, "
+            +EMAIL_DATA_HOME+" TEXT, "
+            +EMAIL_DATA_COM+" TEXT, "
+            +EMAIL_DATA_OTHER+" TEXT, "
+            +EMAIL_DATA_CUSTOM+" TEXT ); ";
 
     private static MyContactDBHelper instance;
     //取得實體

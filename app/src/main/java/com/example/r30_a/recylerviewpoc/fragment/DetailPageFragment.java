@@ -45,17 +45,17 @@ public class DetailPageFragment extends Fragment {
     private static final String AVATAR = "avatar_base64";
     private static final String NOTE = "note";
     private static final String ADDRESS = "address";
-    private static final String EMAIL = "email";
+    private static final String EMAIL_HOME = "email_home";
+    private static final String EMAIL_COM = "email_com";
+    private static final String EMAIL_OTHER = "email_other";
+    private static final String EMAIL_CUSTOM = "email_custom";
 
     ImageView img_avatar;
     TextView txvName;
     TextView txvPhoneNumber;
     TextView txvNote;
     TextView txv_detailAddress;
-    TextView txv_detailEmail;
-
-    SharedPreferences sp;
-
+    TextView txv_email_home,txv_email_company,txv_email_other,txv_email_custom;
 
     Context context;
     Toast toast;
@@ -67,14 +67,19 @@ public class DetailPageFragment extends Fragment {
     private String phoneNumber;
     private String note;
     private String address;
-    private String email;
+    private String email_home,email_company,email_other,email_custom;
     private byte[] img_avatar_bytes;
     ImageButton ibt_toDial,ibt_toSMS;
     ImageView btn_locate;
 
     public DetailPageFragment() {}
 
-    public static DetailPageFragment newInstance(String contact_id, String number,String name,String phoneNumber,byte[] img_avatar_bytes,String note,String address,String email) {
+    public static DetailPageFragment newInstance(String contact_id, String number,
+                                                 String name,String phoneNumber,
+                                                 byte[] img_avatar_bytes,String note,
+                                                 String city,String street,
+                                                 String email_home,String email_company,
+                                                 String email_other,String email_custom) {
         DetailPageFragment fragment = new DetailPageFragment();
         Bundle args = new Bundle();
         args.putString(CONTACT_ID,contact_id );
@@ -83,8 +88,11 @@ public class DetailPageFragment extends Fragment {
         args.putString(PHONE_NUMBER,phoneNumber);
         args.putByteArray(AVATAR,img_avatar_bytes);
         args.putString(NOTE,note);
-        args.putString(ADDRESS,address);
-        args.putString(EMAIL,email);
+        args.putString(ADDRESS,city+street);
+        args.putString(EMAIL_HOME,email_home);
+        args.putString(EMAIL_COM,email_company);
+        args.putString(EMAIL_OTHER,email_other);
+        args.putString(EMAIL_CUSTOM,email_custom);
         fragment.setArguments(args);
         return fragment;
     }
@@ -103,12 +111,14 @@ public class DetailPageFragment extends Fragment {
            }
            note = getArguments().getString(NOTE);
            address = getArguments().getString(ADDRESS);
-           email = getArguments().getString(EMAIL);
+           email_home = getArguments().getString(EMAIL_HOME);
+           email_company = getArguments().getString(EMAIL_COM);
+           email_other = getArguments().getString(EMAIL_OTHER);
+           email_custom = getArguments().getString(EMAIL_CUSTOM);
 
            context = getContext();
            toast = Toast.makeText(context,"",Toast.LENGTH_SHORT);
-           sp = context.getSharedPreferences("favorTags",MODE_PRIVATE);
-           CommonUtil.favorIdSet = sp.getStringSet("favorTags",null);
+
 
         }
     }
@@ -124,11 +134,13 @@ public class DetailPageFragment extends Fragment {
         ibt_toSMS = (ImageButton)v.findViewById(R.id.ib_toMsg);
         txvNote = (TextView)v.findViewById(R.id.txv_detailNote);
         txv_detailAddress = (TextView)v.findViewById(R.id.txv_detailAddress);
-        txv_detailEmail = (TextView)v.findViewById(R.id.txv_detailEmail);
+        txv_email_home = (TextView)v.findViewById(R.id.txv_email_home);
+        txv_email_company = (TextView)v.findViewById(R.id.txv_email_company);
+        txv_email_other = (TextView)v.findViewById(R.id.txv_email_other);
+        txv_email_custom = (TextView)v.findViewById(R.id.txv_email_custom);
+
         btn_locate = (ImageView)v.findViewById(R.id.btn_locate);
-        if(!TextUtils.isEmpty(note)){
-            txvNote.setText(note);
-        }
+        setText(txvNote,note);
         if(!TextUtils.isEmpty(address)){
             txv_detailAddress.setText(address);
         }else {
@@ -140,14 +152,12 @@ public class DetailPageFragment extends Fragment {
         if(img_bitmap != null){
             img_avatar.setImageBitmap(img_bitmap);
         }
-        if(!TextUtils.isEmpty(email)){
-            txv_detailEmail.setText(email);
-        }
+        setText(txv_email_home,email_home);
+        setText(txv_email_company,email_company);
+        setText(txv_email_other,email_other);
+        setText(txv_email_custom,email_custom);
 
-
-
-
-
+        //----------撥號----------//
         ibt_toDial.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -158,7 +168,7 @@ public class DetailPageFragment extends Fragment {
                 context.startActivity(intent_dial);
             }
         });
-
+        //----------簡訊----------//
         ibt_toSMS.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -169,7 +179,7 @@ public class DetailPageFragment extends Fragment {
                 context.startActivity(intent_sms);
             }
         });
-
+        //----------定位----------//
         btn_locate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -198,6 +208,12 @@ public class DetailPageFragment extends Fragment {
         });
 
         return v;
+    }
+
+    private void setText(TextView txv,String data) {
+        if(!TextUtils.isEmpty(data)){
+            txv.setText(data);
+        }
     }
 
 }

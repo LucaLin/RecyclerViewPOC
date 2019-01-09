@@ -26,19 +26,66 @@ public class ContactData {
     private Bitmap img_avatar ;//大頭照
     private ImageView img_favor;//是否為常用清單的圖
     private String note;//記事
+    private String city;
+    private String street;
     private String address;//地址
-    private String email;//Email
+    private String email_home;
+    private String email_company;
+    private String email_other;
+    private String email_custom;
 
-    public String getEmail() {
-        return email;
+
+    public String getEmail_home() {
+        return email_home;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setEmail_home(String email_home) {
+        this.email_home = email_home;
+    }
+
+    public String getEmail_company() {
+        return email_company;
+    }
+
+    public void setEmail_company(String email_company) {
+        this.email_company = email_company;
+    }
+
+    public String getEmail_other() {
+        return email_other;
+    }
+
+    public void setEmail_other(String email_other) {
+        this.email_other = email_other;
+    }
+
+    public String getEmail_custom() {
+        return email_custom;
+    }
+
+    public void setEmail_custom(String email_custom) {
+        this.email_custom = email_custom;
     }
 
 
 
+
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public String getStreet() {
+        return street;
+    }
+
+    public void setStreet(String street) {
+        this.street = street;
+    }
 
     public String getAddress() {
         return address;
@@ -47,9 +94,6 @@ public class ContactData {
     public void setAddress(String address) {
         this.address = address;
     }
-
-
-
 
     private boolean isFavor = false;
 
@@ -61,8 +105,6 @@ public class ContactData {
         this.note = note;
     }
 
-
-
     public boolean getIsFavor() {
         return isFavor;
     }
@@ -70,8 +112,6 @@ public class ContactData {
     public void isFavor(boolean favor) {
         isFavor = favor;
     }
-
-
 
     public ImageView getImg_favor() {
 
@@ -87,7 +127,6 @@ public class ContactData {
         img_favor.setBackgroundResource(android.R.drawable.star_on);
 
     }
-
     public int getNumber() {
         return number;
     }

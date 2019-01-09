@@ -95,17 +95,21 @@ public class MyAdapter extends SwipeMenuAdapter<MyAdapter.MainViewHolder> implem
         holder.infoZone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                ContactData data = list.get(position);
                 Intent intent = new Intent(context, DetailPageActivity.class);
-                intent.putExtra("id",list.get(position).getId());
-                intent.putExtra("number",list.get(position).getNumber());
-                intent.putExtra("name",list.get(position).getName());
-                intent.putExtra("phoneNumber",list.get(position).getPhoneNum());
-                intent.putExtra("note",list.get(position).getNote());
-                intent.putExtra("address",list.get(position).getAddress());
+                intent.putExtra("id",data.getId());
+                intent.putExtra("number",data.getNumber());
+                intent.putExtra("name",data.getName());
+                intent.putExtra("phoneNumber",data.getPhoneNum());
+                intent.putExtra("note",data.getNote());
+                intent.putExtra("city",data.getCity());
+                intent.putExtra("street",data.getStreet());
                 //bytes[] to base64
-                intent.putExtra("avatar",list.get(position).getImg_avatar());
-                intent.putExtra("email",list.get(position).getEmail());
+                intent.putExtra("avatar",data.getImg_avatar());
+                intent.putExtra("email_home",data.getEmail_home());
+                intent.putExtra("email_company",data.getEmail_company());
+                intent.putExtra("email_other",data.getEmail_other());
+                intent.putExtra("email_custom",data.getEmail_custom());
                 context.startActivity(intent);
             }
         });

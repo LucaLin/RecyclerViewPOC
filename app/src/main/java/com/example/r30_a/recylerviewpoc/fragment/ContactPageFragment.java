@@ -32,6 +32,7 @@ import com.example.r30_a.recylerviewpoc.adapter.MyDecoration;
 import com.example.r30_a.recylerviewpoc.helper.MyContactDBHelper;
 
 import com.example.r30_a.recylerviewpoc.model.ContactData;
+import com.example.r30_a.recylerviewpoc.model.EmailData;
 import com.example.r30_a.recylerviewpoc.util.CommonUtil;
 import com.yanzhenjie.recyclerview.swipe.Closeable;
 import com.yanzhenjie.recyclerview.swipe.OnSwipeMenuItemClickListener;
@@ -43,12 +44,14 @@ import com.yanzhenjie.recyclerview.swipe.SwipeMenuRecyclerView;
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import android.provider.ContactsContract.CommonDataKinds.Phone;
 import android.provider.ContactsContract.Data;
 import android.provider.ContactsContract.CommonDataKinds.Note;
 import static com.example.r30_a.recylerviewpoc.util.CommonUtil.isCellPhoneNumber;
+import android.provider.ContactsContract.CommonDataKinds.Email;
 
 
 public class ContactPageFragment extends Fragment {
@@ -167,7 +170,10 @@ public class ContactPageFragment extends Fragment {
 
                                 Fragment fragment = UpdateContactFragment.newInstance(String.valueOf(data.getId()),data.getName(),
                                         data.getPhoneNum(),data.getImg_avatar(),
-                                        data.getNote(),data.getAddress(),data.getEmail());
+                                        data.getNote(),data.getCity(),
+                                        data.getStreet(),data.getEmail_home(),
+                                        data.getEmail_company(),data.getEmail_other(),
+                                        data.getEmail_custom());
                                 FragmentTransaction transaction = getFragmentManager().beginTransaction();
                                 transaction.setCustomAnimations(R.anim.slide_right_in,R.anim.slide_left_out,R.anim.slide_left_in,R.anim.slide_right_out);
                                 transaction.replace(R.id.frameLayout,fragment);
@@ -250,6 +256,8 @@ public class ContactPageFragment extends Fragment {
             String name;
             String mobileNum;
             String note = "";//備註欄
+            String cityName="",streetName="";
+            List<EmailData> emailList = new ArrayList<>();
 
 
 
@@ -263,7 +271,7 @@ public class ContactPageFragment extends Fragment {
                     name = cursor.getString(cursor.getColumnIndex(Phone.DISPLAY_NAME));//名稱
                     mobileNum = cursor.getString(cursor.getColumnIndex(Phone.NUMBER));//電話
 
-//                  //抓取備註欄
+//                  //----------抓取備註欄----------//
                     Cursor info_cursor = resolver.query(Data.CONTENT_URI,
                             new String[]{Data._ID, Note.NOTE},
                             Data.CONTACT_ID + "=?" + " AND " + Data.MIMETYPE + "='" + Note.CONTENT_ITEM_TYPE + "'",
@@ -272,22 +280,38 @@ public class ContactPageFragment extends Fragment {
                             note = info_cursor.getString(info_cursor.getColumnIndex(Note.NOTE));
                         }
                     String address="";
-                    //抓取地址
+                    //--------抓取地址--------//
                     info_cursor = resolver.query(ContactsContract.CommonDataKinds.StructuredPostal.CONTENT_URI,
                             null,Phone.CONTACT_ID+" = " +id,null,null);
                         if(info_cursor != null && info_cursor.moveToFirst()){
-                            address = info_cursor.getString(info_cursor.getColumnIndex(ContactsContract.CommonDataKinds.StructuredPostal.CITY))+
-                                        info_cursor.getString(info_cursor.getColumnIndex(ContactsContract.CommonDataKinds.StructuredPostal.STREET));
+                            cityName = info_cursor.getString(info_cursor.getColumnIndex(ContactsContract.CommonDataKinds.StructuredPostal.CITY));
+                            streetName = info_cursor.getString(info_cursor.getColumnIndex(ContactsContract.CommonDataKinds.StructuredPostal.STREET));
+                            if(streetName == null){
+                                streetName = "";
+                            }
+                            if(cityName == null){
+                                cityName = "";
+                            }
+                           // address = cityName+streetName;
                         }
                     info_cursor.close();
 
                     String email = "";
 
                     //抓取email資料
-                    Cursor email_cursor = resolver.query(ContactsContract.CommonDataKinds.Email.CONTENT_URI,
+                    Cursor email_cursor = resolver.query(Email.CONTENT_URI,
                             null,Phone.CONTACT_ID+" = "+id,null,null);
-                    if(email_cursor != null && email_cursor.moveToFirst()){
-                        email = email_cursor.getString(email_cursor.getColumnIndex(ContactsContract.CommonDataKinds.Email.DATA));
+                    if(email_cursor != null ){
+                        emailList.clear();
+                        while (email_cursor.moveToNext()){
+                            EmailData emailData = new EmailData();
+                            String type = email_cursor.getString(email_cursor.getColumnIndex(Email.TYPE));
+                            email = email_cursor.getString(email_cursor.getColumnIndex(Email.DATA));
+                            emailData.setType(type);
+                            emailData.setMail(email);
+                            emailList.add(emailData);
+
+                        }
                     }
                     email_cursor.close();
 
@@ -302,8 +326,8 @@ public class ContactPageFragment extends Fragment {
                                 name,
                                 CommonUtil.get_Avatar(resolver,id),
                                 note,
-                                address,
-                                email);
+                                cityName,streetName,
+                                emailList);
 
                     }
                 }
@@ -321,23 +345,44 @@ public class ContactPageFragment extends Fragment {
     }
 
     /*新增聯絡人到手機清單*/
-    private void addContactToList(int number, long id, String phoneNumber, String name, Bitmap avatar,String note,String address,String email) {
+    private void addContactToList(int number, long id, String phoneNumber, String name, Bitmap avatar,String note,String city,String street,List<EmailData> emailList) {
 
         if (!tempId.equals(String.valueOf(id))) {
-
+            String email ="";
             ContentValues values = new ContentValues();
             values.put(MyContactDBHelper.CONTACT_ID,id);
             values.put(MyContactDBHelper.NAME,name);
             values.put(MyContactDBHelper.PHONE_NUMBER,CommonUtil.getFormatPhone(phoneNumber));
             values.put(MyContactDBHelper.NUMBER,number);
-            values.put(MyContactDBHelper.EMAIL,email);
+            if(emailList.size()>0){
+                for(int i =0;i<emailList.size();i++){
+                switch (emailList.get(i).getType()){
+                    case "1"://住家
+
+                        values.put(MyContactDBHelper.EMAIL_DATA_HOME,emailList.get(i).getMail());
+                        break;
+                    case "2"://公司
+
+                        values.put(MyContactDBHelper.EMAIL_DATA_COM,emailList.get(i).getMail());
+                        break;
+                    case "3":
+
+                        values.put(MyContactDBHelper.EMAIL_DATA_OTHER,emailList.get(i).getMail());
+                        break;
+                    case "0":
+
+                        values.put(MyContactDBHelper.EMAIL_DATA_CUSTOM,emailList.get(i).getMail());
+                        break;
+                }
+                }
+            }
+
+
             if(!TextUtils.isEmpty(note)){
                 values.put(MyContactDBHelper.NOTE,note);
             }
-            if(!TextUtils.isEmpty(address)){
-                values.put(MyContactDBHelper.ADDRESS,address);
-
-            }
+            values.put(MyContactDBHelper.CITY,city);
+            values.put(MyContactDBHelper.STREET,street);
 
             String img_avatar_base64 = "";
             if(avatar != null){
@@ -402,8 +447,14 @@ public class ContactPageFragment extends Fragment {
                 data.setPhoneNum(c.getString(c.getColumnIndex(MyContactDBHelper.PHONE_NUMBER)));
                 data.setNumber(Integer.parseInt(c.getString(c.getColumnIndex(MyContactDBHelper.NUMBER))));
                 data.setNote(c.getString(c.getColumnIndex(MyContactDBHelper.NOTE)));
-                data.setAddress(c.getString(c.getColumnIndex(MyContactDBHelper.ADDRESS)));
-                data.setEmail(c.getString(c.getColumnIndex(MyContactDBHelper.EMAIL)));
+                data.setCity(c.getString(c.getColumnIndex(MyContactDBHelper.CITY)));
+                data.setStreet(c.getString(c.getColumnIndex(MyContactDBHelper.STREET)));
+                data.setEmail_home(c.getString(c.getColumnIndex(MyContactDBHelper.EMAIL_DATA_HOME)));
+                data.setEmail_company(c.getString(c.getColumnIndex(MyContactDBHelper.EMAIL_DATA_COM)));
+                data.setEmail_other(c.getString(c.getColumnIndex(MyContactDBHelper.EMAIL_DATA_OTHER)));
+                data.setEmail_custom(c.getString(c.getColumnIndex(MyContactDBHelper.EMAIL_DATA_CUSTOM)));
+
+                //data.setEmail(c.getString(c.getColumnIndex(MyContactDBHelper.EMAIL)));
                 int favor_tags = c.getInt(c.getColumnIndex(MyContactDBHelper.FAVOR_TAG));
                 if(favor_tags == 1){
                     data.setImg_favor(new ImageView(context));
