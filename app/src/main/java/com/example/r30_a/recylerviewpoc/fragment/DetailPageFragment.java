@@ -33,6 +33,7 @@ import com.example.r30_a.recylerviewpoc.util.CommonUtil;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 
@@ -63,6 +64,8 @@ public class DetailPageFragment extends Fragment {
     Context context;
     Toast toast;
     Bitmap img_bitmap;
+
+    SharedPreferences sp;
 
     private String contact_id;
     private String number;
@@ -121,7 +124,8 @@ public class DetailPageFragment extends Fragment {
 
            context = getContext();
            toast = Toast.makeText(context,"",Toast.LENGTH_SHORT);
-
+            sp = context.getSharedPreferences("favorTags",MODE_PRIVATE);
+            CommonUtil.favorIdSet = sp.getStringSet("favorTags",new HashSet<String>());
 
         }
     }

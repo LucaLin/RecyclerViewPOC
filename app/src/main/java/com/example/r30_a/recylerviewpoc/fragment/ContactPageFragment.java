@@ -354,26 +354,29 @@ public class ContactPageFragment extends Fragment {
             values.put(MyContactDBHelper.NAME,name);
             values.put(MyContactDBHelper.PHONE_NUMBER,CommonUtil.getFormatPhone(phoneNumber));
             values.put(MyContactDBHelper.NUMBER,number);
-            if(emailList.size()>0){
+            if(emailList != null && emailList.size()>0){
                 for(int i =0;i<emailList.size();i++){
-                switch (emailList.get(i).getType()){
-                    case "1"://住家
+                    String type = emailList.get(i).getType();
+                    if(!TextUtils.isEmpty(type)){
+                        switch (emailList.get(i).getType()){
+                            case "1"://住家
 
-                        values.put(MyContactDBHelper.EMAIL_DATA_HOME,emailList.get(i).getMail());
-                        break;
-                    case "2"://公司
+                                values.put(MyContactDBHelper.EMAIL_DATA_HOME,emailList.get(i).getMail());
+                                break;
+                            case "2"://公司
 
-                        values.put(MyContactDBHelper.EMAIL_DATA_COM,emailList.get(i).getMail());
-                        break;
-                    case "3":
+                                values.put(MyContactDBHelper.EMAIL_DATA_COM,emailList.get(i).getMail());
+                                break;
+                            case "3":
 
-                        values.put(MyContactDBHelper.EMAIL_DATA_OTHER,emailList.get(i).getMail());
-                        break;
-                    case "0":
+                                values.put(MyContactDBHelper.EMAIL_DATA_OTHER,emailList.get(i).getMail());
+                                break;
+                            case "0":
 
-                        values.put(MyContactDBHelper.EMAIL_DATA_CUSTOM,emailList.get(i).getMail());
-                        break;
-                }
+                                values.put(MyContactDBHelper.EMAIL_DATA_CUSTOM,emailList.get(i).getMail());
+                                break;
+                        }
+                    }
                 }
             }
 
