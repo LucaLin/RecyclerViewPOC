@@ -70,7 +70,7 @@ public class MyAdapter extends SwipeMenuAdapter<MyAdapter.MainViewHolder> implem
         holder.txv_Name.setText(list.get(position).getName());
         holder.txv_PhoneNum.setText(list.get(position).getPhoneNum());
         holder.number.setText(String.valueOf(list.get(position).getNumber()));
-        holder.img_favor.setVisibility(View.INVISIBLE);
+
         //設定大頭貼
         if(list.get(position).getImg_avatar() != null){
             Bitmap bitmap_avatar = BitmapFactory.decodeByteArray(list.get(position).getImg_avatar(),0,list.get(position).getImg_avatar().length);
@@ -79,9 +79,11 @@ public class MyAdapter extends SwipeMenuAdapter<MyAdapter.MainViewHolder> implem
             holder.img_avatar.setBackgroundResource(R.drawable.iconfinder_man_196742);
         }
         //設定常用清單tag
-        if(list.get(position).getImg_favor() != null){
+        if(list.get(position).getFavorTag() == 1){
             list.get(position).setImg_favor(holder.img_favor);
-            holder.img_favor.setVisibility(View.VISIBLE);
+//            holder.img_favor.setVisibility(View.VISIBLE);
+        }else {
+            list.get(position).setImg_normal(holder.img_favor);
         }
         //holder.txvrunrun.setText(list.get(position).getNote());
 //        holder.txvrunrun.setOnClickListener(new View.OnClickListener() {
@@ -95,7 +97,12 @@ public class MyAdapter extends SwipeMenuAdapter<MyAdapter.MainViewHolder> implem
         holder.infoZone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 ContactData data = list.get(position);
+//                String email_home = data.getEmail_home();
+//                String email_company = data.getEmail_company();
+//                String email_other = data.getEmail_other();
+//                String email_custom = data.getEmail_custom();
                 Intent intent = new Intent(context, DetailPageActivity.class);
                 intent.putExtra("id",data.getId());
                 intent.putExtra("number",data.getNumber());

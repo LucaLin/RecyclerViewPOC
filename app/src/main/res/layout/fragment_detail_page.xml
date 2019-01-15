@@ -155,6 +155,7 @@
                         android:textSize="14sp" />
 
                     <LinearLayout
+                        android:id="@+id/emailHomeLayout"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
@@ -179,7 +180,9 @@
                             android:textColor="@color/colorPrimary"
                             android:textSize="18sp" />
                     </LinearLayout>
+
                     <LinearLayout
+                        android:id="@+id/emailComLayout"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
@@ -204,7 +207,9 @@
                             android:textColor="@color/colorPrimary"
                             android:textSize="18sp" />
                     </LinearLayout>
+
                     <LinearLayout
+                        android:id="@+id/emailOtherLayout"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
@@ -229,7 +234,9 @@
                             android:textColor="@color/colorPrimary"
                             android:textSize="18sp" />
                     </LinearLayout>
+
                     <LinearLayout
+                        android:id="@+id/emailCustomLayout"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"

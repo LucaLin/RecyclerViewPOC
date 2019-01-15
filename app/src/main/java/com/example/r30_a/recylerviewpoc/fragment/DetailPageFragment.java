@@ -17,12 +17,14 @@ import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -60,6 +62,8 @@ public class DetailPageFragment extends Fragment {
     TextView txvNote;
     TextView txv_detailAddress;
     TextView txv_email_home,txv_email_company,txv_email_other,txv_email_custom;
+
+    LinearLayout emailHomeLayout,emailWorkLayout,emailOtherLayout,emailCustomLayout;
 
     Context context;
     Toast toast;
@@ -146,9 +150,15 @@ public class DetailPageFragment extends Fragment {
         txv_email_company = (TextView)v.findViewById(R.id.txv_email_company);
         txv_email_other = (TextView)v.findViewById(R.id.txv_email_other);
         txv_email_custom = (TextView)v.findViewById(R.id.txv_email_custom);
+        emailHomeLayout = (LinearLayout)v.findViewById(R.id.emailHomeLayout);
+        emailWorkLayout = (LinearLayout)v.findViewById(R.id.emailComLayout);
+        emailOtherLayout = (LinearLayout)v.findViewById(R.id.emailOtherLayout);
+        emailCustomLayout = (LinearLayout) v.findViewById(R.id.emailCustomLayout);
 
         btn_locate = (ImageView)v.findViewById(R.id.btn_locate);
-        setText(txvNote,note);
+        if(!TextUtils.isEmpty(note)){
+            txvNote.setText(note);
+        }
         if(!TextUtils.isEmpty(address)){
             txv_detailAddress.setText(address);
         }else {
@@ -160,10 +170,10 @@ public class DetailPageFragment extends Fragment {
         if(img_bitmap != null){
             img_avatar.setImageBitmap(img_bitmap);
         }
-        setText(txv_email_home,email_home);
-        setText(txv_email_company,email_company);
-        setText(txv_email_other,email_other);
-        setText(txv_email_custom,email_custom);
+        setText(emailHomeLayout,txv_email_home,email_home);
+        setText(emailWorkLayout,txv_email_company,email_company);
+        setText(emailOtherLayout,txv_email_other,email_other);
+        setText(emailCustomLayout,txv_email_custom,email_custom);
 
         //----------撥號----------//
         ibt_toDial.setOnClickListener(new View.OnClickListener() {
@@ -253,9 +263,11 @@ public class DetailPageFragment extends Fragment {
 
     }
 
-    private void setText(TextView txv,String data) {
+    private void setText(LinearLayout layout,TextView txv,String data) {
         if(!TextUtils.isEmpty(data)){
             txv.setText(data);
+        }else {
+            layout.setVisibility(View.GONE);
         }
     }
 

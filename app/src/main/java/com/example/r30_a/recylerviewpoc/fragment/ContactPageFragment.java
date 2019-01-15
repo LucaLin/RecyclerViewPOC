@@ -52,6 +52,7 @@ import android.provider.ContactsContract.Data;
 import android.provider.ContactsContract.CommonDataKinds.Note;
 import static com.example.r30_a.recylerviewpoc.util.CommonUtil.isCellPhoneNumber;
 import android.provider.ContactsContract.CommonDataKinds.Email;
+import android.provider.ContactsContract.CommonDataKinds.StructuredPostal;
 
 
 public class ContactPageFragment extends Fragment {
@@ -256,7 +257,7 @@ public class ContactPageFragment extends Fragment {
             String name;
             String mobileNum;
             String note = "";//備註欄
-            String cityName="",streetName="";
+
             List<EmailData> emailList = new ArrayList<>();
 
 
@@ -280,12 +281,15 @@ public class ContactPageFragment extends Fragment {
                             note = info_cursor.getString(info_cursor.getColumnIndex(Note.NOTE));
                         }
                     String address="";
+
                     //--------抓取地址--------//
-                    info_cursor = resolver.query(ContactsContract.CommonDataKinds.StructuredPostal.CONTENT_URI,
-                            null,Phone.CONTACT_ID+" = " +id,null,null);
+                    String cityName="",streetName="";
+                    info_cursor = resolver.query(Data.CONTENT_URI,
+                            null,Phone.CONTACT_ID+" =? AND " + Data.MIMETYPE+"=?",
+                            new String[]{String.valueOf(id),StructuredPostal.CONTENT_ITEM_TYPE},null);
                         if(info_cursor != null && info_cursor.moveToFirst()){
-                            cityName = info_cursor.getString(info_cursor.getColumnIndex(ContactsContract.CommonDataKinds.StructuredPostal.CITY));
-                            streetName = info_cursor.getString(info_cursor.getColumnIndex(ContactsContract.CommonDataKinds.StructuredPostal.STREET));
+                            cityName = info_cursor.getString(info_cursor.getColumnIndex(StructuredPostal.CITY));
+                            streetName = info_cursor.getString(info_cursor.getColumnIndex(StructuredPostal.STREET));
                             if(streetName == null){
                                 streetName = "";
                             }
@@ -359,6 +363,7 @@ public class ContactPageFragment extends Fragment {
                     String type = emailList.get(i).getType();
                     if(!TextUtils.isEmpty(type)){
                         switch (emailList.get(i).getType()){
+                            //多個同樣tag的資料怎麼辦 = =?
                             case "1"://住家
 
                                 values.put(MyContactDBHelper.EMAIL_DATA_HOME,emailList.get(i).getMail());
@@ -460,7 +465,10 @@ public class ContactPageFragment extends Fragment {
                 //data.setEmail(c.getString(c.getColumnIndex(MyContactDBHelper.EMAIL)));
                 int favor_tags = c.getInt(c.getColumnIndex(MyContactDBHelper.FAVOR_TAG));
                 if(favor_tags == 1){
+                    data.setFavorTag(favor_tags);
                     data.setImg_favor(new ImageView(context));
+                }else {
+                    data.setImg_normal(new ImageView(context));
                 }
 
                 String avatar_base64 = c.getString(c.getColumnIndex(MyContactDBHelper.IMG_AVATAR));

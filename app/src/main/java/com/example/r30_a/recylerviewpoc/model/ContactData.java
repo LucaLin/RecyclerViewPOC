@@ -33,6 +33,17 @@ public class ContactData {
     private String email_company;
     private String email_other;
     private String email_custom;
+    private int favorTag=0;
+
+    public int getFavorTag() {
+        return favorTag;
+    }
+
+    public void setFavorTag(int favorTag) {
+        this.favorTag = favorTag;
+    }
+
+
 
 
     public String getEmail_home() {
@@ -124,8 +135,12 @@ public class ContactData {
 
     public void setImg_favor(ImageView img_favor) {
         this.img_favor = img_favor;
-        img_favor.setBackgroundResource(android.R.drawable.star_on);
+        this.img_favor.setBackgroundResource(R.drawable.icons8_starfavor_24);
 
+    }
+    public void setImg_normal(ImageView img_normal){
+        this.img_favor = img_normal;
+        this.img_favor.setBackgroundResource(R.drawable.icons8_star_white_24);
     }
     public int getNumber() {
         return number;

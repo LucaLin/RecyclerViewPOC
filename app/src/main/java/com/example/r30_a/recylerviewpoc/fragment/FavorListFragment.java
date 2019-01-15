@@ -82,7 +82,14 @@ public class FavorListFragment extends Fragment {
                     data.setName(c.getString(c.getColumnIndex(MyContactDBHelper.NAME)));
                     data.setPhoneNum(c.getString(c.getColumnIndex(MyContactDBHelper.PHONE_NUMBER)));
                     data.setNote(c.getString(c.getColumnIndex(MyContactDBHelper.NOTE)));
+                    data.setFavorTag(Integer.parseInt(c.getString(c.getColumnIndex(MyContactDBHelper.FAVOR_TAG))));
                     data.setImg_favor(new ImageView(context));
+                    data.setCity(c.getString(c.getColumnIndex(MyContactDBHelper.CITY)));
+                    data.setStreet(c.getString(c.getColumnIndex(MyContactDBHelper.STREET)));
+                    data.setEmail_home(c.getString(c.getColumnIndex(MyContactDBHelper.EMAIL_DATA_HOME)));
+                    data.setEmail_company(c.getString(c.getColumnIndex(MyContactDBHelper.EMAIL_DATA_COM)));
+                    data.setEmail_other(c.getString(c.getColumnIndex(MyContactDBHelper.EMAIL_DATA_OTHER)));
+                    data.setEmail_custom(c.getString(c.getColumnIndex(MyContactDBHelper.EMAIL_DATA_CUSTOM)));
                     String avatar_base64 = c.getString(c.getColumnIndex(MyContactDBHelper.IMG_AVATAR));
                     if(!TextUtils.isEmpty(avatar_base64)){
                         byte[] bytes = Base64.decode(avatar_base64, Base64.DEFAULT);
