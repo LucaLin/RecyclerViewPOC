@@ -15,6 +15,7 @@ import android.location.Geocoder;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -32,6 +33,8 @@ import com.example.r30_a.recylerviewpoc.R;
 
 import com.example.r30_a.recylerviewpoc.controller.MapsActivity;
 import com.example.r30_a.recylerviewpoc.util.CommonUtil;
+import com.github.dfqin.grantor.PermissionListener;
+import com.github.dfqin.grantor.PermissionsUtil;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -179,7 +182,7 @@ public class DetailPageFragment extends Fragment {
         ibt_toDial.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent_dial = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + phoneNumber));
+                Intent intent_dial = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + phoneNumber));
                 if (ActivityCompat.checkSelfPermission(context, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
                     return;
                 }
@@ -229,6 +232,9 @@ public class DetailPageFragment extends Fragment {
         btn_locate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                if(PermissionsUtil.hasPermission(context,Manifest.permission.ACCESS_COARSE_LOCATION) &&
+                                PermissionsUtil.hasPermission(context,Manifest.permission.ACCESS_FINE_LOCATION)){
                 //GPS定位,抓地址的經緯度後傳給googlemap顯示
                 try {
                     if(!TextUtils.isEmpty(address)){
@@ -250,6 +256,20 @@ public class DetailPageFragment extends Fragment {
                 }
 
 
+                }else {
+                    PermissionsUtil.requestPermission(getActivity(), new PermissionListener() {
+                        @Override
+                        public void permissionGranted(@NonNull String[] permission) {
+
+                        }
+
+                        @Override
+                        public void permissionDenied(@NonNull String[] permission) {
+
+                        }
+                    },new String[]{Manifest.permission.ACCESS_FINE_LOCATION,
+                            Manifest.permission.ACCESS_COARSE_LOCATION});
+                }
             }
         });
 
@@ -257,7 +277,7 @@ public class DetailPageFragment extends Fragment {
     }
 
     private void addMailToList(List<String> emailList, String email) {
-        if(!TextUtils.isEmpty(email)){
+        if(!TextUtils.isEmpty(email) && !email.equals(getResources().getString(R.string.none))){
             emailList.add(email);
         }
 
