@@ -26,6 +26,7 @@ public class MyDecoration extends RecyclerView.ItemDecoration {
     private TextPaint textPaint;//抬頭文字畫筆
     private int topGap;
     private Paint.FontMetrics fontMetrics;
+    String lastText="";
 
     public MyDecoration(Context context, DecorationCallBack callBack) {
         Resources resources = context.getResources();
@@ -54,11 +55,13 @@ public class MyDecoration extends RecyclerView.ItemDecoration {
     public void onDraw(Canvas c, RecyclerView parent, RecyclerView.State state) {
         super.onDraw(c, parent, state);
 
+
         int left = parent.getLeft();
         int right = parent.getRight()-parent.getPaddingRight();
         int childCount = parent.getChildCount();
 
         for (int i = 0; i < childCount; i++){
+
             View view = parent.getChildAt(i);
             int position = parent.getChildAdapterPosition(view);
             long groupId = callBack.getGroupId(position);
@@ -66,14 +69,20 @@ public class MyDecoration extends RecyclerView.ItemDecoration {
             if(groupId<0){return;}
             //取得清單的第一個字
             String textLine = callBack.getGroupFirstLine(position).toUpperCase();
+
+
             //群組的第一個才加
-            if(position == 0  || isFirstInGroup(position)){
+            if((position == 0  || isFirstInGroup(position)) && !lastText.equals(textLine)){
+
                 float top = view.getTop()-topGap;
                 float bottom = view.getTop();
 
                 //繪製一個方形區塊，範圍需要上下左右的長寬
-                c.drawRect(left,top,right,bottom,paint);
-                c.drawText(textLine,left,bottom-4,textPaint);
+
+                    c.drawRect(left,top,right,bottom,paint);
+                    c.drawText(textLine,left,bottom-4,textPaint);
+                    lastText = textLine;
+
             }
         }
     }

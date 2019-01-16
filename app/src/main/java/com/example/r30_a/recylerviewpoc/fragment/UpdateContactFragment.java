@@ -272,9 +272,9 @@ public class UpdateContactFragment extends Fragment implements View.OnClickListe
 //                                                values.put(Phone._ID,contact_id);
 //                                                values.put(Data.MIMETYPE,"vnd.android.cursor.item/postal-address_v2");
 //                                                values.put(Phone.CONTACT_ID,contact_id);
-                                                resolver.update(ContactsContract.Data.CONTENT_URI,values,
-                                                        Data.RAW_CONTACT_ID+" =?" +" AND "
-                                                        + Data.MIMETYPE + "='vnd.android.cursor.item/postal-address_v2'",
+                                                resolver.update(Data.CONTENT_URI,values,
+                                                        Data.CONTACT_ID+" =?",
+//                                                        + Data.MIMETYPE + "='vnd.android.cursor.item/postal-address_v2'",
                                                         new String[]{contact_id});
 
                                             }else {
@@ -292,8 +292,8 @@ public class UpdateContactFragment extends Fragment implements View.OnClickListe
                                         }
                                     //更新資料庫
 
-                                    updateDB(updateName,updatePhone,updateNote,updateCity,updateStreet,
-                                            updateEmail_home,updateEmail_company,updateEmail_other,updateEmail_custom,bytes);
+//                                    updateDB(updateName,updatePhone,updateNote,updateCity,updateStreet,
+//                                            updateEmail_home,updateEmail_company,updateEmail_other,updateEmail_custom,bytes);
 
 
                                         //setOldinfo(updateName,updatePhone,updateNote,updateEmail);

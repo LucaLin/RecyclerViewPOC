@@ -122,6 +122,7 @@
                                 android:layout_weight="1"
                                 android:gravity="center"
                                 android:hint="@string/street"
+                                android:inputType="text"
                                 android:textSize="16sp"
                                 android:textStyle="bold" />
 

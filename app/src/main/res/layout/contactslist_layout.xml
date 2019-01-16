@@ -1,7 +1,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/contactData_layout"
-    android:layout_width="match_parent"
+    android:layout_width="wrap_content"
     android:layout_height="80dp"
     android:background="@drawable/contact_background"
     android:fitsSystemWindows="false"
@@ -15,7 +15,6 @@
         android:layout_centerHorizontal="false"
         android:layout_centerInParent="false"
         android:layout_centerVertical="false"
-        android:layout_marginLeft="10dp"
         android:gravity="center"
         android:orientation="horizontal">
 
@@ -25,12 +24,14 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginRight="10dp"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            android:visibility="gone" />
 
         <ImageView
             android:id="@+id/img_avatar"
             android:layout_width="70dp"
             android:layout_height="70dp"
+            android:layout_marginLeft="10dp"
             android:layout_weight="1" />
     </LinearLayout>
 
@@ -39,6 +40,7 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_above="@+id/function_layout"
+        android:layout_alignParentLeft="false"
         android:layout_marginLeft="10dp"
         android:layout_toRightOf="@+id/avatar_layout"
         android:orientation="horizontal">
@@ -83,15 +85,15 @@
             android:layout_centerHorizontal="false"
             android:layout_centerInParent="false"
             android:layout_centerVertical="false"
-            android:layout_gravity="center"
             android:layout_toLeftOf="@+id/favor_layout"
             android:layout_toRightOf="@+id/avatar_layout"
             android:gravity="center"
             android:orientation="vertical">
 
             <LinearLayout
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="left"
                 android:orientation="horizontal"
                 android:paddingBottom="10dp"
                 android:paddingLeft="10dp">
@@ -114,8 +116,9 @@
             </LinearLayout>
 
             <LinearLayout
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="left"
                 android:orientation="horizontal"
                 android:paddingLeft="10dp">
 
@@ -146,13 +149,14 @@
             android:id="@+id/favor_layout"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_alignParentBottom="true"
+            android:layout_alignParentBottom="false"
             android:layout_alignParentLeft="false"
             android:layout_alignParentRight="true"
             android:layout_alignWithParentIfMissing="false"
             android:layout_centerHorizontal="false"
             android:layout_centerInParent="false"
-            android:layout_centerVertical="true"
+            android:layout_centerVertical="false"
+            android:layout_marginRight="30dp"
             android:orientation="horizontal"
             android:paddingLeft="10dp"
             android:paddingRight="10dp">
