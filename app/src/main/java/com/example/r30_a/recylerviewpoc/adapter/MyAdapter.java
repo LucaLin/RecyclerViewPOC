@@ -28,6 +28,7 @@ import com.example.r30_a.recylerviewpoc.R;
 import com.example.r30_a.recylerviewpoc.controller.DetailPageActivity;
 import com.example.r30_a.recylerviewpoc.fragment.DetailPageFragment;
 import com.example.r30_a.recylerviewpoc.model.ContactData;
+import com.github.promeg.pinyinhelper.Pinyin;
 import com.yanzhenjie.recyclerview.swipe.SwipeMenuAdapter;
 
 import java.util.ArrayList;
@@ -85,13 +86,7 @@ public class MyAdapter extends SwipeMenuAdapter<MyAdapter.MainViewHolder> implem
         }else {
             list.get(position).setImg_normal(holder.img_favor);
         }
-        //holder.txvrunrun.setText(list.get(position).getNote());
-//        holder.txvrunrun.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                holder.txvrunrun.performClick();
-//            }
-//        });
+
 
         //點擊進入detail頁面
         holder.infoZone.setOnClickListener(new View.OnClickListener() {
@@ -155,9 +150,20 @@ public class MyAdapter extends SwipeMenuAdapter<MyAdapter.MainViewHolder> implem
             contactData_layout = v.findViewById(R.id.contactData_layout);
             img_favor = v.findViewById(R.id.img_favor);
             number = v.findViewById(R.id.number);
-           //txvrunrun = v.findViewById(R.id.txvrunrun);
             infoZone = v.findViewById(R.id.info_zone);
 
         }
+    }
+
+    public int getPosForSection(int section){
+        for(int i=0; i<getItemCount(); i++){
+
+            String str = Pinyin.toPinyin(list.get(i).getName().charAt(0));
+            char firstChar = str.toUpperCase().charAt(0);//取拼音的第一個字元代號
+            if(firstChar == section){
+                return i;//有找到符合的話，跳頁至該資料的第一筆
+            }
+        }
+        return -1;//找不到符合的項合就不動作
     }
 }

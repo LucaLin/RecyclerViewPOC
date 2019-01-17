@@ -54,7 +54,7 @@
 
             <com.example.r30_a.recylerviewpoc.view.SideBar
                 android:id="@+id/sideBar2"
-                android:layout_width="80dp"
+                android:layout_width="85dp"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
                 android:layout_marginTop="20dp" />

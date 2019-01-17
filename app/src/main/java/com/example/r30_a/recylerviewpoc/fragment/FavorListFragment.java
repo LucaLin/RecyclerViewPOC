@@ -10,6 +10,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
 import android.text.TextUtils;
 import android.util.Base64;
 import android.view.LayoutInflater;
@@ -48,6 +49,7 @@ public class FavorListFragment extends Fragment {
     Context context;
     SharedPreferences sp;
     LinearLayout noDataLayout;
+    LinearLayoutManager manager;
 
     public FavorListFragment() {}
 
@@ -64,6 +66,7 @@ public class FavorListFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
             context = getContext();
+            manager = new LinearLayoutManager(context);
             sp = context.getSharedPreferences("favorTags",MODE_PRIVATE);
             myContactDBHelper = MyContactDBHelper.getInstance(context);
             CommonUtil.favorIdSet = sp.getStringSet("favorTags",new HashSet<String>());
@@ -114,7 +117,7 @@ public class FavorListFragment extends Fragment {
         noDataLayout.setVisibility(View.INVISIBLE);
         if(favorList.size()>0){
             adapter = new MyAdapter(context, favorList);
-            CommonUtil.setContactList(context, contact_RecyclerView, adapter, favorList);
+            CommonUtil.setContactList(context, contact_RecyclerView, adapter, favorList,manager);
         }else {
             noDataLayout.setVisibility(View.VISIBLE);
         }
@@ -147,7 +150,7 @@ public class FavorListFragment extends Fragment {
                             }
                             favorList.remove(favorList.get(adapterPosition));
                             adapter = new MyAdapter(context,favorList);
-                            CommonUtil.setContactList(context,contact_RecyclerView,adapter,favorList);
+                            CommonUtil.setContactList(context,contact_RecyclerView,adapter,favorList,manager);
 
                             toast.setText(R.string.deleteOK);toast.show();
                             //刪除最愛清單

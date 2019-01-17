@@ -233,9 +233,8 @@ public class UpdateContactFragment extends Fragment implements View.OnClickListe
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
 
-                                        Cursor c = resolver.query(Data.CONTENT_URI, new String[]{Data.RAW_CONTACT_ID},
-                                                Contacts.DISPLAY_NAME + " =?", new String[]{ oldname },null);
-
+                                    Cursor c = resolver.query(Data.CONTENT_URI, new String[]{Data.RAW_CONTACT_ID},
+                                            Phone.CONTACT_ID+ "=?",new String[]{contact_id},null);
                                         c.moveToFirst();
                                         String raw_contact_id = c.getString(c.getColumnIndex(Data.RAW_CONTACT_ID));
                                         c.close();
@@ -292,8 +291,8 @@ public class UpdateContactFragment extends Fragment implements View.OnClickListe
                                         }
                                     //更新資料庫
 
-//                                    updateDB(updateName,updatePhone,updateNote,updateCity,updateStreet,
-//                                            updateEmail_home,updateEmail_company,updateEmail_other,updateEmail_custom,bytes);
+                                    updateDB(updateName,updatePhone,updateNote,updateCity,updateStreet,
+                                            updateEmail_home,updateEmail_company,updateEmail_other,updateEmail_custom,bytes);
 
 
                                         //setOldinfo(updateName,updatePhone,updateNote,updateEmail);

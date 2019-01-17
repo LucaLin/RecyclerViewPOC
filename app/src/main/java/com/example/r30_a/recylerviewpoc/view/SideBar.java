@@ -25,12 +25,12 @@ public class SideBar extends View{
     ArrayList<String> alphaList = new ArrayList<>();
     private OnTouchingLetterChangedListener onTouchingLetterChangedListener;
 
-    private String[] alphabet = {
+    private String[] alphabet = {"#",
             "A", "B", "C", "D", "E", "F",
             "G", "H", "I", "J", "K", "L",
             "M", "N", "O", "P", "Q", "R",
             "S", "T", "U", "V", "W", "X",
-            "Y", "Z" , "#"
+            "Y", "Z" ,
     };
 
     private int choose = -1;//選中的tag
@@ -93,7 +93,7 @@ public class SideBar extends View{
                 paint.setFakeBoldText(true);
             }
             //X坐標等於中間-字母串寬度的一半
-            float xpos = width/1.2f - paint.measureText(alphabet[i])/2;
+            float xpos = width/1.3f - paint.measureText(alphabet[i])/2;
             float ypos = singleHeight * i + singleHeight;
             //選中時的狀態
             if(recordY >=0){
@@ -221,6 +221,6 @@ public class SideBar extends View{
     }
 
     public interface OnTouchingLetterChangedListener{
-        public void onTouchingChanged(String s);
+        void onTouchingChanged(String s);
     }
 }

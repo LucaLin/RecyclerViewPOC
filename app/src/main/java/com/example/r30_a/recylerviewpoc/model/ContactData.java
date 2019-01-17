@@ -34,6 +34,17 @@ public class ContactData {
     private String email_other;
     private String email_custom;
     private int favorTag=0;
+    private String letter;//字首
+
+    public String getLetter() {
+        return letter;
+    }
+
+    public void setLetter(String letter) {
+        this.letter = letter;
+    }
+
+
 
     public int getFavorTag() {
         return favorTag;

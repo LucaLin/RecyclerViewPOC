@@ -15,6 +15,7 @@ import android.provider.ContactsContract;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Base64;
@@ -68,6 +69,7 @@ public class ContactPageFragment extends Fragment {
     private ArrayList<ContactData> Now_ContactList = new ArrayList<>();
     private ArrayList<ContactData> searchList = new ArrayList<>();
     int number=0;
+    LinearLayoutManager manager;
 
     //--------聯絡人元件-------//
     private Cursor cursor;//搜尋資料的游標
@@ -98,11 +100,17 @@ public class ContactPageFragment extends Fragment {
         CommonUtil.favorIdSet = sp.getStringSet("favorTags",new HashSet<String>());
         //資料有更新時，要更新nowlist，無更新時丟回原本的
 
-        if(sp.getInt("listSize",0) == 0 ){//只有第一次
-            setContactList(CommonUtil.ALL_CONTACTS_URI,CommonUtil.phoneNumberProjection);
-        }
+        try {
+
+//            if(sp.getInt("listSize",0) == 0 ){//只有第一次
+                setContactList(CommonUtil.ALL_CONTACTS_URI,CommonUtil.phoneNumberProjection);
+//            }
             Now_ContactList = getList();
-            CommonUtil.setContactList(context,contact_RecyclerView,adapter, Now_ContactList);
+            CommonUtil.setContactList(context,contact_RecyclerView,adapter, Now_ContactList,manager);
+
+        }catch (Exception e){
+            e.getMessage();
+        }
 
     }
 
@@ -119,9 +127,14 @@ public class ContactPageFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         context = getContext();
+        manager = new LinearLayoutManager(context);
         resolver = context.getContentResolver();
-        myContactDBHelper = MyContactDBHelper.getInstance(context);
+        if(myContactDBHelper == null){
+            myContactDBHelper = MyContactDBHelper.getInstance(context);
+        }
+
         sp = context.getSharedPreferences("favorTags",Context.MODE_PRIVATE);
+
 //        CommonUtil.favorIdSet = sp.getStringSet("favorTags",new HashSet<String>());
 
         CommonUtil.favorIdSet = sp.getStringSet("favorTags",new HashSet<String>());
@@ -223,7 +236,7 @@ public class ContactPageFragment extends Fragment {
                                     myContactDBHelper.getWritableDatabase().update(MyContactDBHelper.TABLE_NAME,values,
                                             MyContactDBHelper.CONTACT_ID+"=?",new String[]{String.valueOf(data.getId())});
                                     Now_ContactList = getList();
-                                    CommonUtil.setContactList(context,contact_RecyclerView, adapter, Now_ContactList);
+                                    CommonUtil.setContactList(context,contact_RecyclerView, adapter, Now_ContactList,manager);
                                     toast.setText(R.string.favorDone);toast.show();
                                 }else {
                                     toast.setText(R.string.alreadyaddfavor);toast.show();
@@ -254,25 +267,29 @@ public class ContactPageFragment extends Fragment {
                                 name.substring(0,searchText.length()).equals(searchText))  ){
                             searchList.add(Now_ContactList.get(i));
                         }
-                        CommonUtil.setContactList(context,contact_RecyclerView,adapter,searchList);
+                        CommonUtil.setContactList(context,contact_RecyclerView,adapter,searchList,manager);
                     }
                 }else {
                     contact_RecyclerView.addItemDecoration(itemDecoration);
                     searchList.clear();
-                    CommonUtil.setContactList(context,contact_RecyclerView, adapter, Now_ContactList);
+                    CommonUtil.setContactList(context,contact_RecyclerView, adapter, Now_ContactList,manager);
                 }
                 return true;
             }
 
         });
-        sideBar = new SideBar(context);
+        sideBar = v.findViewById(R.id.sideBar2);
         sideBar.setOnTouchingLetterChangedListener(new SideBar.OnTouchingLetterChangedListener() {
             @Override
             public void onTouchingChanged(String s) {
-
+                if(s.matches("#")){//其它未分類就跳至最前
+                    manager.scrollToPositionWithOffset(0,0);
+                }else {//根據資料找第一個出現的字母資料，並跳至該頁
+                    int pos = adapter.getPosForSection(s.charAt(0));
+                    manager.scrollToPositionWithOffset(pos,0);
+                }
             }
         });
-
         return v;
     }
 
@@ -286,8 +303,6 @@ public class ContactPageFragment extends Fragment {
             String note = "";//備註欄
 
             List<EmailData> emailList = new ArrayList<>();
-
-
 
             cursor = resolver.query(uri, projection, null, null, null);
             //直接取contacts中的號碼資料區，再從號碼欄去抓對應的name跟number
@@ -434,7 +449,6 @@ public class ContactPageFragment extends Fragment {
     }
 
 
-
     /*刪除聯絡人*/
     private void deleteContact(final long id,final int number, final String[] projection) {
 
@@ -459,7 +473,7 @@ public class ContactPageFragment extends Fragment {
                                 toast.setText(R.string.deleteOK);
                                 toast.show();
 
-                                CommonUtil.setContactList(context,contact_RecyclerView,adapter,Now_ContactList);
+                                CommonUtil.setContactList(context,contact_RecyclerView,adapter,Now_ContactList,manager);
                             }
                         } catch (Exception e) {
                             e.getMessage();
@@ -505,7 +519,17 @@ public class ContactPageFragment extends Fragment {
                 data.setImg_avatar(bitmap);
                 }
 
+                String letter = Pinyin.toPinyin(data.getName().substring(0,1).charAt(0));
+                if(letter.matches("[A-Z]")){
+                    data.setLetter(letter);
+
+                }else {
+                    data.setLetter("#");
+
+                }
                 list.add(data);
+
+
             }
         }
         sp.edit().putInt("listSize",c.getCount()).commit();
@@ -514,14 +538,34 @@ public class ContactPageFragment extends Fragment {
             Collections.sort(list, new Comparator<ContactData>() {
                 @Override
                 public int compare(ContactData o1, ContactData o2) {
-                    String s1 = Pinyin.toPinyin(o1.getName().charAt(0)).toUpperCase();
-                    String s2 = Pinyin.toPinyin(o2.getName().charAt(0)).toUpperCase();
-                    
-                    return s1.compareTo(s2);
+
+
+//                    if(o1.getLetter().equals("#")||o2.getLetter().equals("#")){
+//                        return -1;
+//                    }else {
+                        String s1 = Pinyin.toPinyin(o1.getName().charAt(0)).toUpperCase();
+                        String s2 = Pinyin.toPinyin(o2.getName().charAt(0)).toUpperCase();
+                        if(!s1.matches("[0-9]")||!s2.matches("[0-9]")){
+                            return s1.compareTo(s2);
+                        }else {
+                            return 1;
+                        }
+//                        if(!s1.matches("[A-Z]")||!s2.matches("[A-Z]")){
+//                            return 1;
+//                        }else {
+//                            return s1.compareTo(s2);
+//                        }
+
+//                        }else {
+//                            return -1;
+//                        }
+                    //}
+
+
                 }
             });
 
-
+        adapter = new MyAdapter(context,list);
         return list;
     }
 

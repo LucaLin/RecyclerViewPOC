@@ -34,7 +34,7 @@ public class MyDecoration extends RecyclerView.ItemDecoration {
 
         paint = new Paint();
 //        paint.setColor(context.getResources().getColor(R.color.colorPrimary));
-        paint.setColor(Color.parseColor("#0091EA"));
+        paint.setColor(Color.parseColor("#77a6e4"));
 
 
         textPaint = new TextPaint();
