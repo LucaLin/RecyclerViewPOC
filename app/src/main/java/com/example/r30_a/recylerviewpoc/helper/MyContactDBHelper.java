@@ -11,7 +11,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class MyContactDBHelper extends SQLiteOpenHelper {
 
     private static final String DB_NAME="CONTACT_DB";//資料庫名稱
-    private static final int DB_VERSION=1;//資料庫版本
+    private static final int DB_VERSION = 2;//資料庫版本
     public static final String TABLE_NAME="CONTACT_LIST";//資料表名稱
     public static final String id = "_id";
     public static final String CONTACT_ID = "ID";//聯絡人id編號
@@ -51,7 +51,7 @@ public class MyContactDBHelper extends SQLiteOpenHelper {
             +EMAIL_DATA_HOME+" TEXT, "
             +EMAIL_DATA_COM+" TEXT, "
             +EMAIL_DATA_OTHER+" TEXT, "
-            +EMAIL_DATA_CUSTOM+" TEXT ); ";
+            +EMAIL_DATA_CUSTOM+" TEXT); ";
 
     private static MyContactDBHelper instance;
     //取得實體
@@ -71,7 +71,7 @@ public class MyContactDBHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE IF EXISTS "+TABLE_NAME);
+        db.execSQL(" DROP TABLE IF EXISTS "+TABLE_NAME);
         onCreate(db);
     }
 }

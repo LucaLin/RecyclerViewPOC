@@ -26,7 +26,7 @@ public class ContactPageActivity extends AppCompatActivity {
     private DrawerLayout drawerLayout;//側邊選單
     private NavigationView navigationView;
     private Toolbar toolbar;
-    private SideBar sideBar;
+
 
 
     @Override
@@ -35,7 +35,6 @@ public class ContactPageActivity extends AppCompatActivity {
         setContentView(R.layout.activity_contact_page);
         showFrag(new ContactPageFragment());
 
-//        sideBar = new SideBar(this);
         //----------抽屜設定-----------//
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         navigationView = (NavigationView)findViewById(R.id.navigationView);
@@ -98,13 +97,5 @@ public class ContactPageActivity extends AppCompatActivity {
         transaction.replace(R.id.frameLayout,fragment);
         transaction.commit();
     }
-    public static OnsearchViewListener onsearchViewListener;
 
-    public static void setOnsearchViewListener(OnsearchViewListener listener){
-        onsearchViewListener = listener;
-    }
-
-    public interface OnsearchViewListener{
-        void startSearch();
-    }
 }

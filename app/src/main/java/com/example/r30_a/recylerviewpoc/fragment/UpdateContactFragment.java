@@ -267,14 +267,14 @@ public class UpdateContactFragment extends Fragment implements View.OnClickListe
                                             if(!TextUtils.isEmpty(updateCity) && !TextUtils.isEmpty(updateStreet)){
                                                 values = new ContentValues();
                                                 values.put(StructuredPostal.CITY,updateCity);
-//                                                values.put(StructuredPostal.STREET,updateStreet);
-//                                                values.put(Phone._ID,contact_id);
-//                                                values.put(Data.MIMETYPE,"vnd.android.cursor.item/postal-address_v2");
+                                                values.put(StructuredPostal.STREET,updateStreet);
 //                                                values.put(Phone.CONTACT_ID,contact_id);
+                                                values.put(Data.MIMETYPE,"vnd.android.cursor.item/postal-address_v2");
+
                                                 resolver.update(Data.CONTENT_URI,values,
-                                                        Data.CONTACT_ID+" =?",
-//                                                        + Data.MIMETYPE + "='vnd.android.cursor.item/postal-address_v2'",
-                                                        new String[]{contact_id});
+                                                        Data.RAW_CONTACT_ID+" =? AND "
+                                                        + Data.MIMETYPE + "='vnd.android.cursor.item/postal-address_v2'",
+                                                        new String[]{raw_contact_id});
 
                                             }else {
                                                 toast.setText("地址不完整，本次尚未更新");toast.show();
@@ -329,8 +329,8 @@ public class UpdateContactFragment extends Fragment implements View.OnClickListe
         values.put(MyContactDBHelper.NAME,updateName);
         values.put(MyContactDBHelper.PHONE_NUMBER,updatePhone);
         values.put(MyContactDBHelper.NOTE,updateNote);
-//        values.put(MyContactDBHelper.CITY,updateCity);
-//        values.put(MyContactDBHelper.STREET,updateStreet);
+        values.put(MyContactDBHelper.CITY,updateCity);
+        values.put(MyContactDBHelper.STREET,updateStreet);
         values.put(MyContactDBHelper.EMAIL_DATA_HOME,updateEmail_home);
         values.put(MyContactDBHelper.EMAIL_DATA_COM,updateEmail_company);
         values.put(MyContactDBHelper.EMAIL_DATA_OTHER,updateEmail_other);

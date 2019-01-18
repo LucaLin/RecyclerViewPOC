@@ -97,14 +97,15 @@ public class ContactPageFragment extends Fragment {
     public void onResume() {
         super.onResume();
         searchList.clear();
+
         CommonUtil.favorIdSet = sp.getStringSet("favorTags",new HashSet<String>());
         //資料有更新時，要更新nowlist，無更新時丟回原本的
 
         try {
 
-//            if(sp.getInt("listSize",0) == 0 ){//只有第一次
+            if(sp.getInt("listSize",0) == 0 ){//只有第一次
                 setContactList(CommonUtil.ALL_CONTACTS_URI,CommonUtil.phoneNumberProjection);
-//            }
+            }
             Now_ContactList = getList();
             CommonUtil.setContactList(context,contact_RecyclerView,adapter, Now_ContactList,manager);
 
@@ -118,7 +119,6 @@ public class ContactPageFragment extends Fragment {
 
         ContactPageFragment fragment = new ContactPageFragment();
         Bundle args = new Bundle();
-
         fragment.setArguments(args);
         return fragment;
     }
@@ -129,35 +129,30 @@ public class ContactPageFragment extends Fragment {
         context = getContext();
         manager = new LinearLayoutManager(context);
         resolver = context.getContentResolver();
-        if(myContactDBHelper == null){
-            myContactDBHelper = MyContactDBHelper.getInstance(context);
-        }
+        toast = Toast.makeText(context, "", Toast.LENGTH_SHORT);
 
-        sp = context.getSharedPreferences("favorTags",Context.MODE_PRIVATE);
+            myContactDBHelper = MyContactDBHelper.getInstance(context);
+
+        sp = context.getSharedPreferences("Tags",Context.MODE_PRIVATE);
 
 //        CommonUtil.favorIdSet = sp.getStringSet("favorTags",new HashSet<String>());
 
-        CommonUtil.favorIdSet = sp.getStringSet("favorTags",new HashSet<String>());
+        //CommonUtil.favorIdSet = sp.getStringSet("favorTags",new HashSet<String>());
         //資料有更新時，要更新nowlist，無更新時丟回原本的
 
 
-        toast = Toast.makeText(context, "", Toast.LENGTH_SHORT);
+
         //名稱分隔線
         itemDecoration = new MyDecoration(context, new MyDecoration.DecorationCallBack() {
             @Override
             public long getGroupId(int pos) {
-
                 String  s = Pinyin.toPinyin(Now_ContactList.get(pos).getName().charAt(0));
-
                 return s.charAt(0);
-
 
             }
             @Override
             public String getGroupFirstLine(int pos) {
-
                 return Pinyin.toPinyin(Now_ContactList.get(pos).getName().charAt(0)).substring(0,1);
-//
             }
         });
     }
@@ -306,9 +301,13 @@ public class ContactPageFragment extends Fragment {
 
             cursor = resolver.query(uri, projection, null, null, null);
             //直接取contacts中的號碼資料區，再從號碼欄去抓對應的name跟number
+//            int c = cursor.getCount();
+//            Cursor s = myContactDBHelper.getReadableDatabase().query(MyContactDBHelper.TABLE_NAME,null,null,null,null,null,null);
+//            int ss = s.getCount();
             if (cursor != null) {
-                while (cursor != null && cursor.moveToNext()) {
-
+//                while (cursor.moveToNext()) {
+                for(int i = 0; i< cursor.getCount(); i++){
+                    cursor.moveToNext();
 
                     id =cursor.getLong(cursor.getColumnIndex(Phone.CONTACT_ID));//id
                     name = cursor.getString(cursor.getColumnIndex(Phone.DISPLAY_NAME));//名稱
@@ -322,7 +321,7 @@ public class ContactPageFragment extends Fragment {
                         if (info_cursor != null && info_cursor.moveToFirst()) {
                             note = info_cursor.getString(info_cursor.getColumnIndex(Note.NOTE));
                         }
-                    String address="";
+//                    String address="";
 
                     //--------抓取地址--------//
                     String cityName="",streetName="";
@@ -338,7 +337,7 @@ public class ContactPageFragment extends Fragment {
                             if(cityName == null){
                                 cityName = "";
                             }
-                           // address = cityName+streetName;
+
                         }
                     info_cursor.close();
 
@@ -399,7 +398,8 @@ public class ContactPageFragment extends Fragment {
             values.put(MyContactDBHelper.CONTACT_ID,id);
             values.put(MyContactDBHelper.NAME,name);
             values.put(MyContactDBHelper.PHONE_NUMBER,CommonUtil.getFormatPhone(phoneNumber));
-            values.put(MyContactDBHelper.NUMBER,number);
+            values.put(MyContactDBHelper.NUMBER,number+1);
+
             if(emailList != null && emailList.size()>0){
                 for(int i =0;i<emailList.size();i++){
                     String type = emailList.get(i).getType();
@@ -488,6 +488,7 @@ public class ContactPageFragment extends Fragment {
         ArrayList<ContactData> list = new ArrayList<>();
 
         Cursor c = myContactDBHelper.getReadableDatabase().query(MyContactDBHelper.TABLE_NAME,null,null,null,null,null,null);
+//        int i = c.getCount();
         if(c != null){
             while (c.moveToNext()){
                 ContactData data = new ContactData();
@@ -529,7 +530,6 @@ public class ContactPageFragment extends Fragment {
                 }
                 list.add(data);
 
-
             }
         }
         sp.edit().putInt("listSize",c.getCount()).commit();
@@ -540,9 +540,6 @@ public class ContactPageFragment extends Fragment {
                 public int compare(ContactData o1, ContactData o2) {
 
 
-//                    if(o1.getLetter().equals("#")||o2.getLetter().equals("#")){
-//                        return -1;
-//                    }else {
                         String s1 = Pinyin.toPinyin(o1.getName().charAt(0)).toUpperCase();
                         String s2 = Pinyin.toPinyin(o2.getName().charAt(0)).toUpperCase();
                         if(!s1.matches("[0-9]")||!s2.matches("[0-9]")){
@@ -550,16 +547,6 @@ public class ContactPageFragment extends Fragment {
                         }else {
                             return 1;
                         }
-//                        if(!s1.matches("[A-Z]")||!s2.matches("[A-Z]")){
-//                            return 1;
-//                        }else {
-//                            return s1.compareTo(s2);
-//                        }
-
-//                        }else {
-//                            return -1;
-//                        }
-                    //}
 
 
                 }
