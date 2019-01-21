@@ -1,11 +1,13 @@
 <resources>
     <string name="app_name">RecylerViewPOC</string>
     <!--元件-->
+    <string name="addProfile">建立個人檔案</string>
     <string name="ContactPage">通訊錄</string>
     <string name="SettingPage">更多設定</string>
+    <string name="FBLogin">使用facebook個人資料</string>
     <string name="addContact">新增好友</string>
-    <string name="addName">輸入姓名</string>
-    <string name="addPhone">輸入電話</string>
+    <string name="addName">輸入姓名(必填)</string>
+    <string name="addPhone">輸入電話(必填)</string>
     <string name="update">更新</string>
     <string name="city">縣/市名稱</string>
     <string name="street">街道</string>
@@ -63,10 +65,14 @@
     <string name="deleteOrNot">此功能會永久刪除此聯絡人，確定要繼續嗎？</string>
     <string name="chooseMail">請選擇要寄送的信箱</string>
     <string name="noEmailData">您並無信箱資料喔！</string>
+    <string name="addSuccessnotify">哈囉！你剛剛已新增了一位好友</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_maps">Map</string>
 
+
+    <string name="facebook_app_id">224145721868033</string>
+    <string name="fb_login_protocol_scheme">fb224145721868033</string>
 
 </resources>

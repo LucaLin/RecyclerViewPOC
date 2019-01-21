@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.r30_a.recylerviewpoc.fragment.DetailPageFragment">
+    tools:context="com.example.r30_a.recyclerviewpoc.fragment.DetailPageFragment">
 
     <RelativeLayout
         android:layout_width="match_parent"

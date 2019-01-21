@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#bbbbbb"
-    tools:context="com.example.r30_a.recylerviewpoc.controller.FavorListPageActivity">
+    tools:context="com.example.r30_a.recyclerviewpoc.controller.FavorListPageActivity">
 
     <RelativeLayout
         android:layout_width="match_parent"

@@ -1,16 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.r30_a.recylerviewpoc">
+    package="com.example.r30_a.recyclerviewpoc">
 
     <uses-permission android:name="android.permission.CALL_PHONE" />
     <uses-permission android:name="android.permission.SEND_SMS" />
-    <!--GOOGLE MAP-->
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
-
-
-
+    <!-- GOOGLE MAP -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
     <!-- 聯絡人清單需要的權限 -->
     <uses-permission android:name="android.permission.READ_CONTACTS" />
@@ -34,23 +31,24 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.AppCompat.Light.NoActionBar"
-        >
-        <uses-library android:name="com.google.android.maps"/>
-        <activity android:name=".controller.MainActivity">
+        android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+        <uses-library android:name="com.google.android.maps" />
+
+        <activity android:name="com.example.r30_a.recyclerviewpoc.controller.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <activity android:name=".controller.SettingPageActivity" />
-        <activity android:name=".controller.WelcomeActivity" />
-        <activity android:name=".controller.DetailPageActivity"
-            android:windowSoftInputMode="adjustPan"/>
-        <activity android:name=".controller.ContactPageActivity"
-            android:windowSoftInputMode="adjustPan"/>
+        <activity android:name="com.example.r30_a.recyclerviewpoc.controller.SettingPageActivity" />
+        <activity android:name="com.example.r30_a.recyclerviewpoc.controller.WelcomeActivity" />
+        <activity
+            android:name="com.example.r30_a.recyclerviewpoc.controller.DetailPageActivity"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name="com.example.r30_a.recyclerviewpoc.controller.ContactPageActivity"
+            android:windowSoftInputMode="adjustPan" />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -64,11 +62,39 @@
             android:value="@integer/google_play_services_version" />
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyDJsq3_MgAFzSU7ZhvIqAqnJqHT9yj_BAk"/>
+            android:value="AIzaSyDJsq3_MgAFzSU7ZhvIqAqnJqHT9yj_BAk" />
 
         <activity
-            android:name=".controller.MapsActivity"
-            android:label="@string/title_activity_maps"></activity>
+            android:name="com.example.r30_a.recyclerviewpoc.controller.MapsActivity"
+            android:label="@string/title_activity_maps" />
+        <activity android:name="com.example.r30_a.recyclerviewpoc.controller.AddProfileActivity"></activity>
+
+        <!--FB用-->
+        <meta-data
+            android:name="com.facebook.sdk.ApplicationId"
+            android:value="@string/facebook_app_id" />
+
+        <activity
+            android:name="com.facebook.FacebookActivity"
+            android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
+            android:label="@string/app_name" />
+        <activity
+            android:name="com.facebook.CustomTabActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="@string/fb_login_protocol_scheme" />
+            </intent-filter>
+        </activity>
+        <provider
+            android:authorities="com.facebook.app.FacebookContentProvider"
+            android:name="com.facebook.FacebookContentProvider"
+            android:exported="true"/>
+
     </application>
 
 </manifest>

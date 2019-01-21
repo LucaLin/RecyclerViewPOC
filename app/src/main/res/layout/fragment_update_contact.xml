@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/contact_background"
-    tools:context="com.example.r30_a.recylerviewpoc.fragment.UpdateContactFragment">
+    tools:context="com.example.r30_a.recyclerviewpoc.fragment.UpdateContactFragment">
 
     <RelativeLayout
         android:layout_width="match_parent"

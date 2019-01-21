@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.r30_a.recylerviewpoc.fragment.ContactPageFragment">
+    tools:context="com.example.r30_a.recyclerviewpoc.fragment.ContactPageFragment">
 
 
     <RelativeLayout
@@ -52,7 +52,7 @@
 
             </RelativeLayout>
 
-            <com.example.r30_a.recylerviewpoc.view.SideBar
+            <com.example.r30_a.recyclerviewpoc.view.SideBar
                 android:id="@+id/sideBar2"
                 android:layout_width="85dp"
                 android:layout_height="wrap_content"
