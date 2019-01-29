@@ -6,6 +6,23 @@
     android:layout_height="match_parent"
     tools:context="com.example.r30_a.recyclerviewpoc.controller.MainActivity">
 
+    <TextView
+        android:id="@+id/txvNews"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:text="新聞焦點" />
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/viewPager"
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:layout_alignParentStart="false"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="10dp"
+        android:layout_toRightOf="@+id/txvNews">
+
+    </android.support.v4.view.ViewPager>
 
     <Button
         android:id="@+id/btnProfile"
