@@ -64,8 +64,6 @@ public class MyViewPagerAdapter extends PagerAdapter{
 
             }
         });
-//        txvTitle.setGravity(Gravity.BOTTOM);
-//        container.addView(view);
         viewPager.addView(view);
         return view;
 
@@ -77,31 +75,10 @@ public class MyViewPagerAdapter extends PagerAdapter{
         return view ==object;
     }
 
-//    private void autoplayView() {
-//
-//        new Thread(new Runnable() {
-//            @Override
-//            public void run() {
-//                while (!isStop) {
-//                    context.runOnUiThread(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            if(viewPager != null){
-//                                viewPager.setCurrentItem(viewPager.getCurrentItem() + 1);
-//                            }
-//                        }
-//                    });
-//                    SystemClock.sleep(5000);
-//                }
-//            }
-//        }).start();
-//    }
-
     @Override
     public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
-
+        if(list != null &&list.size()>0)
         viewPager.removeView(list.get(position % list.size()));
     }
-
 
 }

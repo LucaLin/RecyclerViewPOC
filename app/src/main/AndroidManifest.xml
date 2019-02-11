@@ -16,6 +16,7 @@
     <uses-permission android:name="android.permission.WRITE_PROFILE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_SETTINGS"/>
     <uses-permission android:name="android.permission.CAMERA" />
 
     <!--
@@ -94,6 +95,17 @@
             android:authorities="com.facebook.app.FacebookContentProvider"
             android:name="com.facebook.FacebookContentProvider"
             android:exported="true"/>
+
+        <!-- 适配android 7.0 拍照闪退的处理 ,其中authorities的值要和等下代码中使用的一致就行，其中resource内的文件就是拍照后的共享文件 -->
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="com.example.r30_a.recyclerviewpoc.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths"/>
+        </provider>
 
     </application>
 

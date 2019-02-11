@@ -37,9 +37,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     ViewPager viewPager;
     MyViewPagerAdapter myViewPagerAdapter;
     private boolean isStop = false;//線程是否停止
-    ArrayList<ImageView> newsList = new ArrayList<>();
     ArrayList<ViewPagerData> myNewsList = new ArrayList<>();
-    int[] photoList = new int[]{R.drawable.sorry, R.drawable.sorry2, R.drawable.sorry3};
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,13 +99,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }).start();
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-
-    }
-
     private void initView() {
         getNews();
 
@@ -127,6 +119,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 .create();
 
         if (PermissionsUtil.hasPermission(this, Manifest.permission.CALL_PHONE) &&
+
                 PermissionsUtil.hasPermission(this, Manifest.permission.SEND_SMS) &&
                 PermissionsUtil.hasPermission(this, Manifest.permission.READ_CONTACTS) &&
                 PermissionsUtil.hasPermission(this, Manifest.permission.WRITE_CONTACTS) &&
@@ -151,11 +144,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     Manifest.permission.CALL_PHONE,
                     Manifest.permission.SEND_SMS,
 
+
             });
-
         }
-
-
     }
 
     @Override
@@ -168,23 +159,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.btnContactPage:
                 startActivity(new Intent(this, ContactPageActivity.class));
                 break;
-
             case R.id.btnSettingPage:
                 startActivity(new Intent(this, SettingPageActivity.class));
                 break;
 
         }
-
     }
-
     public void getNews() {
 
-        new Thread(new Runnable() {
+        new Thread(new Runnable() {//使用線程確資料能順利抓取
             @Override
             public void run() {
                 try {
 
-                    Document doc = Jsoup.connect("https://tw.yahoo.com/").get();
+                    Document doc = Jsoup.connect("https://tw.yahoo.com/").get();//要連結的新聞網址
 
                     Element element = doc.getElementById("t1");
                     Elements titles = element.select("a[href]");//標題列
@@ -200,6 +188,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //                    Message msg = new Message()
                 } catch (IOException e) {
                     e.printStackTrace();
+                    getNews();
                 }
 
             }
@@ -208,14 +197,5 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }.start();
     }
 
-    public interface OnLoadingNewsListener {
-        void onComplete();
-    }
-
-    public OnLoadingNewsListener onLoadingNewsListener;
-
-    public void setOnLoadingNewsListener(OnLoadingNewsListener onLoadingNewsListener) {
-        this.onLoadingNewsListener = onLoadingNewsListener;
-    }
 }
 

@@ -15,10 +15,12 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.ContactsContract;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v7.widget.PopupMenu;
 import android.text.TextUtils;
 import android.util.Base64;
@@ -32,6 +34,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.example.r30_a.recyclerviewpoc.BuildConfig;
 import com.example.r30_a.recyclerviewpoc.R;
 import com.example.r30_a.recyclerviewpoc.helper.MyContactDBHelper;
 
@@ -39,6 +42,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 
 import static android.app.Activity.RESULT_OK;
+import static android.support.v4.content.FileProvider.getUriForFile;
 import static com.example.r30_a.recyclerviewpoc.util.CommonUtil.isCellPhoneNumber;
 
 public class AddContactFragment extends Fragment {
@@ -172,6 +176,14 @@ public class AddContactFragment extends Fragment {
 
             Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            File imagePath = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), System.currentTimeMillis()+"temp.jpg");
+
+            if (!imagePath.exists()) {
+                if (!imagePath.mkdirs()) {
+                }
+            }
+            camera_uri = getUriForFile(getContext(), "com.example.r30_a.recyclerviewpoc.fileprovider", imagePath);
+
             intent.putExtra(MediaStore.EXTRA_OUTPUT, camera_uri);
             getActivity().setResult(RESULT_OK,intent);
             startActivityForResult(intent,CAMERA_REQUEST);

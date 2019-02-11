@@ -4,6 +4,7 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -12,6 +13,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.speech.RecognizerIntent;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
@@ -35,6 +37,7 @@ import com.example.r30_a.recyclerviewpoc.helper.MyContactDBHelper;
 import com.example.r30_a.recyclerviewpoc.model.ContactData;
 import com.example.r30_a.recyclerviewpoc.model.EmailData;
 import com.example.r30_a.recyclerviewpoc.util.CommonUtil;
+import com.example.r30_a.recyclerviewpoc.view.MyFloatButton;
 import com.example.r30_a.recyclerviewpoc.view.SideBar;
 import com.github.promeg.pinyinhelper.Pinyin;
 import com.yanzhenjie.recyclerview.swipe.Closeable;
@@ -54,10 +57,11 @@ import java.util.List;
 import android.provider.ContactsContract.CommonDataKinds.Phone;
 import android.provider.ContactsContract.Data;
 import android.provider.ContactsContract.CommonDataKinds.Note;
+
 import static com.example.r30_a.recyclerviewpoc.util.CommonUtil.isCellPhoneNumber;
+
 import android.provider.ContactsContract.CommonDataKinds.Email;
 import android.provider.ContactsContract.CommonDataKinds.StructuredPostal;
-
 
 
 public class ContactPageFragment extends Fragment {
@@ -66,8 +70,9 @@ public class ContactPageFragment extends Fragment {
     private ArrayList<ContactData> favorList = new ArrayList<>();//常用清單
     private ArrayList<ContactData> Now_ContactList = new ArrayList<>();
     private ArrayList<ContactData> searchList = new ArrayList<>();
-    int number=0;
+    int number = 0;
     LinearLayoutManager manager;
+    private MyFloatButton floatButton;
 
     //--------聯絡人元件-------//
     private Cursor cursor;//搜尋資料的游標
@@ -89,25 +94,26 @@ public class ContactPageFragment extends Fragment {
     SharedPreferences sp;
     private Context context;
 
-    public ContactPageFragment() {}
+    public ContactPageFragment() {
+    }
 
     @Override
     public void onResume() {
         super.onResume();
         searchList.clear();
 
-        CommonUtil.favorIdSet = sp.getStringSet("favorTags",new HashSet<String>());
+        CommonUtil.favorIdSet = sp.getStringSet("favorTags", new HashSet<String>());
         //資料有更新時，要更新nowlist，無更新時丟回原本的
 
         try {
 
-            if(sp.getInt("listSize",0) == 0 ){//只有第一次
-                setContactList(CommonUtil.ALL_CONTACTS_URI,CommonUtil.phoneNumberProjection);
+            if (sp.getInt("listSize", 0) == 0) {//只有第一次
+                setContactList(CommonUtil.ALL_CONTACTS_URI, CommonUtil.phoneNumberProjection);
             }
             Now_ContactList = getList();
-            CommonUtil.setContactList(context,contact_RecyclerView,adapter, Now_ContactList,manager);
+            CommonUtil.setContactList(context, contact_RecyclerView, adapter, Now_ContactList, manager);
 
-        }catch (Exception e){
+        } catch (Exception e) {
             e.getMessage();
         }
 
@@ -129,9 +135,9 @@ public class ContactPageFragment extends Fragment {
         resolver = context.getContentResolver();
         toast = Toast.makeText(context, "", Toast.LENGTH_SHORT);
 
-            myContactDBHelper = MyContactDBHelper.getInstance(context);
+        myContactDBHelper = MyContactDBHelper.getInstance(context);
 
-        sp = context.getSharedPreferences("Tags",Context.MODE_PRIVATE);
+        sp = context.getSharedPreferences("Tags", Context.MODE_PRIVATE);
 
 //        CommonUtil.favorIdSet = sp.getStringSet("favorTags",new HashSet<String>());
 
@@ -139,27 +145,27 @@ public class ContactPageFragment extends Fragment {
         //資料有更新時，要更新nowlist，無更新時丟回原本的
 
 
-
         //名稱分隔線
         itemDecoration = new MyDecoration(context, new MyDecoration.DecorationCallBack() {
             @Override
             public long getGroupId(int pos) {
-                String  s = Pinyin.toPinyin(Now_ContactList.get(pos).getName().charAt(0));
+                String s = Pinyin.toPinyin(Now_ContactList.get(pos).getName().charAt(0));
                 return s.charAt(0);
 
             }
+
             @Override
             public String getGroupFirstLine(int pos) {
-                return Pinyin.toPinyin(Now_ContactList.get(pos).getName().charAt(0)).substring(0,1);
+                return Pinyin.toPinyin(Now_ContactList.get(pos).getName().charAt(0)).substring(0, 1);
             }
         });
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(final LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_contact_page,container,false);
-        contact_RecyclerView = (SwipeMenuRecyclerView)v.findViewById(R.id.contact_RecyclerView);
+        View v = inflater.inflate(R.layout.fragment_contact_page, container, false);
+        contact_RecyclerView = (SwipeMenuRecyclerView) v.findViewById(R.id.contact_RecyclerView);
         //增加群組分類抬頭
         contact_RecyclerView.addItemDecoration(itemDecoration);
         //--------滑動菜單設定-------------//
@@ -167,11 +173,11 @@ public class ContactPageFragment extends Fragment {
             @Override
             public void onCreateMenu(SwipeMenu swipeLeftMenu, SwipeMenu swipeRightMenu, int viewType) {
                 //建立右菜單更新按鈕
-                SwipeMenuItem update_item = CommonUtil.setMenuItem(context, 200,240,R.drawable.icons8_restart_72,16, Color.parseColor("#69e359"));
+                SwipeMenuItem update_item = CommonUtil.setMenuItem(context, 200, 260, R.drawable.icons8_restart_72, 16, Color.parseColor("#69e359"));
                 //建立右菜單刪除按鈕
-                SwipeMenuItem delete_item = CommonUtil.setMenuItem(context,200,240,R.drawable.icons8_trash_72,16,Color.parseColor("#db2824"));
+                SwipeMenuItem delete_item = CommonUtil.setMenuItem(context, 200, 260, R.drawable.icons8_trash_72, 16, Color.parseColor("#db2824"));
                 //建立左菜單加入最愛按鈕
-                SwipeMenuItem favor_item = CommonUtil.setMenuItem(context, 200, 240,R.drawable.icons8_starplus_48,16,Color.parseColor("#69e359"));
+                SwipeMenuItem favor_item = CommonUtil.setMenuItem(context, 200, 260, R.drawable.icons8_starplus_48, 16, Color.parseColor("#69e359"));
 
                 swipeRightMenu.addMenuItem(update_item);
                 swipeRightMenu.addMenuItem(delete_item);
@@ -184,55 +190,57 @@ public class ContactPageFragment extends Fragment {
             @Override
             public void onItemClick(Closeable closeable, final int pos, int menuPosition, int direction) {
                 ContactData data = new ContactData();
-                if(searchList.size()>0){
+                if (searchList.size() > 0) {
                     data = searchList.get(pos);
-                }else {
+                } else {
                     data = Now_ContactList.get(pos);
                 }
-                if(direction == -1){//向右滑動
-                    switch (menuPosition){
+                if (direction == -1) {//向右滑動
+                    switch (menuPosition) {
                         //更新
                         case 0:
 
-                                Fragment fragment = UpdateContactFragment.newInstance(String.valueOf(data.getId()),data.getName(),
-                                        data.getPhoneNum(),data.getImg_avatar(),
-                                        data.getNote(),data.getCity(),
-                                        data.getStreet(),data.getEmail_home(),
-                                        data.getEmail_company(),data.getEmail_other(),
-                                        data.getEmail_custom());
-                                FragmentTransaction transaction = getFragmentManager().beginTransaction();
-                                transaction.setCustomAnimations(R.anim.slide_right_in,R.anim.slide_left_out,R.anim.slide_left_in,R.anim.slide_right_out);
-                                transaction.replace(R.id.frameLayout,fragment);
-                                transaction.commit();
+                            Fragment fragment = UpdateContactFragment.newInstance(String.valueOf(data.getId()), data.getName(),
+                                    data.getPhoneNum(), data.getImg_avatar(),
+                                    data.getNote(), data.getCity(),
+                                    data.getStreet(), data.getEmail_home(),
+                                    data.getEmail_company(), data.getEmail_other(),
+                                    data.getEmail_custom());
+                            FragmentTransaction transaction = getFragmentManager().beginTransaction();
+                            transaction.setCustomAnimations(R.anim.slide_right_in, R.anim.slide_left_out, R.anim.slide_left_in, R.anim.slide_right_out);
+                            transaction.replace(R.id.frameLayout, fragment);
+                            transaction.commit();
 
                             break;
                         //刪除
                         case 1:
-                            deleteContact(data.getId(),data.getNumber(),CommonUtil.phoneNumberProjection);
+                            deleteContact(data.getId(), data.getNumber(), CommonUtil.phoneNumberProjection);
                             break;
                     }
-                }else {
-                    switch (menuPosition){//向左滑動
+                } else {
+                    switch (menuPosition) {//向左滑動
                         //加入最愛
                         case 0:
-                            if(favorList != null ){
+                            if (favorList != null) {
                                 String id = String.valueOf(data.getId());
-                                if(!CommonUtil.favorIdSet.contains(id) ){
+                                if (!CommonUtil.favorIdSet.contains(id)) {
 
                                     CommonUtil.favorIdSet.add(id);
-                                    sp.edit().putStringSet("favorTags",CommonUtil.favorIdSet).commit();
+                                    sp.edit().putStringSet("favorTags", CommonUtil.favorIdSet).commit();
                                     //更新當前清單
 //
                                     ContentValues values = new ContentValues();
-                                    values.put(MyContactDBHelper.FAVOR_TAG,1);
+                                    values.put(MyContactDBHelper.FAVOR_TAG, 1);
 
-                                    myContactDBHelper.getWritableDatabase().update(MyContactDBHelper.TABLE_NAME,values,
-                                            MyContactDBHelper.CONTACT_ID+"=?",new String[]{String.valueOf(data.getId())});
+                                    myContactDBHelper.getWritableDatabase().update(MyContactDBHelper.TABLE_NAME, values,
+                                            MyContactDBHelper.CONTACT_ID + "=?", new String[]{String.valueOf(data.getId())});
                                     Now_ContactList = getList();
-                                    CommonUtil.setContactList(context,contact_RecyclerView, adapter, Now_ContactList,manager);
-                                    toast.setText(R.string.favorDone);toast.show();
-                                }else {
-                                    toast.setText(R.string.alreadyaddfavor);toast.show();
+                                    CommonUtil.setContactList(context, contact_RecyclerView, adapter, Now_ContactList, manager);
+                                    toast.setText(R.string.favorDone);
+                                    toast.show();
+                                } else {
+                                    toast.setText(R.string.alreadyaddfavor);
+                                    toast.show();
                                 }
 
                             }
@@ -243,29 +251,49 @@ public class ContactPageFragment extends Fragment {
         });
 
         //------快速搜尋功能設定--------//
-        searchView = (SearchView)v.findViewById(R.id.searchView);
+        floatButton = (MyFloatButton)v.findViewById(R.id.fab);
+        floatButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                    Fragment fragment = new AddContactFragment();
+                    FragmentTransaction transaction = getFragmentManager().beginTransaction();
+                    transaction.setCustomAnimations(R.anim.slide_right_in,R.anim.slide_left_out,R.anim.slide_left_in,R.anim.slide_right_out);
+                    transaction.replace(R.id.frameLayout,fragment);
+                    transaction.commit();
+
+//                Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+//                intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+//                intent.putExtra(RecognizerIntent.EXTRA_PROMPT,"請說出要搜尋的人名或電話開頭");
+//                startActivityForResult(intent,1);
+            }
+        });
+
+
+        searchView = (SearchView) v.findViewById(R.id.searchView);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
-            public boolean onQueryTextSubmit(String query) {return false;}
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
 
             @Override
             public boolean onQueryTextChange(String searchText) {
-                if(searchText.length()>0){
+                if (searchText.length() > 0) {
                     contact_RecyclerView.removeItemDecoration(itemDecoration);
                     searchList.clear();
-                    for(int i = 0;i< Now_ContactList.size();i++){
-                        String num = Now_ContactList.get(i).getPhoneNum().substring(0,searchText.length());
+                    for (int i = 0; i < Now_ContactList.size(); i++) {
+                        String num = Now_ContactList.get(i).getPhoneNum().substring(0, searchText.length());
                         String name = Now_ContactList.get(i).getName();
-                        if(num.equals(searchText) || (name.length() >= searchText.length() &&
-                                name.substring(0,searchText.length()).equals(searchText))  ){
+                        if (num.equals(searchText) || (name.length() >= searchText.length() &&
+                                name.substring(0, searchText.length()).equals(searchText))) {
                             searchList.add(Now_ContactList.get(i));
                         }
-                        CommonUtil.setContactList(context,contact_RecyclerView,adapter,searchList,manager);
+                        CommonUtil.setContactList(context, contact_RecyclerView, adapter, searchList, manager);
                     }
-                }else {
+                } else {
                     contact_RecyclerView.addItemDecoration(itemDecoration);
                     searchList.clear();
-                    CommonUtil.setContactList(context,contact_RecyclerView, adapter, Now_ContactList,manager);
+                    CommonUtil.setContactList(context, contact_RecyclerView, adapter, Now_ContactList, manager);
                 }
                 return true;
             }
@@ -275,11 +303,11 @@ public class ContactPageFragment extends Fragment {
         sideBar.setOnTouchingLetterChangedListener(new SideBar.OnTouchingLetterChangedListener() {
             @Override
             public void onTouchingChanged(String s) {
-                if(s.matches("#")){//其它未分類就跳至最前
-                    manager.scrollToPositionWithOffset(0,0);
-                }else {//根據資料找第一個出現的字母資料，並跳至該頁
+                if (s.matches("#")) {//其它未分類就跳至最前
+                    manager.scrollToPositionWithOffset(0, 0);
+                } else {//根據資料找第一個出現的字母資料，並跳至該頁
                     int pos = adapter.getPosForSection(s.charAt(0));
-                    manager.scrollToPositionWithOffset(pos,0);
+                    manager.scrollToPositionWithOffset(pos, 0);
                 }
             }
         });
@@ -287,7 +315,7 @@ public class ContactPageFragment extends Fragment {
     }
 
 
-    public void setContactList(Uri uri, String[] projection){
+    public void setContactList(Uri uri, String[] projection) {
         try {
             number = 0;
             Long id;
@@ -304,10 +332,10 @@ public class ContactPageFragment extends Fragment {
 //            int ss = s.getCount();
             if (cursor != null) {
 //                while (cursor.moveToNext()) {
-                for(int i = 0; i< cursor.getCount(); i++){
+                for (int i = 0; i < cursor.getCount(); i++) {
                     cursor.moveToNext();
 
-                    id =cursor.getLong(cursor.getColumnIndex(Phone.CONTACT_ID));//id
+                    id = cursor.getLong(cursor.getColumnIndex(Phone.CONTACT_ID));//id
                     name = cursor.getString(cursor.getColumnIndex(Phone.DISPLAY_NAME));//名稱
                     mobileNum = cursor.getString(cursor.getColumnIndex(Phone.NUMBER));//電話
 
@@ -316,37 +344,37 @@ public class ContactPageFragment extends Fragment {
                             new String[]{Data._ID, Note.NOTE},
                             Data.CONTACT_ID + "=?" + " AND " + Data.MIMETYPE + "='" + Note.CONTENT_ITEM_TYPE + "'",
                             new String[]{String.valueOf(id)}, null);
-                        if (info_cursor != null && info_cursor.moveToFirst()) {
-                            note = info_cursor.getString(info_cursor.getColumnIndex(Note.NOTE));
-                        }
+                    if (info_cursor != null && info_cursor.moveToFirst()) {
+                        note = info_cursor.getString(info_cursor.getColumnIndex(Note.NOTE));
+                    }
 //                    String address="";
 
                     //--------抓取地址--------//
-                    String cityName="",streetName="";
+                    String cityName = "", streetName = "";
                     info_cursor = resolver.query(Data.CONTENT_URI,
-                            null,Phone.CONTACT_ID+" =? AND " + Data.MIMETYPE+"=?",
-                            new String[]{String.valueOf(id),StructuredPostal.CONTENT_ITEM_TYPE},null);
-                        if(info_cursor != null && info_cursor.moveToFirst()){
-                            cityName = info_cursor.getString(info_cursor.getColumnIndex(StructuredPostal.CITY));
-                            streetName = info_cursor.getString(info_cursor.getColumnIndex(StructuredPostal.STREET));
-                            if(streetName == null){
-                                streetName = "";
-                            }
-                            if(cityName == null){
-                                cityName = "";
-                            }
-
+                            null, Phone.CONTACT_ID + " =? AND " + Data.MIMETYPE + "=?",
+                            new String[]{String.valueOf(id), StructuredPostal.CONTENT_ITEM_TYPE}, null);
+                    if (info_cursor != null && info_cursor.moveToFirst()) {
+                        cityName = info_cursor.getString(info_cursor.getColumnIndex(StructuredPostal.CITY));
+                        streetName = info_cursor.getString(info_cursor.getColumnIndex(StructuredPostal.STREET));
+                        if (streetName == null) {
+                            streetName = "";
                         }
+                        if (cityName == null) {
+                            cityName = "";
+                        }
+
+                    }
                     info_cursor.close();
 
                     String email = "";
 
                     //抓取email資料
                     Cursor email_cursor = resolver.query(Email.CONTENT_URI,
-                            null,Phone.CONTACT_ID+" = "+id,null,null);
-                    if(email_cursor != null ){
+                            null, Phone.CONTACT_ID + " = " + id, null, null);
+                    if (email_cursor != null) {
                         emailList.clear();
-                        while (email_cursor.moveToNext()){
+                        while (email_cursor.moveToNext()) {
                             EmailData emailData = new EmailData();
                             String type = email_cursor.getString(email_cursor.getColumnIndex(Email.TYPE));
                             email = email_cursor.getString(email_cursor.getColumnIndex(Email.DATA));
@@ -362,14 +390,14 @@ public class ContactPageFragment extends Fragment {
                     if (!TextUtils.isEmpty(mobileNum) && !isCellPhoneNumber(mobileNum)) {
                         continue;
                     } else {
-                        number = number+1;
+                        number = number + 1;
                         addContactToList(number,
                                 id,
                                 mobileNum,
                                 name,
-                                CommonUtil.get_Avatar(resolver,id),
+                                CommonUtil.get_Avatar(resolver, id),
                                 note,
-                                cityName,streetName,
+                                cityName, streetName,
                                 emailList);
 
                     }
@@ -381,44 +409,44 @@ public class ContactPageFragment extends Fragment {
                 toast.setText(R.string.noData);
                 toast.show();
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.getMessage();
         }
 
     }
 
     /*新增聯絡人到手機清單*/
-    private void addContactToList(int number, long id, String phoneNumber, String name, Bitmap avatar,String note,String city,String street,List<EmailData> emailList) {
+    private void addContactToList(int number, long id, String phoneNumber, String name, Bitmap avatar, String note, String city, String street, List<EmailData> emailList) {
 
         if (!tempId.equals(String.valueOf(id))) {
-            String email ="";
+            String email = "";
             ContentValues values = new ContentValues();
-            values.put(MyContactDBHelper.CONTACT_ID,id);
-            values.put(MyContactDBHelper.NAME,name);
-            values.put(MyContactDBHelper.PHONE_NUMBER,CommonUtil.getFormatPhone(phoneNumber));
-            values.put(MyContactDBHelper.NUMBER,number+1);
+            values.put(MyContactDBHelper.CONTACT_ID, id);
+            values.put(MyContactDBHelper.NAME, name);
+            values.put(MyContactDBHelper.PHONE_NUMBER, CommonUtil.getFormatPhone(phoneNumber));
+            values.put(MyContactDBHelper.NUMBER, number + 1);
 
-            if(emailList != null && emailList.size()>0){
-                for(int i =0;i<emailList.size();i++){
+            if (emailList != null && emailList.size() > 0) {
+                for (int i = 0; i < emailList.size(); i++) {
                     String type = emailList.get(i).getType();
-                    if(!TextUtils.isEmpty(type)){
-                        switch (emailList.get(i).getType()){
+                    if (!TextUtils.isEmpty(type)) {
+                        switch (emailList.get(i).getType()) {
                             //多個同樣tag的資料怎麼辦 = =?
                             case "1"://住家
 
-                                values.put(MyContactDBHelper.EMAIL_DATA_HOME,emailList.get(i).getMail());
+                                values.put(MyContactDBHelper.EMAIL_DATA_HOME, emailList.get(i).getMail());
                                 break;
                             case "2"://公司
 
-                                values.put(MyContactDBHelper.EMAIL_DATA_COM,emailList.get(i).getMail());
+                                values.put(MyContactDBHelper.EMAIL_DATA_COM, emailList.get(i).getMail());
                                 break;
                             case "3":
 
-                                values.put(MyContactDBHelper.EMAIL_DATA_OTHER,emailList.get(i).getMail());
+                                values.put(MyContactDBHelper.EMAIL_DATA_OTHER, emailList.get(i).getMail());
                                 break;
                             case "0":
 
-                                values.put(MyContactDBHelper.EMAIL_DATA_CUSTOM,emailList.get(i).getMail());
+                                values.put(MyContactDBHelper.EMAIL_DATA_CUSTOM, emailList.get(i).getMail());
                                 break;
                         }
                     }
@@ -426,29 +454,29 @@ public class ContactPageFragment extends Fragment {
             }
 
 
-            if(!TextUtils.isEmpty(note)){
-                values.put(MyContactDBHelper.NOTE,note);
+            if (!TextUtils.isEmpty(note)) {
+                values.put(MyContactDBHelper.NOTE, note);
             }
-            values.put(MyContactDBHelper.CITY,city);
-            values.put(MyContactDBHelper.STREET,street);
+            values.put(MyContactDBHelper.CITY, city);
+            values.put(MyContactDBHelper.STREET, street);
 
             String img_avatar_base64 = "";
-            if(avatar != null){
+            if (avatar != null) {
                 ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-                avatar.compress(Bitmap.CompressFormat.PNG,100,outputStream);
+                avatar.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
                 byte[] bytes = outputStream.toByteArray();
-                img_avatar_base64 = Base64.encodeToString(bytes,Base64.DEFAULT);
-                values.put(MyContactDBHelper.IMG_AVATAR,img_avatar_base64);
+                img_avatar_base64 = Base64.encodeToString(bytes, Base64.DEFAULT);
+                values.put(MyContactDBHelper.IMG_AVATAR, img_avatar_base64);
             }
 
-            myContactDBHelper.getWritableDatabase().insert(MyContactDBHelper.TABLE_NAME,null,values);
+            myContactDBHelper.getWritableDatabase().insert(MyContactDBHelper.TABLE_NAME, null, values);
             tempId = String.valueOf(id);
         }
     }
 
 
     /*刪除聯絡人*/
-    private void deleteContact(final long id,final int number, final String[] projection) {
+    private void deleteContact(final long id, final int number, final String[] projection) {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle(R.string.attention)
@@ -466,29 +494,29 @@ public class ContactPageFragment extends Fragment {
                             if (c.moveToFirst()) {
 
                                 resolver.delete(ContactsContract.RawContacts.CONTENT_URI, "contact_id =?", new String[]{String.valueOf(id)});
-                                myContactDBHelper.getWritableDatabase().delete(MyContactDBHelper.TABLE_NAME,String.valueOf(id),null);
-                                Now_ContactList.remove(number-1);
+                                myContactDBHelper.getWritableDatabase().delete(MyContactDBHelper.TABLE_NAME, String.valueOf(id), null);
+                                Now_ContactList.remove(number - 1);
                                 toast.setText(R.string.deleteOK);
                                 toast.show();
 
-                                CommonUtil.setContactList(context,contact_RecyclerView,adapter,Now_ContactList,manager);
+                                CommonUtil.setContactList(context, contact_RecyclerView, adapter, Now_ContactList, manager);
                             }
                         } catch (Exception e) {
                             e.getMessage();
                         }
                     }
                 })
-                .setNegativeButton(R.string.no,null)
+                .setNegativeButton(R.string.no, null)
                 .show();
     }
 
     public ArrayList<ContactData> getList() {
         ArrayList<ContactData> list = new ArrayList<>();
 
-        Cursor c = myContactDBHelper.getReadableDatabase().query(MyContactDBHelper.TABLE_NAME,null,null,null,null,null,null);
+        Cursor c = myContactDBHelper.getReadableDatabase().query(MyContactDBHelper.TABLE_NAME, null, null, null, null, null, null);
 //        int i = c.getCount();
-        if(c != null){
-            while (c.moveToNext()){
+        if (c != null) {
+            while (c.moveToNext()) {
                 ContactData data = new ContactData();
                 data.setId(Long.valueOf(c.getString(c.getColumnIndex(MyContactDBHelper.CONTACT_ID))));
                 data.setName(c.getString(c.getColumnIndex(MyContactDBHelper.NAME)));
@@ -504,25 +532,25 @@ public class ContactPageFragment extends Fragment {
 
                 //data.setEmail(c.getString(c.getColumnIndex(MyContactDBHelper.EMAIL)));
                 int favor_tags = c.getInt(c.getColumnIndex(MyContactDBHelper.FAVOR_TAG));
-                if(favor_tags == 1){
+                if (favor_tags == 1) {
                     data.setFavorTag(favor_tags);
                     data.setImg_favor(new ImageView(context));
-                }else {
+                } else {
                     data.setImg_normal(new ImageView(context));
                 }
 
                 String avatar_base64 = c.getString(c.getColumnIndex(MyContactDBHelper.IMG_AVATAR));
-                if(!TextUtils.isEmpty(avatar_base64)){
-                byte[] bytes = Base64.decode(avatar_base64,Base64.DEFAULT);
-                Bitmap bitmap = BitmapFactory.decodeByteArray(bytes,0,bytes.length);
-                data.setImg_avatar(bitmap);
+                if (!TextUtils.isEmpty(avatar_base64)) {
+                    byte[] bytes = Base64.decode(avatar_base64, Base64.DEFAULT);
+                    Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                    data.setImg_avatar(bitmap);
                 }
 
-                String letter = Pinyin.toPinyin(data.getName().substring(0,1).charAt(0));
-                if(letter.matches("[A-Z]")){
+                String letter = Pinyin.toPinyin(data.getName().substring(0, 1).charAt(0));
+                if (letter.matches("[A-Z]")) {
                     data.setLetter(letter);
 
-                }else {
+                } else {
                     data.setLetter("#");
 
                 }
@@ -530,38 +558,38 @@ public class ContactPageFragment extends Fragment {
 
             }
         }
-        sp.edit().putInt("listSize",c.getCount()).commit();
+        sp.edit().putInt("listSize", c.getCount()).commit();
         c.close();
 
-            Collections.sort(list, new Comparator<ContactData>() {
-                @Override
-                public int compare(ContactData o1, ContactData o2) {
+        Collections.sort(list, new Comparator<ContactData>() {
+            @Override
+            public int compare(ContactData o1, ContactData o2) {
 
 
-                        String s1 = Pinyin.toPinyin(o1.getName().charAt(0)).toUpperCase();
-                        String s2 = Pinyin.toPinyin(o2.getName().charAt(0)).toUpperCase();
-                        if(!s1.matches("[0-9]")||!s2.matches("[0-9]")){
-                            return s1.compareTo(s2);
-                        }else {
-                            return 1;
-                        }
-
-
+                String s1 = Pinyin.toPinyin(o1.getName().charAt(0)).toUpperCase();
+                String s2 = Pinyin.toPinyin(o2.getName().charAt(0)).toUpperCase();
+                if (!s1.matches("[0-9]") || !s2.matches("[0-9]")) {
+                    return s1.compareTo(s2);
+                } else {
+                    return 1;
                 }
-            });
 
-        adapter = new MyAdapter(context,list);
+
+            }
+        });
+
+        adapter = new MyAdapter(context, list);
         return list;
     }
 
-    public ArrayList getFirstAlpha(ArrayList<ContactData> list){
+    public ArrayList getFirstAlpha(ArrayList<ContactData> list) {
         ArrayList<String> alphaList = new ArrayList<>();
-        String alpha="";
-        for(int i=0;i< Now_ContactList.size();i++){
+        String alpha = "";
+        for (int i = 0; i < Now_ContactList.size(); i++) {
 
-            String firstWord = Now_ContactList.get(i).getName().substring(0,1);
+            String firstWord = Now_ContactList.get(i).getName().substring(0, 1);
 
-            if(!alpha.equals(firstWord)){
+            if (!alpha.equals(firstWord)) {
                 alphaList.add(alpha);
                 alpha = firstWord;
             }

@@ -18,13 +18,13 @@
 
     </item>
 
-    <item
-        android:id="@+id/toolbar_add"
-        android:icon="@drawable/add"
-        android:title="add"
-        app:showAsAction="always">
+    <!--<item-->
+        <!--android:id="@+id/toolbar_add"-->
+        <!--android:icon="@drawable/add"-->
+        <!--android:title="add"-->
+        <!--app:showAsAction="always">-->
 
-    </item>
+    <!--</item>-->
 
 
 </menu>

@@ -66,9 +66,9 @@ public class ContactPageActivity extends AppCompatActivity {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 switch (item.getItemId()){
-                    case R.id.toolbar_add:
-                        showFrag(new AddContactFragment());
-                        break;
+//                    case R.id.toolbar_add:
+//                        showFrag(new AddContactFragment());
+//                        break;
 
                     case R.id.toolbar_allContact:
                         showFrag(new ContactPageFragment());

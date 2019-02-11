@@ -5,12 +5,16 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.PopupMenu;
@@ -23,6 +27,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.example.r30_a.recyclerviewpoc.BuildConfig;
 import com.example.r30_a.recyclerviewpoc.R;
 import com.example.r30_a.recyclerviewpoc.helper.MyContactDBHelper;
 import com.facebook.CallbackManager;
@@ -47,10 +52,12 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AddProfileActivity extends AppCompatActivity implements View.OnClickListener{
+import static android.support.v4.content.FileProvider.getUriForFile;
+
+public class AddProfileActivity extends AppCompatActivity implements View.OnClickListener {
 
     Toast toast;
-    EditText edtName, edtPhomeNumber, edtNote,edtEmail_Custom, edtCity, edtStreet;//使用者編輯區
+    EditText edtName, edtPhomeNumber, edtNote, edtEmail_Custom, edtCity, edtStreet;//使用者編輯區
     Button btnAddContact;
     LoginButton btnLoginFB;
     ContentResolver resolver;
@@ -73,6 +80,7 @@ public class AddProfileActivity extends AppCompatActivity implements View.OnClic
     LoginManager loginManager;
     CallbackManager callbackManager;
     private boolean isLogin = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -94,7 +102,7 @@ public class AddProfileActivity extends AppCompatActivity implements View.OnClic
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()){
+        switch (v.getId()) {
             case R.id.userPhoto:
                 showPopupMenu(v);
                 break;
@@ -107,7 +115,7 @@ public class AddProfileActivity extends AppCompatActivity implements View.OnClic
 
     private void loginKB() {
 
-        if(!isLogin) {
+        if (!isLogin) {
             loginManager.setLoginBehavior(LoginBehavior.NATIVE_WITH_FALLBACK);//預設fb login的顯示方式
             //可基本取得的權限，不需經過fb的審核
             List<String> permissions = new ArrayList<>();
@@ -176,7 +184,7 @@ public class AddProfileActivity extends AppCompatActivity implements View.OnClic
                 }
             });
 
-        }else {
+        } else {
             loginManager.logOut();
         }
 
@@ -194,7 +202,7 @@ public class AddProfileActivity extends AppCompatActivity implements View.OnClic
         edtNote = (EditText) findViewById(R.id.edtNote);
         edtCity = (EditText) findViewById(R.id.edtCity);
         edtStreet = (EditText) findViewById(R.id.edtStreet);
-        edtEmail_Custom = (EditText)findViewById(R.id.edtEmail_custom);
+        edtEmail_Custom = (EditText) findViewById(R.id.edtEmail_custom);
         btnAddContact = (Button) findViewById(R.id.btnUpdate);
         btnLoginFB = (LoginButton) findViewById(R.id.btnFBLogin);
 
@@ -228,10 +236,150 @@ public class AddProfileActivity extends AppCompatActivity implements View.OnClic
 
     }
 
+
+    private void albumStart() {
+
+        Intent albumIntent = new Intent();
+        albumIntent.setType("image/*");//設定只顯示圖片區，不要秀其它的資料夾
+        albumIntent.setAction(Intent.ACTION_GET_CONTENT);//取得本機相簿的action
+        startActivityForResult(albumIntent, ALBUM_REQUEST);
+
+    }
+
+    private void cameraStart() {
+
+        File file = new File(this.getExternalCacheDir(), "temp.png");
+        try {
+            if (file.exists()) {
+                file.delete();
+            }
+
+            file.createNewFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        if (Build.VERSION.SDK_INT >= 24) {
+            camera_uri = FileProvider.getUriForFile(getApplicationContext(), "com.example.r30_a.recyclerviewpoc.fileprovider", temp_file);
+        } else {
+            camera_uri = Uri.fromFile(file);
+        }
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);//使用拍照
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, camera_uri);
+        startActivityForResult(intent, CAMERA_REQUEST);
+//        //API < 23的版本使用原來的方法
+//        if (Build.VERSION.SDK_INT < 23) {
+//            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);//使用拍照
+//            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+//            setResult(RESULT_OK, intent);
+//            startActivityForResult(intent, CAMERA_REQUEST);
+//
+//        } else {
+//
+//            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+//            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+////            File imagePath = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), System.currentTimeMillis()+"temp.jpg");
+////
+////            if (!imagePath.exists()) {
+////                if (!imagePath.mkdirs()) {
+////                    imagePath.mkdir();
+////                }
+////            }
+//            camera_uri = FileProvider.getUriForFile(getApplicationContext(), "com.example.r30_a.recyclerviewpoc.fileprovider", temp_file);
+//
+//            intent.putExtra(MediaStore.EXTRA_OUTPUT, camera_uri);
+//            setResult(RESULT_OK, intent);
+//            startActivityForResult(intent, CAMERA_REQUEST);
+//        }
+    }
+
+    private void doCropPhoto(Uri uri) {
+        Intent intent = getCropImageIntent(uri);
+        startActivityForResult(intent, CROP_REQUEST);
+    }
+
+    //呼叫裁切圖片介面
+    private Intent getCropImageIntent(Uri uri) {
+        try {
+            Intent intent = new Intent("com.android.camera.action.CROP");
+            File cropFile = new File(Environment.getExternalStorageDirectory().getPath(), "avatar.png");
+            if (cropFile.exists()) {
+                cropFile.delete();
+            }
+
+            cropFile.createNewFile();
+
+            Uri imageUri = uri;
+            Uri outputUri = null;
+
+            outputUri = Uri.fromFile(cropFile);
+            intent.putExtra("crop", "true");
+            intent.putExtra("aspectX", 1);// 这兩項為裁剪框的比例.
+            intent.putExtra("aspectY", 1);// x:y=1:1
+            intent.putExtra("scale", true);
+            intent.putExtra("return-data",false);
+
+            if(imageUri != null){
+                intent.setDataAndType(imageUri,"image/*");
+            }
+            if(outputUri != null){
+                intent.putExtra(MediaStore.EXTRA_OUTPUT,outputUri);
+            }
+            intent.putExtra("noFaceDetection",true);
+            intent.putExtra("outputFormat",Bitmap.CompressFormat.JPEG.toString());
+            return intent;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+//        intent.setDataAndType(uri, "image/*");
+//        intent.putExtra("crop", "true");
+//        intent.putExtra("scale", true);
+//        intent.putExtra("aspectX", 1);// 这兩項為裁剪框的比例.
+//        intent.putExtra("aspectY", 1);// x:y=1:1
+//        intent.putExtra("outputX", 200);//回傳照片比例X
+//        intent.putExtra("outputY", 200);//回傳照片比例Y
+//        intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(temp_file));
+////        intent.putExtra("return-data",true);
+//
+//        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
+//            int flag = Intent.FLAG_GRANT_READ_URI_PERMISSION;
+//            if (true) {
+//                flag |= Intent.FLAG_GRANT_WRITE_URI_PERMISSION;
+//            }
+//            intent.addFlags(flag);
+//            List<ResolveInfo> resInfoList = this.getPackageManager()
+//                    .queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
+//            for (ResolveInfo resolveInfo : resInfoList) {
+//                String packageName = resolveInfo.activityInfo.packageName;
+//                this.grantUriPermission(packageName, uri, flag);
+//                intent.putExtra("outputFormat", "JPEG");
+//            }
+//        }
+//        return intent;
+
+    }
+
+
+    private void setChangedAvatar(File file, ImageView img_avatar) {
+        try {
+
+            update_avatar = BitmapFactory.decodeFile(file.getAbsolutePath());
+            //bitmap to byte[]
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            update_avatar.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
+            img_avatar_bytes = outputStream.toByteArray();
+            outputStream.close();
+            img_avatar.setImageBitmap(update_avatar);
+
+        } catch (Exception e) {
+            e.getMessage();
+        }
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        callbackManager.onActivityResult(requestCode,resultCode,data);
+        callbackManager.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
 
             if (requestCode == ALBUM_REQUEST || requestCode == CAMERA_REQUEST) {
@@ -255,74 +403,4 @@ public class AddProfileActivity extends AppCompatActivity implements View.OnClic
             }
         }
     }
-
-
-    private void albumStart() {
-
-        Intent albumIntent = new Intent();
-        albumIntent.setType("image/*");//設定只顯示圖片區，不要秀其它的資料夾
-        albumIntent.setAction(Intent.ACTION_GET_CONTENT);//取得本機相簿的action
-        startActivityForResult(albumIntent, ALBUM_REQUEST);
-
-    }
-
-    private void cameraStart() {
-
-        //API < 23的版本使用原來的方法
-        if (Build.VERSION.SDK_INT <= 23) {
-            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);//使用拍照
-            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-            setResult(RESULT_OK, intent);
-            startActivityForResult(intent, CAMERA_REQUEST);
-
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-
-            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-            intent.putExtra(MediaStore.EXTRA_OUTPUT, camera_uri);
-            setResult(RESULT_OK, intent);
-            startActivityForResult(intent, CAMERA_REQUEST);
-        }
-    }
-
-    private void doCropPhoto(Uri uri) {
-        Intent intent = getCropImageIntent(uri);
-        startActivityForResult(intent, CROP_REQUEST);
-    }
-
-    //呼叫裁切圖片介面
-    private Intent getCropImageIntent(Uri uri) {
-
-        Intent intent = new Intent("com.android.camera.action.CROP");
-        intent.setDataAndType(uri, "image/*");
-        intent.putExtra("crop", "true");
-        intent.putExtra("scale", true);
-        intent.putExtra("aspectX", 1);// 这兩項為裁剪框的比例.
-        intent.putExtra("aspectY", 1);// x:y=1:1
-        intent.putExtra("outputX", 200);//回傳照片比例X
-        intent.putExtra("outputY", 200);//回傳照片比例Y
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(temp_file));
-        intent.putExtra("outputFormat", "JPEG");
-
-        return intent;
-
-    }
-
-    private void setChangedAvatar(File file, ImageView img_avatar) {
-        try {
-
-            update_avatar = BitmapFactory.decodeFile(file.getAbsolutePath());
-            //bitmap to byte[]
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            update_avatar.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
-            img_avatar_bytes = outputStream.toByteArray();
-            outputStream.close();
-            img_avatar.setImageBitmap(update_avatar);
-
-        } catch (Exception e) {
-            e.getMessage();
-        }
-    }
-
-
 }

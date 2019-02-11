@@ -135,7 +135,7 @@ public class CommonUtil {
 
     //更新通訊錄清單的方法
     public static void setContactList(Context context,RecyclerView recyclerView, MyAdapter adapter, ArrayList<ContactData> list,LinearLayoutManager manager) {
-
+        adapter = new MyAdapter(context,list);
         recyclerView.setLayoutManager(manager);//設定排版樣式
         recyclerView.setAdapter(adapter);
 
