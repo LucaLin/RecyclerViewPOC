@@ -41,6 +41,7 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
         </activity>
         <activity android:name="com.example.r30_a.recyclerviewpoc.controller.SettingPageActivity" />
         <activity android:name="com.example.r30_a.recyclerviewpoc.controller.WelcomeActivity" />
@@ -69,6 +70,7 @@
             android:name="com.example.r30_a.recyclerviewpoc.controller.MapsActivity"
             android:label="@string/title_activity_maps" />
         <activity android:name="com.example.r30_a.recyclerviewpoc.controller.AddProfileActivity"></activity>
+        <activity android:name=".controller.CropImageActivity"></activity>
 
         <!--FB用-->
         <meta-data

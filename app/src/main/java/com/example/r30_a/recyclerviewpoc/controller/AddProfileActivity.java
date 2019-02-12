@@ -30,6 +30,7 @@ import com.bumptech.glide.Glide;
 import com.example.r30_a.recyclerviewpoc.BuildConfig;
 import com.example.r30_a.recyclerviewpoc.R;
 import com.example.r30_a.recyclerviewpoc.helper.MyContactDBHelper;
+import com.example.r30_a.recyclerviewpoc.util.BitmapUtil;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
@@ -49,6 +50,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -61,6 +63,7 @@ public class AddProfileActivity extends AppCompatActivity implements View.OnClic
     Button btnAddContact;
     LoginButton btnLoginFB;
     ContentResolver resolver;
+    File file;
 
     //取得結果用的Request Code
     private final int CAMERA_REQUEST = 1;
@@ -123,7 +126,6 @@ public class AddProfileActivity extends AppCompatActivity implements View.OnClic
             permissions.add("public_profile");
             permissions.add("email");
 
-            //permissions.add("user_friends");
 
             loginManager.logInWithReadPermissions(this, permissions);
 
@@ -190,7 +192,6 @@ public class AddProfileActivity extends AppCompatActivity implements View.OnClic
 
     }
 
-
     private void initView() {
         toast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
         resolver = getContentResolver();
@@ -248,7 +249,7 @@ public class AddProfileActivity extends AppCompatActivity implements View.OnClic
 
     private void cameraStart() {
 
-        File file = new File(this.getExternalCacheDir(), "temp.png");
+        file = new File(this.getExternalCacheDir(), "temp.png");
         try {
             if (file.exists()) {
                 file.delete();
@@ -258,42 +259,38 @@ public class AddProfileActivity extends AppCompatActivity implements View.OnClic
         } catch (IOException e) {
             e.printStackTrace();
         }
-        if (Build.VERSION.SDK_INT >= 24) {
+        if(Build.VERSION.SDK_INT < 23){
+
+            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);//使用拍照
+            //拍完的照片做成暫存檔
+            String folderPath = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "Test";//取得目標folder
+            File folder = new File(folderPath);
+            //如果裝置沒有此folder，建立一個新的
+            if (!folder.exists()) {
+                if (!folder.mkdir()) {
+                }
+            }
+            //組合成輸出路徑
+            String filePath = folderPath + File.separator + "temp.png";
+            camera_uri = Uri.fromFile(new File(filePath));
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, camera_uri);//將拍照的檔案放入暫存檔路徑
+            startActivityForResult(intent, CAMERA_REQUEST);
+
+        } else if (Build.VERSION.SDK_INT >= 24) {
             camera_uri = FileProvider.getUriForFile(getApplicationContext(), "com.example.r30_a.recyclerviewpoc.fileprovider", temp_file);
-        } else {
-            camera_uri = Uri.fromFile(file);
         }
+//        else {
+//            camera_uri = Uri.fromFile(file);
+//        }
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);//使用拍照
         intent.putExtra(MediaStore.EXTRA_OUTPUT, camera_uri);
         startActivityForResult(intent, CAMERA_REQUEST);
-//        //API < 23的版本使用原來的方法
-//        if (Build.VERSION.SDK_INT < 23) {
-//            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);//使用拍照
-//            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-//            setResult(RESULT_OK, intent);
-//            startActivityForResult(intent, CAMERA_REQUEST);
-//
-//        } else {
-//
-//            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-//            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-////            File imagePath = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), System.currentTimeMillis()+"temp.jpg");
-////
-////            if (!imagePath.exists()) {
-////                if (!imagePath.mkdirs()) {
-////                    imagePath.mkdir();
-////                }
-////            }
-//            camera_uri = FileProvider.getUriForFile(getApplicationContext(), "com.example.r30_a.recyclerviewpoc.fileprovider", temp_file);
-//
-//            intent.putExtra(MediaStore.EXTRA_OUTPUT, camera_uri);
-//            setResult(RESULT_OK, intent);
-//            startActivityForResult(intent, CAMERA_REQUEST);
-//        }
+
     }
 
     private void doCropPhoto(Uri uri) {
-        Intent intent = getCropImageIntent(uri);
+        Intent intent = new Intent(this,CropImageActivity.class);
+        intent.setData(uri);
         startActivityForResult(intent, CROP_REQUEST);
     }
 
@@ -315,47 +312,25 @@ public class AddProfileActivity extends AppCompatActivity implements View.OnClic
             intent.putExtra("crop", "true");
             intent.putExtra("aspectX", 1);// 这兩項為裁剪框的比例.
             intent.putExtra("aspectY", 1);// x:y=1:1
-            intent.putExtra("scale", true);
-            intent.putExtra("return-data",false);
-
-            if(imageUri != null){
-                intent.setDataAndType(imageUri,"image/*");
+//            intent.putExtra("scale", true);
+            intent.putExtra("return-data", false);
+            intent.putExtra("outputX", 200);//回傳照片比例X
+            intent.putExtra("outputY", 200);//回傳照片比例Y
+            if (imageUri != null) {
+                intent.setDataAndType(imageUri, "image/*");
             }
-            if(outputUri != null){
+            if (outputUri != null) {
                 intent.putExtra(MediaStore.EXTRA_OUTPUT,outputUri);
             }
-            intent.putExtra("noFaceDetection",true);
-            intent.putExtra("outputFormat",Bitmap.CompressFormat.JPEG.toString());
+            intent.putExtra("noFaceDetection", true);
+            intent.putExtra("outputFormat", Bitmap.CompressFormat.JPEG.toString());
+
             return intent;
         } catch (IOException e) {
             e.printStackTrace();
         }
         return null;
-//        intent.setDataAndType(uri, "image/*");
-//        intent.putExtra("crop", "true");
-//        intent.putExtra("scale", true);
-//        intent.putExtra("aspectX", 1);// 这兩項為裁剪框的比例.
-//        intent.putExtra("aspectY", 1);// x:y=1:1
-//        intent.putExtra("outputX", 200);//回傳照片比例X
-//        intent.putExtra("outputY", 200);//回傳照片比例Y
-//        intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(temp_file));
-////        intent.putExtra("return-data",true);
-//
-//        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
-//            int flag = Intent.FLAG_GRANT_READ_URI_PERMISSION;
-//            if (true) {
-//                flag |= Intent.FLAG_GRANT_WRITE_URI_PERMISSION;
-//            }
-//            intent.addFlags(flag);
-//            List<ResolveInfo> resInfoList = this.getPackageManager()
-//                    .queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
-//            for (ResolveInfo resolveInfo : resInfoList) {
-//                String packageName = resolveInfo.activityInfo.packageName;
-//                this.grantUriPermission(packageName, uri, flag);
-//                intent.putExtra("outputFormat", "JPEG");
-//            }
-//        }
-//        return intent;
+
 
     }
 
@@ -392,14 +367,36 @@ public class AddProfileActivity extends AppCompatActivity implements View.OnClic
                 }
             } else if (requestCode == CROP_REQUEST) {
 
-                try {
-                    //設定縮圖大頭貼
-                    setChangedAvatar(temp_file, img_avatar);
-                    img_avatar.setImageDrawable(Drawable.createFromPath(temp_file.getAbsolutePath()));
+                if (data.hasExtra(CropImageActivity.EXTRA_IMAGE) && data != null) {
+                    //取得裁切後圖片的暫存位置
+                    String filePath = data.getStringExtra(CropImageActivity.EXTRA_IMAGE);
+                    // !=-1代表有此路徑檔
+                    if (filePath.indexOf(Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "DCIM") != -1) {
 
-                } catch (Exception e) {
-                    e.getMessage();
+                        File imgFile = new File(filePath);
+                        if (imgFile.exists()) {
+                            //代入已設定好的圖片size
+                            int photoSize = getResources().getDimensionPixelSize(R.dimen.photo_size);
+                            //使用寫好的方法將路徑檔做成bitmap檔
+                            Bitmap realBitmap = BitmapUtil.decodeSampledBitmap(imgFile.getAbsolutePath(), photoSize, photoSize);
+
+                            if (realBitmap != null) {
+                                img_avatar.setImageBitmap(realBitmap);
+                                //Toast.makeText(this,R.string.updateOK,Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    }
                 }
+
+//                try {
+//                    //設定縮圖大頭貼
+//                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(resolver, data.getData());
+//                    img_avatar.setImageBitmap(bitmap);
+//
+//
+//                } catch (Exception e) {
+//                    e.getMessage();
+//                }
             }
         }
     }

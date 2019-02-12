@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="photo_size">72dp</dimen>
+    <dimen name="photo_crop_circle_radius">31dp</dimen>
+
+    <dimen name="divider_height">1dp</dimen>
+    <dimen name="button_shadow_offset">1dp</dimen>
+
+    <dimen name="button_height">40dp</dimen>
+    <dimen name="button_corner">5dp</dimen>
+
+
+    <dimen name="button_background_height">72dp</dimen>
+    <dimen name="section_top">20dp</dimen>
+
+    <!-- Multiples of four -->
+    <dimen name="x0">2dp</dimen>
+    <dimen name="x1">4dp</dimen>
+    <dimen name="x2">8dp</dimen>
+    <dimen name="x3">12dp</dimen>
+    <dimen name="x4">16dp</dimen>
+    <dimen name="x5">20dp</dimen>
+    <dimen name="x6">24dp</dimen>
+    <dimen name="x7">28dp</dimen>
+    <dimen name="x8">32dp</dimen>
+    <dimen name="x9">36dp</dimen>
+    <dimen name="x10">40dp</dimen>
+    <dimen name="x11">44dp</dimen>
+    <dimen name="x12">48dp</dimen>
+    <dimen name="x13">52dp</dimen>
+    <dimen name="x14">56dp</dimen>
+    <dimen name="x15">60dp</dimen>
+    <dimen name="x16">64dp</dimen>
+    <dimen name="x17">68dp</dimen>
+    <dimen name="x18">72dp</dimen>
+
+
+</resources>
