@@ -278,7 +278,7 @@
             android:layout_centerHorizontal="true"
             android:layout_centerInParent="false"
             android:layout_marginTop="20dp"
-            android:background="@drawable/iconfinder_man_196742" />
+            android:src="@drawable/iconfinder_man_196742" />
 
         <LinearLayout
             android:id="@+id/layout_nameColumn"

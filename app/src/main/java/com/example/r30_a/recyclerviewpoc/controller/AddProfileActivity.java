@@ -249,16 +249,6 @@ public class AddProfileActivity extends AppCompatActivity implements View.OnClic
 
     private void cameraStart() {
 
-        file = new File(this.getExternalCacheDir(), "temp.png");
-        try {
-            if (file.exists()) {
-                file.delete();
-            }
-
-            file.createNewFile();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
         if(Build.VERSION.SDK_INT < 23){
 
             Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);//使用拍照
@@ -276,12 +266,10 @@ public class AddProfileActivity extends AppCompatActivity implements View.OnClic
             intent.putExtra(MediaStore.EXTRA_OUTPUT, camera_uri);//將拍照的檔案放入暫存檔路徑
             startActivityForResult(intent, CAMERA_REQUEST);
 
-        } else if (Build.VERSION.SDK_INT >= 24) {
+        } else {
             camera_uri = FileProvider.getUriForFile(getApplicationContext(), "com.example.r30_a.recyclerviewpoc.fileprovider", temp_file);
         }
-//        else {
-//            camera_uri = Uri.fromFile(file);
-//        }
+
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);//使用拍照
         intent.putExtra(MediaStore.EXTRA_OUTPUT, camera_uri);
         startActivityForResult(intent, CAMERA_REQUEST);
@@ -295,44 +283,44 @@ public class AddProfileActivity extends AppCompatActivity implements View.OnClic
     }
 
     //呼叫裁切圖片介面
-    private Intent getCropImageIntent(Uri uri) {
-        try {
-            Intent intent = new Intent("com.android.camera.action.CROP");
-            File cropFile = new File(Environment.getExternalStorageDirectory().getPath(), "avatar.png");
-            if (cropFile.exists()) {
-                cropFile.delete();
-            }
+//    private Intent getCropImageIntent(Uri uri) {
+//        try {
+//            Intent intent = new Intent("com.android.camera.action.CROP");
+//            File cropFile = new File(Environment.getExternalStorageDirectory().getPath(), "avatar.png");
+//            if (cropFile.exists()) {
+//                cropFile.delete();
+//            }
+//
+//            cropFile.createNewFile();
+//
+//            Uri imageUri = uri;
+//            Uri outputUri = null;
+//
+//            outputUri = Uri.fromFile(cropFile);
+//            intent.putExtra("crop", "true");
+//            intent.putExtra("aspectX", 1);// 这兩項為裁剪框的比例.
+//            intent.putExtra("aspectY", 1);// x:y=1:1
+////            intent.putExtra("scale", true);
+//            intent.putExtra("return-data", false);
+//            intent.putExtra("outputX", 200);//回傳照片比例X
+//            intent.putExtra("outputY", 200);//回傳照片比例Y
+//            if (imageUri != null) {
+//                intent.setDataAndType(imageUri, "image/*");
+//            }
+//            if (outputUri != null) {
+//                intent.putExtra(MediaStore.EXTRA_OUTPUT,outputUri);
+//            }
+//            intent.putExtra("noFaceDetection", true);
+//            intent.putExtra("outputFormat", Bitmap.CompressFormat.JPEG.toString());
+//
+//            return intent;
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        return null;
 
-            cropFile.createNewFile();
 
-            Uri imageUri = uri;
-            Uri outputUri = null;
-
-            outputUri = Uri.fromFile(cropFile);
-            intent.putExtra("crop", "true");
-            intent.putExtra("aspectX", 1);// 这兩項為裁剪框的比例.
-            intent.putExtra("aspectY", 1);// x:y=1:1
-//            intent.putExtra("scale", true);
-            intent.putExtra("return-data", false);
-            intent.putExtra("outputX", 200);//回傳照片比例X
-            intent.putExtra("outputY", 200);//回傳照片比例Y
-            if (imageUri != null) {
-                intent.setDataAndType(imageUri, "image/*");
-            }
-            if (outputUri != null) {
-                intent.putExtra(MediaStore.EXTRA_OUTPUT,outputUri);
-            }
-            intent.putExtra("noFaceDetection", true);
-            intent.putExtra("outputFormat", Bitmap.CompressFormat.JPEG.toString());
-
-            return intent;
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
-
-
-    }
+//    }
 
 
     private void setChangedAvatar(File file, ImageView img_avatar) {
@@ -388,15 +376,6 @@ public class AddProfileActivity extends AppCompatActivity implements View.OnClic
                     }
                 }
 
-//                try {
-//                    //設定縮圖大頭貼
-//                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(resolver, data.getData());
-//                    img_avatar.setImageBitmap(bitmap);
-//
-//
-//                } catch (Exception e) {
-//                    e.getMessage();
-//                }
             }
         }
     }

@@ -170,6 +170,7 @@ public class DetailPageFragment extends Fragment {
         txvPhoneNumber.setText(phoneNumber);
         if(img_bitmap != null){
             img_avatar.setImageBitmap(img_bitmap);
+
         }
         setText(emailHomeLayout,txv_email_home,email_home);
         setText(emailWorkLayout,txv_email_company,email_company);
