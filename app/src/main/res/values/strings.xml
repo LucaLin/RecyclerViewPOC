@@ -66,6 +66,7 @@
     <string name="chooseMail">請選擇要寄送的信箱</string>
     <string name="noEmailData">您並無信箱資料喔！</string>
     <string name="addSuccessnotify">哈囉！你剛剛已新增了一位好友</string>
+    <string name="welcomeBack">歡迎您回來！</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

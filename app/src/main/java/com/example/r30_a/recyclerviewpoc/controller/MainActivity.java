@@ -2,17 +2,20 @@ package com.example.r30_a.recyclerviewpoc.controller;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.os.Handler;
+import android.os.HandlerThread;
 import android.os.Message;
 import android.os.SystemClock;
 import android.support.annotation.NonNull;
-import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.view.inputmethod.InputMethodInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
-import android.widget.ImageView;
 
 import com.example.r30_a.recyclerviewpoc.R;
 import com.example.r30_a.recyclerviewpoc.adapter.MyViewPagerAdapter;
@@ -28,7 +31,7 @@ import org.jsoup.select.Elements;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Iterator;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -39,12 +42,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private boolean isStop = false;//線程是否停止
     ArrayList<ViewPagerData> myNewsList = new ArrayList<>();
 
+    Button btnInput;
+
+//    InputMethodManager inputMethodManager;
+//    Thread thread;
+//    String packageName = "com.mitake.android.scb";
+//    int flag = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+//        inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         //第一次使用的話先開歡迎畫面
         if (CommonUtil.isFirstTimeUse(this)) {
             Intent intent = new Intent(this, WelcomeActivity.class);
@@ -77,7 +86,63 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //        }
 
         //myViewPagerAdapter = new MyViewPagerAdapter(this,viewPager,)
+
+
     }
+
+//    private Runnable runnable = new Runnable() {
+//        @Override
+//        public void run() {
+//
+//            do {
+//                if(isThisImeOpen(packageName,inputMethodManager)){
+//                    Intent intent = new Intent();
+////                    intent.setFlags(
+////                            Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED |
+////                                    Intent.FLAG_ACTIVITY_SINGLE_TOP
+////                                    | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//                    intent.setClass(MainActivity.this, MainActivity.class);
+//                    startActivity(intent);
+//                    break;
+//                }
+//
+//            } while (true);
+//        }
+//    };
+
+//    private Handler handler = new Handler() {
+//        @Override
+//        public void handleMessage(Message msg) {
+//            super.handleMessage(msg);
+//            if(flag ==0) {
+//                switch (msg.what) {
+//                    case 0:
+//                        if (isThisImeOpen(packageName, inputMethodManager)) {
+//                            Intent intent = new Intent();
+//                            intent.setFlags(
+//                                    Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED |
+//                                            Intent.FLAG_ACTIVITY_SINGLE_TOP
+//                                            | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//                            intent.setClass(MainActivity.this, MainActivity.class);
+//                            startActivity(intent);
+//                            break;
+//                        }
+//                    case 1:
+//                        if (!isThisImeOpen(packageName, inputMethodManager)) {
+//                            Intent intent = new Intent();
+//                            intent.setFlags(
+//                                    Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED |
+//                                            Intent.FLAG_ACTIVITY_SINGLE_TOP
+//                                            | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//                            intent.setClass(MainActivity.this, MainActivity.class);
+//                            startActivity(intent);
+//                            break;
+//                        }
+//                }
+//            }
+//
+//        }
+//    };
 
     private void autoplayView() {
 
@@ -88,8 +153,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            if(viewPager != null){
-                            viewPager.setCurrentItem(viewPager.getCurrentItem() + 1);
+                            if (viewPager != null) {
+                                viewPager.setCurrentItem(viewPager.getCurrentItem() + 1);
                             }
                         }
                     });
@@ -147,6 +212,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             });
         }
+//
+//        btnInput = (Button) findViewById(R.id.btnInput);
+//        btnInput.setOnClickListener(this);
     }
 
     @Override
@@ -163,8 +231,35 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 startActivity(new Intent(this, SettingPageActivity.class));
                 break;
 
+//            case R.id.btnInput:
+//
+//                if(!isThisImeOpen(packageName,inputMethodManager)){
+//                    thread = new Thread(runnable);
+//                    thread.start();
+//                    }
+//
+//                Intent inputIntent = new Intent();
+//                inputIntent.setAction("android.settings.INPUT_METHOD_SETTINGS");
+////
+////                int pendingIntentId = 123456;
+////                PendingIntent pendingIntent = PendingIntent.getActivity(this, pendingIntentId, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+//
+//
+////                AlarmManager manager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
+////                manager.set(AlarmManager.RTC,System.currentTimeMillis() +3000,pendingIntent);
+//
+//                startActivity(inputIntent);
+//
+////                System.exit(0);
+
         }
     }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+    }
+
     public void getNews() {
 
         new Thread(new Runnable() {//使用線程確資料能順利抓取
@@ -196,6 +291,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }) {
         }.start();
     }
+    //判斷指定輸入法是否已開啟使用
+    public  boolean isThisImeOpen(String packageName, InputMethodManager imm) {
+
+        Iterator iterator = imm.getEnabledInputMethodList().iterator();
+        String inputPackageName;
+        InputMethodInfo inputMethodInfo;
+        do {
+            if (!iterator.hasNext()) {
+                return false;
+            }
+            inputMethodInfo = (InputMethodInfo) iterator.next();
+            inputPackageName = inputMethodInfo.getPackageName();
+        } while (!packageName.equals(inputPackageName));
+        return true;
+    }
+
 
 }
 

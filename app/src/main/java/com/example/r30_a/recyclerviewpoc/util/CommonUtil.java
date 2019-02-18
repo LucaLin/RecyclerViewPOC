@@ -18,6 +18,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Base64;
 import android.view.View;
+import android.widget.TextView;
 
 import com.example.r30_a.recyclerviewpoc.R;
 import com.example.r30_a.recyclerviewpoc.adapter.MyAdapter;
@@ -143,7 +144,7 @@ public class CommonUtil {
 
 
     //設定抽屜layout
-    public static void setDrawer(Activity activity, DrawerLayout drawerLayout, Toolbar toolbar, int headerViewResId, NavigationView navigationView) {
+    public static void setDrawer(Context context,Activity activity, DrawerLayout drawerLayout, Toolbar toolbar, int headerViewResId,String userName, NavigationView navigationView) {
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 activity, drawerLayout, toolbar, R.string.drawer_open, R.string.drawer_close
@@ -151,6 +152,8 @@ public class CommonUtil {
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
         View headerView = activity.getLayoutInflater().inflate(headerViewResId, navigationView, false);
+
+//        txvHeaderTitle.setText(userName);
 
     }
 

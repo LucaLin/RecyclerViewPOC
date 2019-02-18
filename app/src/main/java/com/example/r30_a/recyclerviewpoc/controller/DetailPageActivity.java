@@ -6,6 +6,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -17,7 +19,10 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Base64;
 import android.view.MenuItem;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.r30_a.recyclerviewpoc.R;
@@ -50,6 +55,11 @@ public class DetailPageActivity extends AppCompatActivity {
     MyContactDBHelper myContactDBHelper;
     byte[] bytes;
 
+    SharedPreferences sf;
+    String userName;
+    ImageView img_headerAvatar;
+    Bitmap bitmap_avatar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,10 +71,20 @@ public class DetailPageActivity extends AppCompatActivity {
     private void initView() {
 
         myContactDBHelper = MyContactDBHelper.getInstance(this);
-
         context = DetailPageActivity.this;
+
+        sf = getSharedPreferences("profile",MODE_PRIVATE);
+        userName = sf.getString("name","");
+        String img_avatarBase64 = sf.getString("avatar","");
+        if(img_avatarBase64.length()>0){
+
+            byte[] avatar_bytes = Base64.decode(img_avatarBase64,Base64.DEFAULT);
+            bitmap_avatar = BitmapFactory.decodeByteArray(avatar_bytes,0,avatar_bytes.length);
+        }
+
         toast = Toast.makeText(context,"",Toast.LENGTH_SHORT);
         final Intent intent = getIntent();
+
         id = intent.getLongExtra("id",0);
         name = intent.getStringExtra("name");
         number = String.valueOf(intent.getIntExtra("number",0));
@@ -73,6 +93,7 @@ public class DetailPageActivity extends AppCompatActivity {
         note = intent.getStringExtra("note");
         city = intent.getStringExtra("city");
         street = intent.getStringExtra("street");
+
         email_home = intent.getStringExtra("email_home");
         email_company = intent.getStringExtra("email_company");
         email_other = intent.getStringExtra("email_other");
@@ -85,9 +106,17 @@ public class DetailPageActivity extends AppCompatActivity {
         transaction.commit();
 
         navigationView = (NavigationView)findViewById(R.id.navigationView);
+
+        TextView txv = navigationView.getHeaderView(0).findViewById(R.id.txvHeaderTitle);
+        img_headerAvatar = navigationView.getHeaderView(0).findViewById(R.id.img_headerAvatar);
+        txv.setText(getResources().getString(R.string.welcomeBack) + userName);
+        if(bitmap_avatar != null){
+            img_headerAvatar.setImageBitmap(bitmap_avatar);
+        }
+
         drawerLayout = (DrawerLayout)findViewById(R.id.drawerLayout);
         toolbar = (Toolbar)findViewById(R.id.toolbar);
-        CommonUtil.setDrawer(this,drawerLayout,toolbar,R.layout.drawer_header,navigationView);
+        CommonUtil.setDrawer(context,this,drawerLayout,toolbar,R.layout.drawer_header,userName,navigationView);
 
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override

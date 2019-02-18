@@ -18,6 +18,7 @@ import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.PopupMenu;
+import android.util.Base64;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -61,9 +62,11 @@ public class AddProfileActivity extends AppCompatActivity implements View.OnClic
     Toast toast;
     EditText edtName, edtPhomeNumber, edtNote, edtEmail_Custom, edtCity, edtStreet;//使用者編輯區
     Button btnAddContact;
+    Button btnUpdate;
     LoginButton btnLoginFB;
     ContentResolver resolver;
     File file;
+    SharedPreferences sf;
 
     //取得結果用的Request Code
     private final int CAMERA_REQUEST = 1;
@@ -91,8 +94,7 @@ public class AddProfileActivity extends AppCompatActivity implements View.OnClic
         FacebookSdk.sdkInitialize(this);
         loginManager = LoginManager.getInstance();
         callbackManager = CallbackManager.Factory.create();
-
-
+        sf = getSharedPreferences("profile",MODE_PRIVATE);
         initView();
 
     }
@@ -113,6 +115,22 @@ public class AddProfileActivity extends AppCompatActivity implements View.OnClic
 
                 loginKB();
                 break;
+            case R.id.btnUpdate:
+                sf.edit().putString("name",edtName.getText().toString()).commit();
+                sf.edit().putString("phoneNum",edtPhomeNumber.getText().toString()).commit();
+                sf.edit().putString("email_custom",edtEmail_Custom.getText().toString()).commit();
+                sf.edit().putString("city",edtCity.getText().toString()).commit();
+                sf.edit().putString("street",edtStreet.getText().toString()).commit();
+                sf.edit().putString("note",edtNote.getText().toString()).commit();
+
+                if(img_avatar_base64 != null && img_avatar_base64.length()>0){
+                    sf.edit().putString("avatar",img_avatar_base64).commit();
+                }
+
+
+                toast.setText("done");toast.show();
+                finish();
+
         }
     }
 
@@ -126,10 +144,7 @@ public class AddProfileActivity extends AppCompatActivity implements View.OnClic
             permissions.add("public_profile");
             permissions.add("email");
 
-
             loginManager.logInWithReadPermissions(this, permissions);
-
-
             loginManager.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
                 @Override
                 public void onSuccess(LoginResult loginResult) {
@@ -146,8 +161,6 @@ public class AddProfileActivity extends AppCompatActivity implements View.OnClic
                                     edtEmail_Custom.setEnabled(false);
 
                                     //String birth = object.getString("birthday");
-
-
                                     //取得用戶大頭照
                                     Profile profile = Profile.getCurrentProfile();
                                     //設定大頭照大小
@@ -212,6 +225,8 @@ public class AddProfileActivity extends AppCompatActivity implements View.OnClic
         img_avatar = (ImageView) findViewById(R.id.userPhoto);
         img_avatar.setOnClickListener(this);
 
+        btnUpdate = (Button)findViewById(R.id.btnUpdate);
+        btnUpdate.setOnClickListener(this);
 
     }
 
@@ -370,6 +385,8 @@ public class AddProfileActivity extends AppCompatActivity implements View.OnClic
 
                             if (realBitmap != null) {
                                 img_avatar.setImageBitmap(realBitmap);
+                                byte[] avatar_bytes = BitmapUtil.Bitmap2Bytes(realBitmap);
+                                img_avatar_base64 = Base64.encodeToString(avatar_bytes,Base64.DEFAULT);
                                 //Toast.makeText(this,R.string.updateOK,Toast.LENGTH_SHORT).show();
                             }
                         }

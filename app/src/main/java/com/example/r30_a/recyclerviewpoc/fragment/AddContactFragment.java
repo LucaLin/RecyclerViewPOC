@@ -300,32 +300,17 @@ public class AddContactFragment extends Fragment {
 
             //新增Name
             UpdateHelper.insertName(resolver, contactId, name);
-//            insertNameData(ContactsContract.Data.RAW_CONTACT_ID, contactId, ContactsContract.Data.MIMETYPE,
-//                    ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE,
-//                    ContactsContract.CommonDataKinds.StructuredName.GIVEN_NAME, name, ContactsContract.Data.CONTENT_URI, values);
 
             //新增PhoneNum
             UpdateHelper.insertPhoneNum(resolver, contactId, phoneNum);
-//            insertData(ContactsContract.Data.RAW_CONTACT_ID, contactId,
-//                    ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE,
-//                    ContactsContract.CommonDataKinds.Phone.TYPE, ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE,
-//                    ContactsContract.CommonDataKinds.Phone.NUMBER, phoneNum, ContactsContract.Data.CONTENT_URI, values);
+
             //新增備註
             UpdateHelper.insertNote(resolver, note, contactId);
-//            values = new ContentValues();
-//            values.put(ContactsContract.CommonDataKinds.Note.NOTE, note);
-//            values.put(ContactsContract.Data.RAW_CONTACT_ID, contactId);
-//            values.put(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Note.CONTENT_ITEM_TYPE);
-//            resolver.insert(ContactsContract.Data.CONTENT_URI, values);
+
             //新增地址
             if (!TextUtils.isEmpty(city) || !TextUtils.isEmpty(street)) {
                 UpdateHelper.insertAddress(resolver, city, street, contactId);
-//                values = new ContentValues();
-//                values.put(ContactsContract.CommonDataKinds.StructuredPostal.CITY, city);
-//                values.put(ContactsContract.CommonDataKinds.StructuredPostal.STREET, street);
-//                values.put(ContactsContract.Data.RAW_CONTACT_ID, contactId);
-//                values.put(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.StructuredPostal.CONTENT_ITEM_TYPE);
-//                resolver.insert(ContactsContract.Data.CONTENT_URI, values);
+
             }
 
 
@@ -338,11 +323,7 @@ public class AddContactFragment extends Fragment {
 
                     //尚未有大頭貼時
                     UpdateHelper.insertAvatar(resolver, raw_contact_id, img_avatar_bytes);
-//                    values = new ContentValues();
-//                    values.put(ContactsContract.Data.RAW_CONTACT_ID, raw_contact_id);
-//                    values.put(ContactsContract.CommonDataKinds.Photo.PHOTO, img_avatar_bytes);
-//                    values.put(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Photo.CONTENT_ITEM_TYPE);
-//                    resolver.insert(ContactsContract.Data.CONTENT_URI, values);
+
                 }
             }
 
