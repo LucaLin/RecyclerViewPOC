@@ -232,7 +232,7 @@ public class BitmapUtil {
         try {
             //使用exif類取得或設定圖片的細部參數，此處只處理旋轉角度
             ExifInterface exifInterface = new ExifInterface(path);
-            int orientation = exifInterface.getAttributeInt(ExifInterface.TAG_ORIENTATION,ExifInterface.ORIENTATION_UNDEFINED);
+            int orientation = exifInterface.getAttributeInt(ExifInterface.TAG_ORIENTATION,ExifInterface.ORIENTATION_NORMAL);
 
             switch (orientation){
                 case ExifInterface.ORIENTATION_ROTATE_90:
@@ -259,19 +259,14 @@ public class BitmapUtil {
         //根據角度生成旋轉矩陣，並設定取得的需旋轉角度
         Matrix matrix = new Matrix();
         matrix.postRotate(degree);
-
         //創建一個有角度的圖，寬高與傳入的圖一樣
         try{
             returnbitmap = Bitmap.createBitmap(bitmap,0,0,bitmap.getWidth(),bitmap.getHeight(),matrix,true);
-        }catch (OutOfMemoryError e){}
-
-        if(returnbitmap != null){
-            returnbitmap = bitmap;
+            return  returnbitmap;
+        }catch (OutOfMemoryError e){
+            e.printStackTrace();
+            return null;
         }
-        if(bitmap != returnbitmap){
-            bitmap.recycle();
-        }
-        return  returnbitmap;
 
     }
     //9: bitmap存成圖檔

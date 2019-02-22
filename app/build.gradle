@@ -50,7 +50,7 @@ dependencies {
     compile 'com.github.promeg:tinypinyin:2.0.3'
     //facebook工具
     compile 'com.facebook.android:facebook-android-sdk:4.23.0'
-    
+
     compile 'com.github.bumptech.glide:glide:3.6.1'
     //取外部新聞的工具
     implementation files('libs/jsoup-1.11.3.jar')

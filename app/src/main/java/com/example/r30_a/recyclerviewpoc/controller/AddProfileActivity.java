@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
@@ -18,6 +19,7 @@ import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.PopupMenu;
+import android.text.TextUtils;
 import android.util.Base64;
 import android.view.MenuItem;
 import android.view.View;
@@ -67,6 +69,7 @@ public class AddProfileActivity extends AppCompatActivity implements View.OnClic
     ContentResolver resolver;
     File file;
     SharedPreferences sf;
+    String filePath;
 
     //取得結果用的Request Code
     private final int CAMERA_REQUEST = 1;
@@ -95,6 +98,7 @@ public class AddProfileActivity extends AppCompatActivity implements View.OnClic
         loginManager = LoginManager.getInstance();
         callbackManager = CallbackManager.Factory.create();
         sf = getSharedPreferences("profile",MODE_PRIVATE);
+
         initView();
 
     }
@@ -220,13 +224,25 @@ public class AddProfileActivity extends AppCompatActivity implements View.OnClic
         btnAddContact = (Button) findViewById(R.id.btnUpdate);
         btnLoginFB = (LoginButton) findViewById(R.id.btnFBLogin);
 
-
         btnLoginFB.setOnClickListener(this);
         img_avatar = (ImageView) findViewById(R.id.userPhoto);
         img_avatar.setOnClickListener(this);
 
         btnUpdate = (Button)findViewById(R.id.btnUpdate);
         btnUpdate.setOnClickListener(this);
+
+        edtName.setText(sf.getString("name",""));
+        edtPhomeNumber.setText(sf.getString("phoneNum",""));
+        edtEmail_Custom.setText(sf.getString("email_custom",""));
+        edtCity.setText(sf.getString("city",""));
+        edtStreet.setText(sf.getString("street",""));
+
+        String img_avatarBase64 = (sf.getString("avatar",""));
+        if(!TextUtils.isEmpty(img_avatarBase64)){
+            byte[] bytes = Base64.decode(img_avatarBase64,Base64.DEFAULT);
+            Bitmap bitmap = BitmapFactory.decodeByteArray(bytes,0,bytes.length);
+           img_avatar.setImageBitmap(bitmap);
+        }
 
     }
 
@@ -276,7 +292,7 @@ public class AddProfileActivity extends AppCompatActivity implements View.OnClic
                 }
             }
             //組合成輸出路徑
-            String filePath = folderPath + File.separator + "temp.png";
+            filePath = folderPath + File.separator + "temp.png";
             camera_uri = Uri.fromFile(new File(filePath));
             intent.putExtra(MediaStore.EXTRA_OUTPUT, camera_uri);//將拍照的檔案放入暫存檔路徑
             startActivityForResult(intent, CAMERA_REQUEST);
@@ -291,9 +307,10 @@ public class AddProfileActivity extends AppCompatActivity implements View.OnClic
 
     }
 
-    private void doCropPhoto(Uri uri) {
+    private void doCropPhoto(Uri uri, int degree) {
         Intent intent = new Intent(this,CropImageActivity.class);
         intent.setData(uri);
+        intent.putExtra("degree",degree);
         startActivityForResult(intent, CROP_REQUEST);
     }
 
@@ -364,9 +381,14 @@ public class AddProfileActivity extends AppCompatActivity implements View.OnClic
 
                 if (data != null && data.getData() != null) {
                     album_uri = data.getData();
-                    doCropPhoto(album_uri);
+
+
+                    doCropPhoto(album_uri,0);
                 } else {
-                    doCropPhoto(camera_uri);
+                    //取file的絕對路徑
+                    int degree = BitmapUtil.getBitmapDegree(temp_file.getAbsolutePath());
+
+                    doCropPhoto(camera_uri,degree);
                 }
             } else if (requestCode == CROP_REQUEST) {
 
@@ -381,6 +403,7 @@ public class AddProfileActivity extends AppCompatActivity implements View.OnClic
                             //代入已設定好的圖片size
                             int photoSize = getResources().getDimensionPixelSize(R.dimen.photo_size);
                             //使用寫好的方法將路徑檔做成bitmap檔
+
                             Bitmap realBitmap = BitmapUtil.decodeSampledBitmap(imgFile.getAbsolutePath(), photoSize, photoSize);
 
                             if (realBitmap != null) {

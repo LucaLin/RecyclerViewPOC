@@ -231,20 +231,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 startActivity(new Intent(this, SettingPageActivity.class));
                 break;
 
-//            case R.id.btnInput:
 //
+//            case R.id.btnInput:
+////
 //                if(!isThisImeOpen(packageName,inputMethodManager)){
 //                    thread = new Thread(runnable);
 //                    thread.start();
 //                    }
-//
 //                Intent inputIntent = new Intent();
 //                inputIntent.setAction("android.settings.INPUT_METHOD_SETTINGS");
 ////
 ////                int pendingIntentId = 123456;
 ////                PendingIntent pendingIntent = PendingIntent.getActivity(this, pendingIntentId, intent, PendingIntent.FLAG_CANCEL_CURRENT);
-//
-//
 ////                AlarmManager manager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
 ////                manager.set(AlarmManager.RTC,System.currentTimeMillis() +3000,pendingIntent);
 //

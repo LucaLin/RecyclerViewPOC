@@ -17,7 +17,7 @@
     <uses-permission android:name="android.permission.WRITE_PROFILE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.WRITE_SETTINGS"/>
+    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
     <uses-permission android:name="android.permission.CAMERA" />
 
     <!--
@@ -36,21 +36,20 @@
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
         <uses-library android:name="com.google.android.maps" />
 
-        <activity android:name="com.example.r30_a.recyclerviewpoc.controller.MainActivity">
+        <activity android:name=".controller.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
         </activity>
-        <activity android:name="com.example.r30_a.recyclerviewpoc.controller.SettingPageActivity" />
-        <activity android:name="com.example.r30_a.recyclerviewpoc.controller.WelcomeActivity" />
+        <activity android:name=".controller.SettingPageActivity" />
+        <activity android:name=".controller.WelcomeActivity" />
         <activity
-            android:name="com.example.r30_a.recyclerviewpoc.controller.DetailPageActivity"
+            android:name=".controller.DetailPageActivity"
             android:windowSoftInputMode="adjustPan" />
         <activity
-            android:name="com.example.r30_a.recyclerviewpoc.controller.ContactPageActivity"
+            android:name=".controller.ContactPageActivity"
             android:windowSoftInputMode="adjustPan" />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
@@ -68,12 +67,12 @@
             android:value="AIzaSyDJsq3_MgAFzSU7ZhvIqAqnJqHT9yj_BAk" />
 
         <activity
-            android:name="com.example.r30_a.recyclerviewpoc.controller.MapsActivity"
+            android:name=".controller.MapsActivity"
             android:label="@string/title_activity_maps" />
-        <activity android:name="com.example.r30_a.recyclerviewpoc.controller.AddProfileActivity"></activity>
-        <activity android:name=".controller.CropImageActivity"></activity>
+        <activity android:name=".controller.AddProfileActivity" />
+        <activity android:name=".controller.CropImageActivity" />
 
-        <!--FB用-->
+        <!-- FB用 -->
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id" />
@@ -94,10 +93,11 @@
                 <data android:scheme="@string/fb_login_protocol_scheme" />
             </intent-filter>
         </activity>
+
         <provider
-            android:authorities="com.facebook.app.FacebookContentProvider"
             android:name="com.facebook.FacebookContentProvider"
-            android:exported="true"/>
+            android:authorities="com.facebook.app.FacebookContentProvider"
+            android:exported="true" />
 
         <!-- 适配android 7.0 拍照闪退的处理 ,其中authorities的值要和等下代码中使用的一致就行，其中resource内的文件就是拍照后的共享文件 -->
         <provider
@@ -107,11 +107,12 @@
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/provider_paths"/>
+                android:resource="@xml/provider_paths" />
         </provider>
 
-
-
+        <activity android:name=".controller.E_MessActivity"
+            android:screenOrientation="landscape">
+        </activity>
     </application>
 
 </manifest>

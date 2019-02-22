@@ -62,9 +62,13 @@ public class CropImageActivity extends AppCompatActivity
         Uri uri = getIntent().getData();
         if(uri != null){
 
+        int degree = getIntent().getIntExtra("degree",0);
             //讀取圖片
             try {
+
                 bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(),uri);
+
+                bitmap = BitmapUtil.rotateBitmap(bitmap,degree);
 
                 //判斷畫素是否超過限制
                 if(bitmap != null){
@@ -99,8 +103,7 @@ public class CropImageActivity extends AppCompatActivity
                     }
 
                     //最後確認翻轉角度
-                    int degree = BitmapUtil.getBitmapDegree(uri.getPath());
-                    bitmap = BitmapUtil.rotateBitmap(bitmap,degree);
+
                 }
 
 

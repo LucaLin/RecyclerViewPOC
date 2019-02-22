@@ -24,6 +24,7 @@
     <string name="favorDone">已加入常用清單</string>
     <string name="allContact">全部聯絡人</string>
     <string name="favorContact">常用聯絡人</string>
+    <string name="e_mess">我的電子名片</string>
     <string name="drawer_open">Drawer opened</string>
     <string name="drawer_close">Drawer closed</string>
 

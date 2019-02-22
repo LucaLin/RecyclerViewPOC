@@ -39,8 +39,6 @@ public class ContactPageActivity extends AppCompatActivity {
     Bitmap bitmap_avatar;
 
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,38 +46,40 @@ public class ContactPageActivity extends AppCompatActivity {
         showFrag(new ContactPageFragment());
 
         context = ContactPageActivity.this;
-        sf = getSharedPreferences("profile",MODE_PRIVATE);
-        userName = sf.getString("name","");
-        String img_avatarBase64 = sf.getString("avatar","");
-        if(img_avatarBase64.length()>0){
+        sf = getSharedPreferences("profile", MODE_PRIVATE);
+        userName = sf.getString("name", "");
+        String img_avatarBase64 = sf.getString("avatar", "");
+        if (img_avatarBase64.length() > 0) {
 
-            byte[] avatar_bytes = Base64.decode(img_avatarBase64,Base64.DEFAULT);
-            bitmap_avatar = BitmapFactory.decodeByteArray(avatar_bytes,0,avatar_bytes.length);
+            byte[] avatar_bytes = Base64.decode(img_avatarBase64, Base64.DEFAULT);
+            bitmap_avatar = BitmapFactory.decodeByteArray(avatar_bytes, 0, avatar_bytes.length);
         }
-
-
-
 
 
         //----------抽屜設定-----------//
         toolbar = (Toolbar) findViewById(R.id.toolbar);
-        navigationView = (NavigationView)findViewById(R.id.navigationView);
+        navigationView = (NavigationView) findViewById(R.id.navigationView);
 
         TextView txv = navigationView.getHeaderView(0).findViewById(R.id.txvHeaderTitle);
         img_headerAvatar = navigationView.getHeaderView(0).findViewById(R.id.img_headerAvatar);
         txv.setText(getResources().getString(R.string.welcomeBack) + userName);
-        if(bitmap_avatar != null){
+        if (bitmap_avatar != null) {
             img_headerAvatar.setImageBitmap(bitmap_avatar);
         }
-        drawerLayout = (DrawerLayout)findViewById(R.id.drawerLayout);
-        CommonUtil.setDrawer(context,ContactPageActivity.this,drawerLayout,toolbar,R.layout.drawer_header,userName,navigationView);
+        drawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
+        CommonUtil.setDrawer(context, ContactPageActivity.this, drawerLayout, toolbar, R.layout.drawer_header, userName, navigationView);
         //----------抽屜動作----------//
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 drawerLayout.closeDrawer(GravityCompat.START);//選單按完之後收起抽屜
 
-                switch (item.getItemId()){
+                switch (item.getItemId()) {
+                    //電子名片
+                    case R.id.my_eMess:
+                        startActivity(new Intent(ContactPageActivity.this,E_MessActivity.class));
+                        break;
+
                     //全部清單
                     case R.id.allContact:
                         showFrag(new ContactPageFragment());
@@ -91,7 +91,7 @@ public class ContactPageActivity extends AppCompatActivity {
                         break;
                     //更多設定
                     case R.id.settings:
-                        startActivity(new Intent(ContactPageActivity.this,SettingPageActivity.class));
+                        startActivity(new Intent(ContactPageActivity.this, SettingPageActivity.class));
                         break;
                 }
                 return true;
@@ -101,7 +101,7 @@ public class ContactPageActivity extends AppCompatActivity {
         toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                switch (item.getItemId()){
+                switch (item.getItemId()) {
 //                    case R.id.toolbar_add:
 //                        showFrag(new AddContactFragment());
 //                        break;
@@ -126,8 +126,8 @@ public class ContactPageActivity extends AppCompatActivity {
     private void showFrag(android.support.v4.app.Fragment fragment) {
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.setCustomAnimations(R.anim.slide_right_in,R.anim.slide_left_out,R.anim.slide_left_in,R.anim.slide_right_out);
-        transaction.replace(R.id.frameLayout,fragment);
+        transaction.setCustomAnimations(R.anim.slide_right_in, R.anim.slide_left_out, R.anim.slide_left_in, R.anim.slide_right_out);
+        transaction.replace(R.id.frameLayout, fragment);
         transaction.commit();
     }
 
