@@ -75,17 +75,31 @@ public class UpdateContactFragment extends Fragment implements View.OnClickListe
 
     Uri album_uri, camera_uri;
 
-    String oldname, oldphoneNumber, contact_id,
-            oldNote, oldCity, oldStreet,
-            oldEmail_home, oldEmail_company,
-            oldEmail_other, oldEmail_custom;
+    String oldname,
+            oldphoneNumber,
+            contact_id,
+            oldNote,
+            oldCity,
+            oldStreet,
+            oldEmail_home,
+            oldEmail_company,
+            oldEmail_other,
+            oldEmail_custom;
+
     byte[] img_avatar_bytes;
     byte[] bytes;
 
     //    TextView txvDataName, txvDataPhone,txvDataNote,txvDataEmail;
     Button btnUpdate;
-    EditText edtName, edtPhone, edtNote, edtCity, edtStreet,
-            edtEmail_home, edtEmail_company, edtEmail_other, edtEmail_custom;
+    EditText edtName,
+             edtPhone,
+             edtNote,
+             edtCity,
+             edtStreet,
+             edtEmail_home,
+             edtEmail_company,
+             edtEmail_other,
+             edtEmail_custom;
     //    String updateName,updatePhone,updateNote,
 //            updateEmail_home,updateEmail_company,updateEmail_other,updateEmail_custom;
     LinearLayout email_homeLayout, email_companyLayout, email_otherLayout, email_customLayout;
@@ -100,6 +114,7 @@ public class UpdateContactFragment extends Fragment implements View.OnClickListe
     ContentValues values;
     Bitmap update_avatar = null;
     File temp_file;
+    File file;
 
     MyContactDBHelper myContactDBHelper;
 
@@ -158,6 +173,7 @@ public class UpdateContactFragment extends Fragment implements View.OnClickListe
 
         }
     }
+
     @Override
     public void onClick(final View v) {
         if (v.getId() == R.id.btnUpdate) {
@@ -206,16 +222,16 @@ public class UpdateContactFragment extends Fragment implements View.OnClickListe
 
                                         //更新地址
                                         if (!TextUtils.isEmpty(updateCity) && !TextUtils.isEmpty(updateStreet)) {
-                                            UpdateHelper.updateAddress(resolver, updateCity, updateStreet,contact_id, raw_contact_id);
+                                            UpdateHelper.updateAddress(resolver, updateCity, updateStreet, contact_id, raw_contact_id);
                                         } else {
                                             toast.setText("地址不完整，本次尚未更新");
                                             toast.show();
                                         }
                                         //更新email
-                                        UpdateHelper.updateEmail(resolver,contact_id,updateEmail_home,"1");
-                                        UpdateHelper.updateEmail(resolver,contact_id,updateEmail_company,"2");
-                                        UpdateHelper.updateEmail(resolver,contact_id,updateEmail_other,"3");
-                                        UpdateHelper.updateEmail(resolver,contact_id,updateEmail_custom,"0");
+                                        UpdateHelper.updateEmail(resolver, contact_id, updateEmail_home, "1");
+                                        UpdateHelper.updateEmail(resolver, contact_id, updateEmail_company, "2");
+                                        UpdateHelper.updateEmail(resolver, contact_id, updateEmail_other, "3");
+                                        UpdateHelper.updateEmail(resolver, contact_id, updateEmail_custom, "0");
 
                                     } catch (Exception e) {
                                         e.getMessage();
@@ -353,7 +369,8 @@ public class UpdateContactFragment extends Fragment implements View.OnClickListe
             }
             //組合成輸出路徑
             String filePath = folderPath + File.separator + "temp.png";
-            camera_uri = Uri.fromFile(new File(filePath));
+            file = new File(filePath);
+            camera_uri = Uri.fromFile(file);
             intent.putExtra(MediaStore.EXTRA_OUTPUT, camera_uri);//將拍照的檔案放入暫存檔路徑
             startActivityForResult(intent, CAMERA_REQUEST);
 
@@ -385,9 +402,16 @@ public class UpdateContactFragment extends Fragment implements View.OnClickListe
 
                 if (data != null && data.getData() != null) {
                     album_uri = data.getData();
-                    doCropPhoto(album_uri);
+                    doCropPhoto(album_uri, 90);
                 } else {
-                    doCropPhoto(camera_uri);
+                    int degree = 0;
+                    //取file的絕對路徑
+                    if (Build.VERSION.SDK_INT < 23) {
+                        degree = BitmapUtil.getBitmapDegree(file.getAbsolutePath());
+                    } else {
+                        degree = BitmapUtil.getBitmapDegree(temp_file.getAbsolutePath());
+                    }
+                    doCropPhoto(camera_uri, degree);
                 }
             } else if (requestCode == CROP_REQUEST) {
 
@@ -453,9 +477,10 @@ public class UpdateContactFragment extends Fragment implements View.OnClickListe
         }
     }
 
-    private void doCropPhoto(Uri uri) {
+    private void doCropPhoto(Uri uri, int degree) {
         Intent intent = new Intent(context, CropImageActivity.class);
         intent.setData(uri);
+        intent.putExtra("degree", degree);
         startActivityForResult(intent, CROP_REQUEST);
     }
 

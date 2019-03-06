@@ -64,10 +64,8 @@ public class DetailPageActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail_page);
-
         initView();
     }
-
     private void initView() {
 
         myContactDBHelper = MyContactDBHelper.getInstance(this);
@@ -98,7 +96,6 @@ public class DetailPageActivity extends AppCompatActivity {
         email_company = intent.getStringExtra("email_company");
         email_other = intent.getStringExtra("email_other");
         email_custom = intent.getStringExtra("email_custom");
-
         Fragment fragment = DetailPageFragment.newInstance(String.valueOf(id),number,name,phoneNumber,bytes,note,city,street,
                                                             email_home,email_company,email_other,email_custom);
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();

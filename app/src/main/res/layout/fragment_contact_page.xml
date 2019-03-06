@@ -10,18 +10,19 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <SearchView
-            android:id="@+id/searchView"
+        <com.example.r30_a.recyclerviewpoc.view.MyCustomSearchView
+            android:id="@+id/myCustomSearchView"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="visible" />
+            android:layout_height="wrap_content">
+
+        </com.example.r30_a.recyclerviewpoc.view.MyCustomSearchView>
 
         <RelativeLayout
             android:id="@+id/layout2"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_alignParentRight="true"
-            android:layout_below="@+id/searchView">
+            android:layout_below="@+id/myCustomSearchView">
 
 
             <com.example.r30_a.recyclerviewpoc.view.MyFloatButton
@@ -34,8 +35,8 @@
                 android:layout_alignParentRight="true"
                 android:layout_margin="40dp"
                 android:elevation="18dp"
-                app:elevation="12dp"
-                android:src="@drawable/icons8_add24" />
+                android:src="@drawable/icons8_add24"
+                app:elevation="12dp" />
 
             <RelativeLayout
                 android:id="@+id/main_layout"

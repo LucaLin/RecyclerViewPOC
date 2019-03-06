@@ -101,13 +101,7 @@ public class CropImageActivity extends AppCompatActivity
                             bitmap = adjustBitmap;
                         }
                     }
-
-                    //最後確認翻轉角度
-
                 }
-
-
-
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -180,7 +174,6 @@ public class CropImageActivity extends AppCompatActivity
                     }
                 }
             }
-
             //設定圖片
             String filePath = forlderPath + File.separator + "avatar_temp" + ".png";
             BitmapUtil.bitmapToFile(cropBitmap,filePath);
@@ -193,6 +186,5 @@ public class CropImageActivity extends AppCompatActivity
             setResult(RESULT_CANCELED);
             finish();
         }
-
     }
 }

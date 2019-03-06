@@ -1,5 +1,8 @@
 package com.example.r30_a.recyclerviewpoc.util;
 
+import android.content.ContentResolver;
+import android.content.Context;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -9,8 +12,10 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.media.ExifInterface;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.util.Base64;
 
 import java.io.ByteArrayOutputStream;
@@ -216,8 +221,10 @@ public class BitmapUtil {
         //設定留下來部份是bitmap裁切後的圓形部份
         paint.setXfermode(new PorterDuffXfermode(mode));
 
-        final Rect rectSrc = new Rect(bitmap.getWidth()/2 - rectSizeIn/2, bitmap.getHeight()/2 - rectSizeIn/2,
-                bitmap.getWidth()/2 + rectSizeIn/2, bitmap.getHeight()/2 + rectSizeIn/2);
+        final Rect rectSrc = new Rect(bitmap.getWidth()/2 - rectSizeIn/3,
+                                      bitmap.getHeight()/2 - rectSizeIn/3,
+                                     bitmap.getWidth()/2 + rectSizeIn/3,
+                                   bitmap.getHeight()/2 + rectSizeIn/3);
         final Rect rectDst = new Rect(0,0,outputBitmap.getWidth(),outputBitmap.getHeight());
 
         canvas.drawBitmap(bitmap,rectSrc,rectDst,paint);
@@ -305,5 +312,29 @@ public class BitmapUtil {
         bm.compress(Bitmap.CompressFormat.PNG, 100, baos);
         return baos.toByteArray();
     }
+
+    public static String getRealFilePath(final Context context, final Uri uri ) {
+        if ( null == uri ) return null;
+        final String scheme = uri.getScheme();
+        String data = null;
+        if ( scheme == null )
+            data = uri.getPath();
+        else if ( ContentResolver.SCHEME_FILE.equals( scheme ) ) {
+            data = uri.getPath();
+        } else if ( ContentResolver.SCHEME_CONTENT.equals( scheme ) ) {
+            Cursor cursor = context.getContentResolver().query( uri, new String[] { MediaStore.Images.ImageColumns.DATA }, null, null, null );
+            if ( null != cursor ) {
+                if ( cursor.moveToFirst() ) {
+                    int index = cursor.getColumnIndex( MediaStore.Images.ImageColumns.DATA );
+                    if ( index > -1 ) {
+                        data = cursor.getString( index );
+                    }
+                }
+                cursor.close();
+            }
+        }
+        return data;
+    }
+
 
 }

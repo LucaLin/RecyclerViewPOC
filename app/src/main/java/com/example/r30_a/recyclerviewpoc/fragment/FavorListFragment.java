@@ -52,7 +52,6 @@ public class FavorListFragment extends Fragment {
 
     public FavorListFragment() {}
 
-
     public static FavorListFragment newInstance() {
         FavorListFragment fragment = new FavorListFragment();
         Bundle args = new Bundle();
@@ -101,11 +100,8 @@ public class FavorListFragment extends Fragment {
                     favorList.add(data);
                     }
                 }
-
             }
-
         }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -120,7 +116,6 @@ public class FavorListFragment extends Fragment {
         }else {
             noDataLayout.setVisibility(View.VISIBLE);
         }
-
         contact_RecyclerView.setSwipeMenuCreator(new SwipeMenuCreator() {
             @Override
             public void onCreateMenu(SwipeMenu swipeLeftMenu, SwipeMenu swipeRightMenu, int viewType) {

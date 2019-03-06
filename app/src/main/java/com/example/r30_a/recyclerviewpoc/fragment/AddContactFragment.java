@@ -73,6 +73,7 @@ public class AddContactFragment extends Fragment {
     ContentValues values;
     MyContactDBHelper myContactDBHelper;
     SharedPreferences sp;
+    File file;
 
     public AddContactFragment() {
     }
@@ -183,7 +184,8 @@ public class AddContactFragment extends Fragment {
             }
             //組合成輸出路徑
             String filePath = folderPath + File.separator + "temp.png";
-            camera_uri = Uri.fromFile(new File(filePath));
+            file = new File(filePath);
+            camera_uri = Uri.fromFile(file);
             intent.putExtra(MediaStore.EXTRA_OUTPUT, camera_uri);//將拍照的檔案放入暫存檔路徑
             startActivityForResult(intent, CAMERA_REQUEST);
 
@@ -212,9 +214,16 @@ public class AddContactFragment extends Fragment {
 
                 if (data != null && data.getData() != null) {
                     album_uri = data.getData();
-                    doCropPhoto(album_uri);
+                    doCropPhoto(album_uri,90);
                 } else {
-                    doCropPhoto(camera_uri);
+                    int degree = 0;
+                    //取file的絕對路徑
+                    if (Build.VERSION.SDK_INT < 23) {
+                        degree = BitmapUtil.getBitmapDegree(file.getAbsolutePath());
+                    } else {
+                        degree = BitmapUtil.getBitmapDegree(temp_file.getAbsolutePath());
+                    }
+                    doCropPhoto(camera_uri, degree);
                 }
             } else if (requestCode == CROP_REQUEST) {
                 if (data.hasExtra(CropImageActivity.EXTRA_IMAGE) && data != null) {
@@ -249,9 +258,10 @@ public class AddContactFragment extends Fragment {
         }
     }
 
-    private void doCropPhoto(Uri uri) {
+    private void doCropPhoto(Uri uri, int degree) {
         Intent intent = new Intent(context, CropImageActivity.class);
         intent.setData(uri);
+        intent.putExtra("degree", degree);
         startActivityForResult(intent, CROP_REQUEST);
     }
 
@@ -283,6 +293,7 @@ public class AddContactFragment extends Fragment {
             img_avatar_bytes = outputStream.toByteArray();
             outputStream.close();
             img_avatar.setImageBitmap(update_avatar);
+            
 
         } catch (Exception e) {
             e.getMessage();

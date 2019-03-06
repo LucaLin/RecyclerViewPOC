@@ -19,11 +19,14 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.SearchView;
 import android.widget.Toast;
@@ -37,6 +40,7 @@ import com.example.r30_a.recyclerviewpoc.helper.MyContactDBHelper;
 import com.example.r30_a.recyclerviewpoc.model.ContactData;
 import com.example.r30_a.recyclerviewpoc.model.EmailData;
 import com.example.r30_a.recyclerviewpoc.util.CommonUtil;
+import com.example.r30_a.recyclerviewpoc.view.MyCustomSearchView;
 import com.example.r30_a.recyclerviewpoc.view.MyFloatButton;
 import com.example.r30_a.recyclerviewpoc.view.SideBar;
 import com.github.promeg.pinyinhelper.Pinyin;
@@ -65,37 +69,32 @@ import android.provider.ContactsContract.CommonDataKinds.StructuredPostal;
 
 
 public class ContactPageFragment extends Fragment {
-
+    private Context context;
     Toast toast;
     private ArrayList<ContactData> favorList = new ArrayList<>();//常用清單
     private ArrayList<ContactData> Now_ContactList = new ArrayList<>();
     private ArrayList<ContactData> searchList = new ArrayList<>();
     int number = 0;
     LinearLayoutManager manager;
-    private MyFloatButton floatButton;
+    private MyFloatButton floatButton;//浮動按鈕
 
     //--------聯絡人元件-------//
     private Cursor cursor;//搜尋資料的游標
-    private ContactData contactData;//用來儲存資料的物件
     private ContentResolver resolver;
-
     private String tempId = "";//聯絡人id的暫存
-    public static final int REQUEST_CODE = 1;
     //-------聯絡人清單元件-----//
     private SwipeMenuRecyclerView contact_RecyclerView;
     private MyAdapter adapter;
-    private SearchView searchView;
-    private SideBar sideBar;
+    private SideBar sideBar;//側邊字母快搜欄
+    private RecyclerView.ItemDecoration itemDecoration;//字首顯示欄
 
-    private RecyclerView.ItemDecoration itemDecoration;
-
+    //儲存資料用
     MyContactDBHelper myContactDBHelper;
-
     SharedPreferences sp;
-    private Context context;
+    //動態搜尋欄
+    MyCustomSearchView myCustomSearchView;
 
-    public ContactPageFragment() {
-    }
+    public ContactPageFragment() {}
 
     @Override
     public void onResume() {
@@ -106,7 +105,6 @@ public class ContactPageFragment extends Fragment {
         //資料有更新時，要更新nowlist，無更新時丟回原本的
 
         try {
-
             if (sp.getInt("listSize", 0) == 0) {//只有第一次
                 setContactList(CommonUtil.ALL_CONTACTS_URI, CommonUtil.phoneNumberProjection);
             }
@@ -140,20 +138,15 @@ public class ContactPageFragment extends Fragment {
         sp = context.getSharedPreferences("Tags", Context.MODE_PRIVATE);
 
 //        CommonUtil.favorIdSet = sp.getStringSet("favorTags",new HashSet<String>());
-
-        //CommonUtil.favorIdSet = sp.getStringSet("favorTags",new HashSet<String>());
         //資料有更新時，要更新nowlist，無更新時丟回原本的
 
-
-        //名稱分隔線
+        //------------名稱分隔線------------//
         itemDecoration = new MyDecoration(context, new MyDecoration.DecorationCallBack() {
             @Override
             public long getGroupId(int pos) {
                 String s = Pinyin.toPinyin(Now_ContactList.get(pos).getName().charAt(0));
                 return s.charAt(0);
-
             }
-
             @Override
             public String getGroupFirstLine(int pos) {
                 return Pinyin.toPinyin(Now_ContactList.get(pos).getName().charAt(0)).substring(0, 1);
@@ -165,6 +158,7 @@ public class ContactPageFragment extends Fragment {
     public View onCreateView(final LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_contact_page, container, false);
+
         contact_RecyclerView = (SwipeMenuRecyclerView) v.findViewById(R.id.contact_RecyclerView);
         //增加群組分類抬頭
         contact_RecyclerView.addItemDecoration(itemDecoration);
@@ -173,11 +167,11 @@ public class ContactPageFragment extends Fragment {
             @Override
             public void onCreateMenu(SwipeMenu swipeLeftMenu, SwipeMenu swipeRightMenu, int viewType) {
                 //建立右菜單更新按鈕
-                SwipeMenuItem update_item = CommonUtil.setMenuItem(context, 200, 260, R.drawable.icons8_restart_72, 16, Color.parseColor("#69e359"));
+                SwipeMenuItem update_item = CommonUtil.setMenuItem(context, 200, 220, R.drawable.icons8_restart_72, 16, Color.parseColor("#69e359"));
                 //建立右菜單刪除按鈕
-                SwipeMenuItem delete_item = CommonUtil.setMenuItem(context, 200, 260, R.drawable.icons8_trash_72, 16, Color.parseColor("#db2824"));
+                SwipeMenuItem delete_item = CommonUtil.setMenuItem(context, 200, 220, R.drawable.icons8_trash_72, 16, Color.parseColor("#db2824"));
                 //建立左菜單加入最愛按鈕
-                SwipeMenuItem favor_item = CommonUtil.setMenuItem(context, 200, 260, R.drawable.icons8_starplus_48, 16, Color.parseColor("#69e359"));
+                SwipeMenuItem favor_item = CommonUtil.setMenuItem(context, 200, 220, R.drawable.icons8_starplus_48, 16, Color.parseColor("#69e359"));
 
                 swipeRightMenu.addMenuItem(update_item);
                 swipeRightMenu.addMenuItem(delete_item);
@@ -199,7 +193,7 @@ public class ContactPageFragment extends Fragment {
                     switch (menuPosition) {
                         //更新
                         case 0:
-
+                            //獲取現有資料至下一頁進行更新
                             Fragment fragment = UpdateContactFragment.newInstance(String.valueOf(data.getId()), data.getName(),
                                     data.getPhoneNum(), data.getImg_avatar(),
                                     data.getNote(), data.getCity(),
@@ -224,7 +218,6 @@ public class ContactPageFragment extends Fragment {
                             if (favorList != null) {
                                 String id = String.valueOf(data.getId());
                                 if (!CommonUtil.favorIdSet.contains(id)) {
-
                                     CommonUtil.favorIdSet.add(id);
                                     sp.edit().putStringSet("favorTags", CommonUtil.favorIdSet).commit();
                                     //更新當前清單
@@ -261,44 +254,41 @@ public class ContactPageFragment extends Fragment {
                     transaction.replace(R.id.frameLayout,fragment);
                     transaction.commit();
 
-//                Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-//                intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-//                intent.putExtra(RecognizerIntent.EXTRA_PROMPT,"請說出要搜尋的人名或電話開頭");
-//                startActivityForResult(intent,1);
             }
         });
-
-
-        searchView = (SearchView) v.findViewById(R.id.searchView);
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+        //------動態搜尋欄---------//
+        myCustomSearchView = new MyCustomSearchView(context);
+        myCustomSearchView.edtInput = (EditText)v.findViewById(R.id.search_input_text);
+        myCustomSearchView.edtInput.addTextChangedListener(new TextWatcher() {
             @Override
-            public boolean onQueryTextSubmit(String query) {
-                return false;
-            }
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
             @Override
-            public boolean onQueryTextChange(String searchText) {
-                if (searchText.length() > 0) {
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                String txt = String.valueOf(s);
+                if(txt.length()>0){
                     contact_RecyclerView.removeItemDecoration(itemDecoration);
                     searchList.clear();
                     for (int i = 0; i < Now_ContactList.size(); i++) {
-                        String num = Now_ContactList.get(i).getPhoneNum().substring(0, searchText.length());
+                        String num = Now_ContactList.get(i).getPhoneNum().substring(0, txt.length());
                         String name = Now_ContactList.get(i).getName();
-                        if (num.equals(searchText) || (name.length() >= searchText.length() &&
-                                name.substring(0, searchText.length()).equals(searchText))) {
+                        if (num.equals(txt) || (name.length() >= txt.length() &&
+                                name.substring(0, txt.length()).equals(txt))) {
                             searchList.add(Now_ContactList.get(i));
                         }
                         CommonUtil.setContactList(context, contact_RecyclerView, adapter, searchList, manager);
                     }
-                } else {
+                }else {
                     contact_RecyclerView.addItemDecoration(itemDecoration);
                     searchList.clear();
                     CommonUtil.setContactList(context, contact_RecyclerView, adapter, Now_ContactList, manager);
                 }
-                return true;
             }
 
+            @Override
+            public void afterTextChanged(Editable s) {}
         });
+        //--------側邊字母快搜欄設定--------//
         sideBar = v.findViewById(R.id.sideBar2);
         sideBar.setOnTouchingLetterChangedListener(new SideBar.OnTouchingLetterChangedListener() {
             @Override
@@ -314,7 +304,7 @@ public class ContactPageFragment extends Fragment {
         return v;
     }
 
-
+    //-------聯絡清單建立--------
     public void setContactList(Uri uri, String[] projection) {
         try {
             number = 0;
@@ -574,29 +564,11 @@ public class ContactPageFragment extends Fragment {
                     return 1;
                 }
 
-
             }
         });
 
         adapter = new MyAdapter(context, list);
         return list;
     }
-
-    public ArrayList getFirstAlpha(ArrayList<ContactData> list) {
-        ArrayList<String> alphaList = new ArrayList<>();
-        String alpha = "";
-        for (int i = 0; i < Now_ContactList.size(); i++) {
-
-            String firstWord = Now_ContactList.get(i).getName().substring(0, 1);
-
-            if (!alpha.equals(firstWord)) {
-                alphaList.add(alpha);
-                alpha = firstWord;
-            }
-
-        }
-        return alphaList;
-    }
-
 
 }

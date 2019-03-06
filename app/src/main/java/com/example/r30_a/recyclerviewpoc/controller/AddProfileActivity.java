@@ -5,12 +5,8 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
@@ -30,7 +26,6 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.example.r30_a.recyclerviewpoc.BuildConfig;
 import com.example.r30_a.recyclerviewpoc.R;
 import com.example.r30_a.recyclerviewpoc.helper.MyContactDBHelper;
 import com.example.r30_a.recyclerviewpoc.util.BitmapUtil;
@@ -52,12 +47,8 @@ import org.json.JSONObject;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
-
-import static android.support.v4.content.FileProvider.getUriForFile;
 
 public class AddProfileActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -70,6 +61,7 @@ public class AddProfileActivity extends AppCompatActivity implements View.OnClic
     File file;
     SharedPreferences sf;
     String filePath;
+
 
     //取得結果用的Request Code
     private final int CAMERA_REQUEST = 1;
@@ -97,7 +89,7 @@ public class AddProfileActivity extends AppCompatActivity implements View.OnClic
         FacebookSdk.sdkInitialize(this);
         loginManager = LoginManager.getInstance();
         callbackManager = CallbackManager.Factory.create();
-        sf = getSharedPreferences("profile",MODE_PRIVATE);
+        sf = getSharedPreferences("profile", MODE_PRIVATE);
 
         initView();
 
@@ -117,28 +109,29 @@ public class AddProfileActivity extends AppCompatActivity implements View.OnClic
                 break;
             case R.id.btnFBLogin:
 
-                loginKB();
+                loginFB();
                 break;
             case R.id.btnUpdate:
-                sf.edit().putString("name",edtName.getText().toString()).commit();
-                sf.edit().putString("phoneNum",edtPhomeNumber.getText().toString()).commit();
-                sf.edit().putString("email_custom",edtEmail_Custom.getText().toString()).commit();
-                sf.edit().putString("city",edtCity.getText().toString()).commit();
-                sf.edit().putString("street",edtStreet.getText().toString()).commit();
-                sf.edit().putString("note",edtNote.getText().toString()).commit();
+                sf.edit().putString("name", edtName.getText().toString()).commit();
+                sf.edit().putString("phoneNum", edtPhomeNumber.getText().toString()).commit();
+                sf.edit().putString("email_custom", edtEmail_Custom.getText().toString()).commit();
+                sf.edit().putString("city", edtCity.getText().toString()).commit();
+                sf.edit().putString("street", edtStreet.getText().toString()).commit();
+                sf.edit().putString("note", edtNote.getText().toString()).commit();
 
-                if(img_avatar_base64 != null && img_avatar_base64.length()>0){
-                    sf.edit().putString("avatar",img_avatar_base64).commit();
+                if (img_avatar_base64 != null && img_avatar_base64.length() > 0) {
+                    sf.edit().putString("avatar", img_avatar_base64).commit();
                 }
 
 
-                toast.setText("done");toast.show();
+                toast.setText("done");
+                toast.show();
                 finish();
 
         }
     }
 
-    private void loginKB() {
+    private void loginFB() {
 
         if (!isLogin) {
             loginManager.setLoginBehavior(LoginBehavior.NATIVE_WITH_FALLBACK);//預設fb login的顯示方式
@@ -175,6 +168,7 @@ public class AddProfileActivity extends AppCompatActivity implements View.OnClic
                                             .crossFade()
                                             .into(img_avatar);
                                     isLogin = true;
+
                                 }
 
                             } catch (IOException e) {
@@ -228,20 +222,20 @@ public class AddProfileActivity extends AppCompatActivity implements View.OnClic
         img_avatar = (ImageView) findViewById(R.id.userPhoto);
         img_avatar.setOnClickListener(this);
 
-        btnUpdate = (Button)findViewById(R.id.btnUpdate);
+        btnUpdate = (Button) findViewById(R.id.btnUpdate);
         btnUpdate.setOnClickListener(this);
 
-        edtName.setText(sf.getString("name",""));
-        edtPhomeNumber.setText(sf.getString("phoneNum",""));
-        edtEmail_Custom.setText(sf.getString("email_custom",""));
-        edtCity.setText(sf.getString("city",""));
-        edtStreet.setText(sf.getString("street",""));
+        edtName.setText(sf.getString("name", ""));
+        edtPhomeNumber.setText(sf.getString("phoneNum", ""));
+        edtEmail_Custom.setText(sf.getString("email_custom", ""));
+        edtCity.setText(sf.getString("city", ""));
+        edtStreet.setText(sf.getString("street", ""));
 
-        String img_avatarBase64 = (sf.getString("avatar",""));
-        if(!TextUtils.isEmpty(img_avatarBase64)){
-            byte[] bytes = Base64.decode(img_avatarBase64,Base64.DEFAULT);
-            Bitmap bitmap = BitmapFactory.decodeByteArray(bytes,0,bytes.length);
-           img_avatar.setImageBitmap(bitmap);
+        String img_avatarBase64 = (sf.getString("avatar", ""));
+        if (!TextUtils.isEmpty(img_avatarBase64)) {
+            byte[] bytes = Base64.decode(img_avatarBase64, Base64.DEFAULT);
+            Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+            img_avatar.setImageBitmap(bitmap);
         }
 
     }
@@ -280,7 +274,7 @@ public class AddProfileActivity extends AppCompatActivity implements View.OnClic
 
     private void cameraStart() {
 
-        if(Build.VERSION.SDK_INT < 23){
+        if (Build.VERSION.SDK_INT < 23) {
 
             Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);//使用拍照
             //拍完的照片做成暫存檔
@@ -293,7 +287,9 @@ public class AddProfileActivity extends AppCompatActivity implements View.OnClic
             }
             //組合成輸出路徑
             filePath = folderPath + File.separator + "temp.png";
-            camera_uri = Uri.fromFile(new File(filePath));
+            file = new File(filePath);
+            camera_uri = Uri.fromFile(file);
+
             intent.putExtra(MediaStore.EXTRA_OUTPUT, camera_uri);//將拍照的檔案放入暫存檔路徑
             startActivityForResult(intent, CAMERA_REQUEST);
 
@@ -308,9 +304,9 @@ public class AddProfileActivity extends AppCompatActivity implements View.OnClic
     }
 
     private void doCropPhoto(Uri uri, int degree) {
-        Intent intent = new Intent(this,CropImageActivity.class);
+        Intent intent = new Intent(this, CropImageActivity.class);
         intent.setData(uri);
-        intent.putExtra("degree",degree);
+        intent.putExtra("degree", degree);
         startActivityForResult(intent, CROP_REQUEST);
     }
 
@@ -354,7 +350,6 @@ public class AddProfileActivity extends AppCompatActivity implements View.OnClic
 
 //    }
 
-
     private void setChangedAvatar(File file, ImageView img_avatar) {
         try {
 
@@ -382,13 +377,17 @@ public class AddProfileActivity extends AppCompatActivity implements View.OnClic
                 if (data != null && data.getData() != null) {
                     album_uri = data.getData();
 
+                    doCropPhoto(album_uri, 90);
 
-                    doCropPhoto(album_uri,0);
                 } else {
+                    int degree = 0;
                     //取file的絕對路徑
-                    int degree = BitmapUtil.getBitmapDegree(temp_file.getAbsolutePath());
-
-                    doCropPhoto(camera_uri,degree);
+                    if (Build.VERSION.SDK_INT < 23) {
+                        degree = BitmapUtil.getBitmapDegree(file.getAbsolutePath());
+                    } else {
+                        degree = BitmapUtil.getBitmapDegree(temp_file.getAbsolutePath());
+                    }
+                    doCropPhoto(camera_uri, degree);
                 }
             } else if (requestCode == CROP_REQUEST) {
 
@@ -409,13 +408,12 @@ public class AddProfileActivity extends AppCompatActivity implements View.OnClic
                             if (realBitmap != null) {
                                 img_avatar.setImageBitmap(realBitmap);
                                 byte[] avatar_bytes = BitmapUtil.Bitmap2Bytes(realBitmap);
-                                img_avatar_base64 = Base64.encodeToString(avatar_bytes,Base64.DEFAULT);
+                                img_avatar_base64 = Base64.encodeToString(avatar_bytes, Base64.DEFAULT);
                                 //Toast.makeText(this,R.string.updateOK,Toast.LENGTH_SHORT).show();
                             }
                         }
                     }
                 }
-
             }
         }
     }
