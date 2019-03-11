@@ -45,7 +45,6 @@ public class CommonUtil {
 
     private static final String MY_TEST_PREF = "MY_TEST_PREF";
     private static final String FIRST_USE = "FIRST_USE";
-    public static boolean isDataChanged = false;
     public static Uri ALL_CONTACTS_URI = ContactsContract.CommonDataKinds.Phone.CONTENT_URI;
     public static final Uri SIM_URI = Uri.parse("content://icc/adn");//讀取sim卡資料的uri string
     public static Set<String> favorIdSet = new HashSet();;
@@ -153,7 +152,6 @@ public class CommonUtil {
         toggle.syncState();
         View headerView = activity.getLayoutInflater().inflate(headerViewResId, navigationView, false);
 
-//        txvHeaderTitle.setText(userName);
 
     }
 

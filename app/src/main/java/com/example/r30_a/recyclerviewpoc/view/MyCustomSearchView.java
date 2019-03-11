@@ -30,16 +30,9 @@ import java.util.ArrayList;
 public class MyCustomSearchView extends FrameLayout implements View.OnClickListener{
 
     Context context;
-    View btnOpenSearch, btnCloseSearch;
-    RelativeLayout search_open_view, search_close_view;
+    public View btnOpenSearch, btnCloseSearch;
+    public RelativeLayout search_open_view, search_close_view;
     public EditText edtInput;
-
-    ArrayList<ContactData> list;
-    ArrayList<ContactData> searchList = new ArrayList<>();
-    SwipeMenuRecyclerView recyclerView;
-    MyAdapter adapter;
-    RecyclerView.ItemDecoration decoration;
-
 
     public MyCustomSearchView(@NonNull Context context) {
         super(context);
@@ -52,6 +45,7 @@ public class MyCustomSearchView extends FrameLayout implements View.OnClickListe
     public MyCustomSearchView(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         init(context);
+
     }
 
     private void init(Context context) {
@@ -78,9 +72,7 @@ public class MyCustomSearchView extends FrameLayout implements View.OnClickListe
         switch (v.getId()){
             case R.id.open_search_button:
 
-
                 search_open_view.setVisibility(VISIBLE);
-//                startAnimator(animator_open,search_open_view,btnOpenSearch,300,0,Float.valueOf(v.getWidth()));
                 Animator animator_open = ViewAnimationUtils.createCircularReveal(search_open_view,
                         (btnOpenSearch.getRight() + btnOpenSearch.getLeft()) / 2,
                         (btnOpenSearch.getTop() + btnOpenSearch.getBottom()) /2 ,
@@ -119,41 +111,10 @@ public class MyCustomSearchView extends FrameLayout implements View.OnClickListe
                     }
                 });
 
-//                startAnimator(animator_close,search_open_view,btnOpenSearch,300,Float.valueOf(v.getWidth()),0);
-
-
                 break;
 
 
         }
-
-    }
-
-    public void startAnimator(Animator animator, final View view, View openSearch, int duration, float startRadius, float endRadius){
-        animator = ViewAnimationUtils.createCircularReveal(view,
-                (openSearch.getRight() + openSearch.getLeft()) / 2,
-                (openSearch.getTop() + openSearch.getBottom()) /2 ,
-                startRadius,endRadius);
-
-        animator.setDuration(duration);
-        animator.start();
-
-        animator.addListener(new Animator.AnimatorListener() {
-            @Override
-            public void onAnimationStart(Animator animation) {
-            }
-            @Override
-            public void onAnimationEnd(Animator animation) {
-
-            }
-            @Override
-            public void onAnimationCancel(Animator animation) {
-            }
-            @Override
-            public void onAnimationRepeat(Animator animation) {
-            }
-        });
-
     }
 
 }

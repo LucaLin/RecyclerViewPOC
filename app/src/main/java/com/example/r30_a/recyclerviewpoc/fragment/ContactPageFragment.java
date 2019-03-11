@@ -1,10 +1,10 @@
 package com.example.r30_a.recyclerviewpoc.fragment;
 
+import android.animation.Animator;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -13,7 +13,6 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
-import android.speech.RecognizerIntent;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
@@ -25,10 +24,11 @@ import android.text.TextWatcher;
 import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewAnimationUtils;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.SearchView;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.example.r30_a.recyclerviewpoc.R;
@@ -92,9 +92,11 @@ public class ContactPageFragment extends Fragment {
     MyContactDBHelper myContactDBHelper;
     SharedPreferences sp;
     //動態搜尋欄
-    MyCustomSearchView myCustomSearchView;
+    MyCustomSearchView searchView;
+    boolean isDecoRemove = false;
 
-    public ContactPageFragment() {}
+    public ContactPageFragment() {
+    }
 
     @Override
     public void onResume() {
@@ -147,6 +149,7 @@ public class ContactPageFragment extends Fragment {
                 String s = Pinyin.toPinyin(Now_ContactList.get(pos).getName().charAt(0));
                 return s.charAt(0);
             }
+
             @Override
             public String getGroupFirstLine(int pos) {
                 return Pinyin.toPinyin(Now_ContactList.get(pos).getName().charAt(0)).substring(0, 1);
@@ -244,30 +247,55 @@ public class ContactPageFragment extends Fragment {
         });
 
         //------快速搜尋功能設定--------//
-        floatButton = (MyFloatButton)v.findViewById(R.id.fab);
+        floatButton = (MyFloatButton) v.findViewById(R.id.fab);
         floatButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                    Fragment fragment = new AddContactFragment();
-                    FragmentTransaction transaction = getFragmentManager().beginTransaction();
-                    transaction.setCustomAnimations(R.anim.slide_right_in,R.anim.slide_left_out,R.anim.slide_left_in,R.anim.slide_right_out);
-                    transaction.replace(R.id.frameLayout,fragment);
-                    transaction.commit();
+                Fragment fragment = new AddContactFragment();
+                FragmentTransaction transaction = getFragmentManager().beginTransaction();
+                transaction.setCustomAnimations(R.anim.slide_right_in, R.anim.slide_left_out, R.anim.slide_left_in, R.anim.slide_right_out);
+                transaction.replace(R.id.frameLayout, fragment);
+                transaction.commit();
 
             }
         });
         //------動態搜尋欄---------//
-        myCustomSearchView = new MyCustomSearchView(context);
-        myCustomSearchView.edtInput = (EditText)v.findViewById(R.id.search_input_text);
-        myCustomSearchView.edtInput.addTextChangedListener(new TextWatcher() {
+        searchView = new MyCustomSearchView(context);
+//        searchView.btnOpenSearch = (View)v.findViewById(R.id.open_search_button);
+//        searchView.search_open_view = (RelativeLayout)v.findViewById(R.id.search_open_view);
+////
+//        searchView.btnCloseSearch = (View) v.findViewById(R.id.close_search_button);
+//        searchView.btnCloseSearch.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                searchView.edtInput.setText("");
+//
+//                final Animator animator_close = ViewAnimationUtils.createCircularReveal(searchView.search_open_view,
+//                        (searchView.btnOpenSearch.getRight() + searchView.btnOpenSearch.getLeft()) / 2,
+//                        (searchView.btnOpenSearch.getTop() + searchView.btnOpenSearch.getBottom()) /2 ,
+//                        Float.valueOf(v.getWidth()),0f);
+//                animator_close.setDuration(300);
+//                animator_close.start();
+//                searchView.search_open_view.setVisibility(View.INVISIBLE);
+//                contact_RecyclerView.addItemDecoration(itemDecoration);
+//                searchList.clear();
+//                CommonUtil.setContactList(context, contact_RecyclerView, adapter, Now_ContactList, manager);
+//            }
+//        });
+
+        searchView.edtInput = (EditText) v.findViewById(R.id.search_input_text);
+        searchView.edtInput.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 String txt = String.valueOf(s);
-                if(txt.length()>0){
+                if (txt.length() > 0) {
+
                     contact_RecyclerView.removeItemDecoration(itemDecoration);
+                    isDecoRemove = true;
                     searchList.clear();
                     for (int i = 0; i < Now_ContactList.size(); i++) {
                         String num = Now_ContactList.get(i).getPhoneNum().substring(0, txt.length());
@@ -278,15 +306,19 @@ public class ContactPageFragment extends Fragment {
                         }
                         CommonUtil.setContactList(context, contact_RecyclerView, adapter, searchList, manager);
                     }
-                }else {
-                    contact_RecyclerView.addItemDecoration(itemDecoration);
+                } else {
+                    if (isDecoRemove){
+                        contact_RecyclerView.addItemDecoration(itemDecoration);
+                        isDecoRemove = false;
+                    }
                     searchList.clear();
                     CommonUtil.setContactList(context, contact_RecyclerView, adapter, Now_ContactList, manager);
                 }
             }
 
             @Override
-            public void afterTextChanged(Editable s) {}
+            public void afterTextChanged(Editable s) {
+            }
         });
         //--------側邊字母快搜欄設定--------//
         sideBar = v.findViewById(R.id.sideBar2);
@@ -317,11 +349,9 @@ public class ContactPageFragment extends Fragment {
 
             cursor = resolver.query(uri, projection, null, null, null);
             //直接取contacts中的號碼資料區，再從號碼欄去抓對應的name跟number
-//            int c = cursor.getCount();
-//            Cursor s = myContactDBHelper.getReadableDatabase().query(MyContactDBHelper.TABLE_NAME,null,null,null,null,null,null);
-//            int ss = s.getCount();
+
             if (cursor != null) {
-//                while (cursor.moveToNext()) {
+
                 for (int i = 0; i < cursor.getCount(); i++) {
                     cursor.moveToNext();
 
@@ -504,7 +534,6 @@ public class ContactPageFragment extends Fragment {
         ArrayList<ContactData> list = new ArrayList<>();
 
         Cursor c = myContactDBHelper.getReadableDatabase().query(MyContactDBHelper.TABLE_NAME, null, null, null, null, null, null);
-//        int i = c.getCount();
         if (c != null) {
             while (c.moveToNext()) {
                 ContactData data = new ContactData();
@@ -520,7 +549,6 @@ public class ContactPageFragment extends Fragment {
                 data.setEmail_other(c.getString(c.getColumnIndex(MyContactDBHelper.EMAIL_DATA_OTHER)));
                 data.setEmail_custom(c.getString(c.getColumnIndex(MyContactDBHelper.EMAIL_DATA_CUSTOM)));
 
-                //data.setEmail(c.getString(c.getColumnIndex(MyContactDBHelper.EMAIL)));
                 int favor_tags = c.getInt(c.getColumnIndex(MyContactDBHelper.FAVOR_TAG));
                 if (favor_tags == 1) {
                     data.setFavorTag(favor_tags);
@@ -554,7 +582,6 @@ public class ContactPageFragment extends Fragment {
         Collections.sort(list, new Comparator<ContactData>() {
             @Override
             public int compare(ContactData o1, ContactData o2) {
-
 
                 String s1 = Pinyin.toPinyin(o1.getName().charAt(0)).toUpperCase();
                 String s2 = Pinyin.toPinyin(o2.getName().charAt(0)).toUpperCase();

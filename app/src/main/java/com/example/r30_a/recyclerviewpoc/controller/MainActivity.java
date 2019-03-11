@@ -42,13 +42,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private boolean isStop = false;//線程是否停止
     ArrayList<ViewPagerData> myNewsList = new ArrayList<>();
 
-    Button btnInput;
-
-//    InputMethodManager inputMethodManager;
-//    Thread thread;
-//    String packageName = "com.mitake.android.scb";
-//    int flag = 0;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -90,59 +83,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
-//    private Runnable runnable = new Runnable() {
-//        @Override
-//        public void run() {
-//
-//            do {
-//                if(isThisImeOpen(packageName,inputMethodManager)){
-//                    Intent intent = new Intent();
-////                    intent.setFlags(
-////                            Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED |
-////                                    Intent.FLAG_ACTIVITY_SINGLE_TOP
-////                                    | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-//                    intent.setClass(MainActivity.this, MainActivity.class);
-//                    startActivity(intent);
-//                    break;
-//                }
-//
-//            } while (true);
-//        }
-//    };
-
-//    private Handler handler = new Handler() {
-//        @Override
-//        public void handleMessage(Message msg) {
-//            super.handleMessage(msg);
-//            if(flag ==0) {
-//                switch (msg.what) {
-//                    case 0:
-//                        if (isThisImeOpen(packageName, inputMethodManager)) {
-//                            Intent intent = new Intent();
-//                            intent.setFlags(
-//                                    Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED |
-//                                            Intent.FLAG_ACTIVITY_SINGLE_TOP
-//                                            | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-//                            intent.setClass(MainActivity.this, MainActivity.class);
-//                            startActivity(intent);
-//                            break;
-//                        }
-//                    case 1:
-//                        if (!isThisImeOpen(packageName, inputMethodManager)) {
-//                            Intent intent = new Intent();
-//                            intent.setFlags(
-//                                    Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED |
-//                                            Intent.FLAG_ACTIVITY_SINGLE_TOP
-//                                            | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-//                            intent.setClass(MainActivity.this, MainActivity.class);
-//                            startActivity(intent);
-//                            break;
-//                        }
-//                }
-//            }
-//
-//        }
-//    };
 
     private void autoplayView() {
 

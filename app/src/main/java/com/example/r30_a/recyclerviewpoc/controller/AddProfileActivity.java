@@ -56,28 +56,27 @@ public class AddProfileActivity extends AppCompatActivity implements View.OnClic
     EditText edtName, edtPhomeNumber, edtNote, edtEmail_Custom, edtCity, edtStreet;//使用者編輯區
     Button btnAddContact;
     Button btnUpdate;
-    LoginButton btnLoginFB;
     ContentResolver resolver;
     File file;
     SharedPreferences sf;
     String filePath;
-
 
     //取得結果用的Request Code
     private final int CAMERA_REQUEST = 1;
     private final int ALBUM_REQUEST = 2;
     private final int CROP_REQUEST = 3;
 
+    //設定大頭貼用
     Uri album_uri, camera_uri;
     byte[] img_avatar_bytes;
     String img_avatar_base64;
     File temp_file;
     ImageView img_avatar;
-    FrameLayout pickUserPhoto;
     Bitmap update_avatar = null;
-    ContentValues values;
-    MyContactDBHelper myContactDBHelper;
+
     SharedPreferences sp;
+    //FB功能
+    LoginButton btnLoginFB;
     LoginManager loginManager;
     CallbackManager callbackManager;
     private boolean isLogin = false;
@@ -108,7 +107,6 @@ public class AddProfileActivity extends AppCompatActivity implements View.OnClic
                 showPopupMenu(v);
                 break;
             case R.id.btnFBLogin:
-
                 loginFB();
                 break;
             case R.id.btnUpdate:
@@ -123,14 +121,13 @@ public class AddProfileActivity extends AppCompatActivity implements View.OnClic
                     sf.edit().putString("avatar", img_avatar_base64).commit();
                 }
 
-
                 toast.setText("done");
                 toast.show();
                 finish();
 
         }
     }
-
+    //登入FB功能
     private void loginFB() {
 
         if (!isLogin) {

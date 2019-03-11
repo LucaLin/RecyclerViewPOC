@@ -6,7 +6,8 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@drawable/contact_background">
 
 
         <ScrollView
@@ -15,8 +16,7 @@
             android:layout_height="match_parent"
             android:layout_above="@+id/funcLayout"
             android:layout_below="@+id/layout_nameColumn"
-            android:layout_margin="20dp"
-            android:background="@drawable/contact_background">
+            android:layout_margin="20dp">
 
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -300,13 +300,12 @@
         </LinearLayout>
 
 
-
         <RelativeLayout
             android:id="@+id/funcLayout"
-            android:background="@color/colorPrimary"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
+            android:background="@color/colorPrimary"
             android:orientation="horizontal">
 
             <ImageButton

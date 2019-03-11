@@ -38,7 +38,6 @@ public class ContactPageActivity extends AppCompatActivity {
     ImageView img_headerAvatar;
     Bitmap bitmap_avatar;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
