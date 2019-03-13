@@ -22,9 +22,6 @@ public class PermissionUtil {
 
     public static final int PERMISSION_REQUEST_CODE_EXTERNAL_STORAGE = 2;
 
-
-
-
     //1：確認權限使用
     public static boolean needGrantRuntimePermission(Activity activity, String[] permissions, final int requestCode){
 
@@ -44,7 +41,6 @@ public class PermissionUtil {
                     msg += str;
                 }
             }
-
 
         }else {
             //Android 6.0以上，顯示訊息要求使用者允許
@@ -131,8 +127,6 @@ public class PermissionUtil {
         ed.commit();
 
     }
-
-
 
     public enum ENUM_PERMISSION_TYPE
     {

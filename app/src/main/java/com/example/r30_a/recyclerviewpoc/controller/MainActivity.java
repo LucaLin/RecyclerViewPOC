@@ -46,7 +46,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-//        inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         //第一次使用的話先開歡迎畫面
         if (CommonUtil.isFirstTimeUse(this)) {
             Intent intent = new Intent(this, WelcomeActivity.class);
@@ -56,7 +55,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         initView();
         autoplayView();
-
 
         //取得28字元的金鑰(註冊fb用)
 //        try {
@@ -78,12 +76,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //            Log.d("FacebookHashKeyError",e.toString());
 //        }
 
-        //myViewPagerAdapter = new MyViewPagerAdapter(this,viewPager,)
-
-
     }
 
-
+//自動輪播新聞的設定
     private void autoplayView() {
 
         new Thread(new Runnable() {
@@ -152,9 +147,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             });
         }
-//
-//        btnInput = (Button) findViewById(R.id.btnInput);
-//        btnInput.setOnClickListener(this);
+
     }
 
     @Override
@@ -171,25 +164,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 startActivity(new Intent(this, SettingPageActivity.class));
                 break;
 
-//
-//            case R.id.btnInput:
-////
-//                if(!isThisImeOpen(packageName,inputMethodManager)){
-//                    thread = new Thread(runnable);
-//                    thread.start();
-//                    }
-//                Intent inputIntent = new Intent();
-//                inputIntent.setAction("android.settings.INPUT_METHOD_SETTINGS");
-////
-////                int pendingIntentId = 123456;
-////                PendingIntent pendingIntent = PendingIntent.getActivity(this, pendingIntentId, intent, PendingIntent.FLAG_CANCEL_CURRENT);
-////                AlarmManager manager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
-////                manager.set(AlarmManager.RTC,System.currentTimeMillis() +3000,pendingIntent);
-//
-//                startActivity(inputIntent);
-//
-////                System.exit(0);
-
         }
     }
 
@@ -200,7 +174,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     public void getNews() {
 
-        new Thread(new Runnable() {//使用線程確資料能順利抓取
+        new Thread(new Runnable() {//使用線程確保資料能順利抓取
             @Override
             public void run() {
                 try {
@@ -217,8 +191,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         myNewsList.add(data);
 
                     }
-//
-//                    Message msg = new Message()
+
                 } catch (IOException e) {
                     e.printStackTrace();
                     getNews();
@@ -229,22 +202,5 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }) {
         }.start();
     }
-    //判斷指定輸入法是否已開啟使用
-    public  boolean isThisImeOpen(String packageName, InputMethodManager imm) {
-
-        Iterator iterator = imm.getEnabledInputMethodList().iterator();
-        String inputPackageName;
-        InputMethodInfo inputMethodInfo;
-        do {
-            if (!iterator.hasNext()) {
-                return false;
-            }
-            inputMethodInfo = (InputMethodInfo) iterator.next();
-            inputPackageName = inputMethodInfo.getPackageName();
-        } while (!packageName.equals(inputPackageName));
-        return true;
-    }
-
-
 }
 

@@ -107,15 +107,19 @@ public class FavorListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_favor_list, container, false);
+
         contact_RecyclerView = (SwipeMenuRecyclerView)v.findViewById(R.id.contact_RecyclerView);
+        //無資料的固定顯示頁，預設隱藏
         noDataLayout = (LinearLayout)v.findViewById(R.id.noData);
         noDataLayout.setVisibility(View.INVISIBLE);
+
         if(favorList.size()>0){
             adapter = new MyAdapter(context, favorList);
             CommonUtil.setContactList(context, contact_RecyclerView, adapter, favorList,manager);
         }else {
             noDataLayout.setVisibility(View.VISIBLE);
         }
+
         contact_RecyclerView.setSwipeMenuCreator(new SwipeMenuCreator() {
             @Override
             public void onCreateMenu(SwipeMenu swipeLeftMenu, SwipeMenu swipeRightMenu, int viewType) {

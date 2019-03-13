@@ -56,13 +56,13 @@ import static com.facebook.FacebookSdk.getApplicationContext;
 
 public class UpdateContactFragment extends Fragment implements View.OnClickListener {
 
-    private static final String USER_OLD_NAME = "name";
-    private static final String USER_OLD_PHONE = "phoneNumber";
-    private static final String USER_AVATAR = "avatar";
-    private static final String CONTACT_ID = "contact_id";
-    private static final String NOTE = "note";
-    private static final String CITY = "city";
-    private static final String STREET = "street";
+    private static final String USER_OLD_NAME = "name";//名稱
+    private static final String USER_OLD_PHONE = "phoneNumber";//手機號碼
+    private static final String USER_AVATAR = "avatar";//大頭貼
+    private static final String CONTACT_ID = "contact_id";//id
+    private static final String NOTE = "note";//備註
+    private static final String CITY = "city";//城市
+    private static final String STREET = "street";//街道
     private static final String EMAIL_HOME = "email_home";
     private static final String EMAIL_COM = "email_com";
     private static final String EMAIL_OTHER = "email_other";
@@ -89,7 +89,6 @@ public class UpdateContactFragment extends Fragment implements View.OnClickListe
     byte[] img_avatar_bytes;
     byte[] bytes;
 
-    //    TextView txvDataName, txvDataPhone,txvDataNote,txvDataEmail;
     Button btnUpdate;
     EditText edtName,
              edtPhone,
@@ -100,12 +99,10 @@ public class UpdateContactFragment extends Fragment implements View.OnClickListe
              edtEmail_company,
              edtEmail_other,
              edtEmail_custom;
-    //    String updateName,updatePhone,updateNote,
-//            updateEmail_home,updateEmail_company,updateEmail_other,updateEmail_custom;
+
     LinearLayout email_homeLayout, email_companyLayout, email_otherLayout, email_customLayout;
 
     Toast toast;
-    String dataId;
     ImageView img_avatar;
     FrameLayout pickUserPhoto;
     Bitmap old_avatar;
@@ -164,7 +161,6 @@ public class UpdateContactFragment extends Fragment implements View.OnClickListe
             oldEmail_company = getArguments().getString(EMAIL_COM);
             oldEmail_other = getArguments().getString(EMAIL_OTHER);
             oldEmail_custom = getArguments().getString(EMAIL_CUSTOM);
-
 
             img_avatar_bytes = getArguments().getByteArray(USER_AVATAR);
             temp_file = new File("/sdcard/a.jpg");
@@ -241,7 +237,6 @@ public class UpdateContactFragment extends Fragment implements View.OnClickListe
                                     updateDB(updateName, updatePhone, updateNote, updateCity, updateStreet,
                                             updateEmail_home, updateEmail_company, updateEmail_other, updateEmail_custom, bytes);
 
-                                    //setOldinfo(updateName,updatePhone,updateNote,updateEmail);
                                     toast.setText(R.string.updateDataOK);
                                     toast.show();
 
@@ -281,12 +276,10 @@ public class UpdateContactFragment extends Fragment implements View.OnClickListe
         values.put(MyContactDBHelper.EMAIL_DATA_COM, updateEmail_company);
         values.put(MyContactDBHelper.EMAIL_DATA_OTHER, updateEmail_other);
         values.put(MyContactDBHelper.EMAIL_DATA_CUSTOM, updateEmail_custom);
-        //values.put(MyContactDBHelper.EMAIL,updateEmail);
         if (img_avatar_bytes != null && img_avatar_bytes.length > 0) {
             String img_base64 = Base64.encodeToString(img_avatar_bytes, Base64.DEFAULT);
             values.put(MyContactDBHelper.IMG_AVATAR, img_base64);
-        } else {
-
+        } else {//
         }
         try {
 
@@ -307,6 +300,7 @@ public class UpdateContactFragment extends Fragment implements View.OnClickListe
         transaction.commit();
     }
 
+    //設定資訊
     private void setOldinfo(String name, String phone, String note,
                             String email_home, String email_company, String email_other, String email_custom,
                             String city, String street) {
@@ -436,7 +430,7 @@ public class UpdateContactFragment extends Fragment implements View.OnClickListe
                                     realBitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
                                     bytes = outputStream.toByteArray();
                                     outputStream.close();
-                                    //Toast.makeText(this,R.string.updateOK,Toast.LENGTH_SHORT).show();
+
                                 }
                             }
                         }

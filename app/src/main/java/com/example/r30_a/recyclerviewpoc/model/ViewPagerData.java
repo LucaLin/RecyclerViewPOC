@@ -13,20 +13,13 @@ public class ViewPagerData extends View{
     String url;
     String content;
     String time;
-//
+
     public ViewPagerData(Context context,String title,String url){
         super(context);
         this.title = title;
         this.url = url;
     }
-//
-//
-//    public ViewPagerData(String title, String url, String content, String time) {
-//        this.title = title;
-//        this.url = url;
-//        this.content = content;
-//        this.time = time;
-//    }
+
 
     public ViewPagerData(Context context, String title, String url, String content, String time) {
         super(context);

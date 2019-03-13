@@ -95,9 +95,6 @@ public class ContactPageFragment extends Fragment {
     MyCustomSearchView searchView;
     boolean isDecoRemove = false;
 
-    public ContactPageFragment() {
-    }
-
     @Override
     public void onResume() {
         super.onResume();
@@ -134,9 +131,8 @@ public class ContactPageFragment extends Fragment {
         manager = new LinearLayoutManager(context);
         resolver = context.getContentResolver();
         toast = Toast.makeText(context, "", Toast.LENGTH_SHORT);
-
+        //資料相關
         myContactDBHelper = MyContactDBHelper.getInstance(context);
-
         sp = context.getSharedPreferences("Tags", Context.MODE_PRIVATE);
 
 //        CommonUtil.favorIdSet = sp.getStringSet("favorTags",new HashSet<String>());
@@ -224,14 +220,16 @@ public class ContactPageFragment extends Fragment {
                                     CommonUtil.favorIdSet.add(id);
                                     sp.edit().putStringSet("favorTags", CommonUtil.favorIdSet).commit();
                                     //更新當前清單
-//
+
                                     ContentValues values = new ContentValues();
                                     values.put(MyContactDBHelper.FAVOR_TAG, 1);
 
                                     myContactDBHelper.getWritableDatabase().update(MyContactDBHelper.TABLE_NAME, values,
                                             MyContactDBHelper.CONTACT_ID + "=?", new String[]{String.valueOf(data.getId())});
+
                                     Now_ContactList = getList();
                                     CommonUtil.setContactList(context, contact_RecyclerView, adapter, Now_ContactList, manager);
+
                                     toast.setText(R.string.favorDone);
                                     toast.show();
                                 } else {
@@ -246,7 +244,7 @@ public class ContactPageFragment extends Fragment {
             }
         });
 
-        //------快速搜尋功能設定--------//
+        //------快速新增朋友按鈕設定--------//
         floatButton = (MyFloatButton) v.findViewById(R.id.fab);
         floatButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -261,28 +259,6 @@ public class ContactPageFragment extends Fragment {
         });
         //------動態搜尋欄---------//
         searchView = new MyCustomSearchView(context);
-//        searchView.btnOpenSearch = (View)v.findViewById(R.id.open_search_button);
-//        searchView.search_open_view = (RelativeLayout)v.findViewById(R.id.search_open_view);
-////
-//        searchView.btnCloseSearch = (View) v.findViewById(R.id.close_search_button);
-//        searchView.btnCloseSearch.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                searchView.edtInput.setText("");
-//
-//                final Animator animator_close = ViewAnimationUtils.createCircularReveal(searchView.search_open_view,
-//                        (searchView.btnOpenSearch.getRight() + searchView.btnOpenSearch.getLeft()) / 2,
-//                        (searchView.btnOpenSearch.getTop() + searchView.btnOpenSearch.getBottom()) /2 ,
-//                        Float.valueOf(v.getWidth()),0f);
-//                animator_close.setDuration(300);
-//                animator_close.start();
-//                searchView.search_open_view.setVisibility(View.INVISIBLE);
-//                contact_RecyclerView.addItemDecoration(itemDecoration);
-//                searchList.clear();
-//                CommonUtil.setContactList(context, contact_RecyclerView, adapter, Now_ContactList, manager);
-//            }
-//        });
-
         searchView.edtInput = (EditText) v.findViewById(R.id.search_input_text);
         searchView.edtInput.addTextChangedListener(new TextWatcher() {
             @Override
@@ -320,6 +296,7 @@ public class ContactPageFragment extends Fragment {
             public void afterTextChanged(Editable s) {
             }
         });
+
         //--------側邊字母快搜欄設定--------//
         sideBar = v.findViewById(R.id.sideBar2);
         sideBar.setOnTouchingLetterChangedListener(new SideBar.OnTouchingLetterChangedListener() {
@@ -419,12 +396,9 @@ public class ContactPageFragment extends Fragment {
                                 note,
                                 cityName, streetName,
                                 emailList);
-
                     }
                 }
-
                 cursor.close();
-
             } else {
                 toast.setText(R.string.noData);
                 toast.show();
@@ -563,14 +537,13 @@ public class ContactPageFragment extends Fragment {
                     Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
                     data.setImg_avatar(bitmap);
                 }
-
+                //-------獲取名稱的第一個字母拼音，供sidebar使用------//
                 String letter = Pinyin.toPinyin(data.getName().substring(0, 1).charAt(0));
                 if (letter.matches("[A-Z]")) {
                     data.setLetter(letter);
 
                 } else {
                     data.setLetter("#");
-
                 }
                 list.add(data);
 
@@ -579,6 +552,7 @@ public class ContactPageFragment extends Fragment {
         sp.edit().putInt("listSize", c.getCount()).commit();
         c.close();
 
+        //將所有資料根據羅馬拼音做排序
         Collections.sort(list, new Comparator<ContactData>() {
             @Override
             public int compare(ContactData o1, ContactData o2) {

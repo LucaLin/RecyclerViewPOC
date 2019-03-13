@@ -119,7 +119,6 @@ public class UpdateHelper {
                         + ContactsContract.CommonDataKinds.Email.MIMETYPE + "=?" + " AND "
                         + ContactsContract.CommonDataKinds.Email.TYPE + "=?",
                 new String[]{contact_id, ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE, type});
-//
 
     }
 }

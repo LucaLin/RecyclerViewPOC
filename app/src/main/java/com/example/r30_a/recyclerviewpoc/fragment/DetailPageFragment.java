@@ -45,12 +45,12 @@ import static android.content.Context.MODE_PRIVATE;
 public class DetailPageFragment extends Fragment {
 
     private static final String CONTACT_ID = "id";
-    private static final String NUMBER = "number";
-    private static final String NAME = "name";
-    private static final String PHONE_NUMBER = "phoneNumber";
-    private static final String AVATAR = "avatar_base64";
-    private static final String NOTE = "note";
-    private static final String ADDRESS = "address";
+    private static final String NUMBER = "number";//序號
+    private static final String NAME = "name";//名稱
+    private static final String PHONE_NUMBER = "phoneNumber";//手機號碼
+    private static final String AVATAR = "avatar_base64";//大頭貼64
+    private static final String NOTE = "note";//備註
+    private static final String ADDRESS = "address";//地址
     private static final String EMAIL_HOME = "email_home";
     private static final String EMAIL_COM = "email_com";
     private static final String EMAIL_OTHER = "email_other";
@@ -229,7 +229,7 @@ public class DetailPageFragment extends Fragment {
                 }
             }
         });
-        //----------定位----------//
+        //----------定位功能----------//
         btn_locate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

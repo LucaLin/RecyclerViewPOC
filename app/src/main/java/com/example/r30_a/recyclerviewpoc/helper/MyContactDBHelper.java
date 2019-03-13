@@ -26,10 +26,6 @@ public class MyContactDBHelper extends SQLiteOpenHelper {
     public static final String STREET = "STREET";//街道名稱
     //--------EMAIL---------//
 
-//    public static final String EMAIL_TYPE_HOME = "EMAIL_TYPE_HOME";
-//    public static final String EMAIL_TYPE_COM = "EMAIL_TYPE_COM";
-//    public static final String EMAIL_TYPE_OTHER = "EMAIL_TYPE_OTHER";
-//    public static final String EMAIL_TYPE_CUSTOM = "EMAIL_TYPE_CUSTOM";
     public static final String EMAIL_DATA_HOME = "EMAIL_DATA_HOME";
     public static final String EMAIL_DATA_COM = "EMAIL_DATA_COM";
     public static final String EMAIL_DATA_OTHER = "EMAIL_DATA_OTHER";
@@ -59,9 +55,6 @@ public class MyContactDBHelper extends SQLiteOpenHelper {
         if(instance==null){instance= new MyContactDBHelper(context,DB_NAME,null,DB_VERSION);};
         return instance;
     }
-
-
-
 
     private MyContactDBHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version){
         super(context,name,factory,version);

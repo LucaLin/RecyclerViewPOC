@@ -19,13 +19,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.r30_a.recyclerviewpoc.R;
-import com.example.r30_a.recyclerviewpoc.fragment.AddContactFragment;
 import com.example.r30_a.recyclerviewpoc.fragment.ContactPageFragment;
 import com.example.r30_a.recyclerviewpoc.fragment.FavorListFragment;
 import com.example.r30_a.recyclerviewpoc.util.CommonUtil;
-
-import org.w3c.dom.Text;
-
 
 public class ContactPageActivity extends AppCompatActivity {
     //------抽屜元件--------//
@@ -42,31 +38,33 @@ public class ContactPageActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contact_page);
-        showFrag(new ContactPageFragment());
 
+        showFrag(new ContactPageFragment());//顯示預設的聯絡人清單頁
         context = ContactPageActivity.this;
         sf = getSharedPreferences("profile", MODE_PRIVATE);
-        userName = sf.getString("name", "");
-        String img_avatarBase64 = sf.getString("avatar", "");
-        if (img_avatarBase64.length() > 0) {
-
-            byte[] avatar_bytes = Base64.decode(img_avatarBase64, Base64.DEFAULT);
-            bitmap_avatar = BitmapFactory.decodeByteArray(avatar_bytes, 0, avatar_bytes.length);
-        }
-
 
         //----------抽屜設定-----------//
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         navigationView = (NavigationView) findViewById(R.id.navigationView);
 
-        TextView txv = navigationView.getHeaderView(0).findViewById(R.id.txvHeaderTitle);
+        //--------設定抬頭個人照 && 名字----//
+        userName = sf.getString("name", "");
+        String img_avatarBase64 = sf.getString("avatar", "");
+        if (img_avatarBase64.length() > 0) {
+            byte[] avatar_bytes = Base64.decode(img_avatarBase64, Base64.DEFAULT);
+            bitmap_avatar = BitmapFactory.decodeByteArray(avatar_bytes, 0, avatar_bytes.length);
+        }
+
+        TextView txvHeaderView = navigationView.getHeaderView(0).findViewById(R.id.txvHeaderTitle);
         img_headerAvatar = navigationView.getHeaderView(0).findViewById(R.id.img_headerAvatar);
-        txv.setText(getResources().getString(R.string.welcomeBack) + userName);
+        txvHeaderView.setText(getResources().getString(R.string.welcomeBack) + userName);
         if (bitmap_avatar != null) {
             img_headerAvatar.setImageBitmap(bitmap_avatar);
         }
+
+
         drawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
-        CommonUtil.setDrawer(context, ContactPageActivity.this, drawerLayout, toolbar, R.layout.drawer_header, userName, navigationView);
+        CommonUtil.setDrawer( ContactPageActivity.this, drawerLayout, toolbar, R.layout.drawer_header, userName, navigationView);
         //----------抽屜動作----------//
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -96,6 +94,7 @@ public class ContactPageActivity extends AppCompatActivity {
                 return true;
             }
         });
+        //--------工具列設定-------//
         toolbar.inflateMenu(R.menu.toolbar_menu);
         toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override
@@ -105,12 +104,11 @@ public class ContactPageActivity extends AppCompatActivity {
 //                        showFrag(new AddContactFragment());
 //                        break;
 
-                    case R.id.toolbar_allContact:
+                    case R.id.toolbar_allContact://所有聯絡人
                         showFrag(new ContactPageFragment());
-
                         break;
 
-                    case R.id.toolbar_favor:
+                    case R.id.toolbar_favor://最愛清單
                         showFrag(new FavorListFragment());
                         break;
                 }
@@ -118,10 +116,9 @@ public class ContactPageActivity extends AppCompatActivity {
                 return true;
             }
         });
-
-
     }
 
+    //顯示分頁的方法
     private void showFrag(android.support.v4.app.Fragment fragment) {
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();

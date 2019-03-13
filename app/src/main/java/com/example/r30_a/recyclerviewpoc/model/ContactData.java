@@ -38,8 +38,6 @@ public class ContactData {
         this.letter = letter;
     }
 
-
-
     public int getFavorTag() {
         return favorTag;
     }
@@ -47,9 +45,6 @@ public class ContactData {
     public void setFavorTag(int favorTag) {
         this.favorTag = favorTag;
     }
-
-
-
 
     public String getEmail_home() {
         return email_home;
@@ -82,10 +77,6 @@ public class ContactData {
     public void setEmail_custom(String email_custom) {
         this.email_custom = email_custom;
     }
-
-
-
-
 
     public String getCity() {
         return city;

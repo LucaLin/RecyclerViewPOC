@@ -113,7 +113,7 @@ public class DetailPageActivity extends AppCompatActivity {
 
         drawerLayout = (DrawerLayout)findViewById(R.id.drawerLayout);
         toolbar = (Toolbar)findViewById(R.id.toolbar);
-        CommonUtil.setDrawer(context,this,drawerLayout,toolbar,R.layout.drawer_header,userName,navigationView);
+        CommonUtil.setDrawer(this,drawerLayout,toolbar,R.layout.drawer_header,userName,navigationView);
 
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
