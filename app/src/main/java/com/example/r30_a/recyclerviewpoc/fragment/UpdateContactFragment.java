@@ -1,6 +1,7 @@
 package com.example.r30_a.recyclerviewpoc.fragment;
 
 
+import android.Manifest;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
@@ -16,6 +17,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.ContactsContract;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 
 import android.support.v4.content.FileProvider;
@@ -41,6 +43,8 @@ import com.example.r30_a.recyclerviewpoc.helper.MyContactDBHelper;
 import com.example.r30_a.recyclerviewpoc.helper.UpdateHelper;
 import com.example.r30_a.recyclerviewpoc.util.BitmapUtil;
 import com.example.r30_a.recyclerviewpoc.util.CommonUtil;
+import com.github.dfqin.grantor.PermissionListener;
+import com.github.dfqin.grantor.PermissionsUtil;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -91,14 +95,14 @@ public class UpdateContactFragment extends Fragment implements View.OnClickListe
 
     Button btnUpdate;
     EditText edtName,
-             edtPhone,
-             edtNote,
-             edtCity,
-             edtStreet,
-             edtEmail_home,
-             edtEmail_company,
-             edtEmail_other,
-             edtEmail_custom;
+            edtPhone,
+            edtNote,
+            edtCity,
+            edtStreet,
+            edtEmail_home,
+            edtEmail_company,
+            edtEmail_other,
+            edtEmail_custom;
 
     LinearLayout email_homeLayout, email_companyLayout, email_otherLayout, email_customLayout;
 
@@ -349,32 +353,40 @@ public class UpdateContactFragment extends Fragment implements View.OnClickListe
     }
 
     private void cameraStart() {
+        if (PermissionsUtil.hasPermission(context, Manifest.permission.CAMERA)) {
+            if (Build.VERSION.SDK_INT < 23) {
 
-        if (Build.VERSION.SDK_INT < 23) {
+                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);//使用拍照
+                //拍完的照片做成暫存檔
+                String folderPath = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "Test";//取得目標folder
+                File folder = new File(folderPath);
+                //如果裝置沒有此folder，建立一個新的
+                if (!folder.exists()) {
+                    if (!folder.mkdir()) {
+                    }
+                }
+                //組合成輸出路徑
+                String filePath = folderPath + File.separator + "temp.png";
+                file = new File(filePath);
+                camera_uri = Uri.fromFile(file);
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, camera_uri);//將拍照的檔案放入暫存檔路徑
+                startActivityForResult(intent, CAMERA_REQUEST);
+
+            } else {
+                camera_uri = FileProvider.getUriForFile(getApplicationContext(), "com.example.r30_a.recyclerviewpoc.fileprovider", temp_file);
+            }
 
             Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);//使用拍照
-            //拍完的照片做成暫存檔
-            String folderPath = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "Test";//取得目標folder
-            File folder = new File(folderPath);
-            //如果裝置沒有此folder，建立一個新的
-            if (!folder.exists()) {
-                if (!folder.mkdir()) {
-                }
-            }
-            //組合成輸出路徑
-            String filePath = folderPath + File.separator + "temp.png";
-            file = new File(filePath);
-            camera_uri = Uri.fromFile(file);
-            intent.putExtra(MediaStore.EXTRA_OUTPUT, camera_uri);//將拍照的檔案放入暫存檔路徑
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, camera_uri);
             startActivityForResult(intent, CAMERA_REQUEST);
-
         } else {
-            camera_uri = FileProvider.getUriForFile(getApplicationContext(), "com.example.r30_a.recyclerviewpoc.fileprovider", temp_file);
+            PermissionsUtil.requestPermission(getActivity(), new PermissionListener() {
+                @Override
+                public void permissionGranted(@NonNull String[] permission) {}
+                @Override
+                public void permissionDenied(@NonNull String[] permission) {}
+            }, new String[]{Manifest.permission.CAMERA});
         }
-
-        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);//使用拍照
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, camera_uri);
-        startActivityForResult(intent, CAMERA_REQUEST);
     }
 
     private void albumStart() {

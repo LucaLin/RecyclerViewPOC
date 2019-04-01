@@ -166,11 +166,11 @@ public class ContactPageFragment extends Fragment {
             @Override
             public void onCreateMenu(SwipeMenu swipeLeftMenu, SwipeMenu swipeRightMenu, int viewType) {
                 //建立右菜單更新按鈕
-                SwipeMenuItem update_item = CommonUtil.setMenuItem(context, 200, 220, R.drawable.icons8_restart_72, 16, Color.parseColor("#69e359"));
+                SwipeMenuItem update_item = CommonUtil.setMenuItem(context, 200, 220, R.string.fun_updateData, 16, Color.parseColor("#69e359"));
                 //建立右菜單刪除按鈕
-                SwipeMenuItem delete_item = CommonUtil.setMenuItem(context, 200, 220, R.drawable.icons8_trash_72, 16, Color.parseColor("#db2824"));
+                SwipeMenuItem delete_item = CommonUtil.setMenuItem(context, 200, 220, R.string.fun_deleteData, 16, Color.parseColor("#db2824"));
                 //建立左菜單加入最愛按鈕
-                SwipeMenuItem favor_item = CommonUtil.setMenuItem(context, 200, 220, R.drawable.icons8_starplus_48, 16, Color.parseColor("#69e359"));
+                SwipeMenuItem favor_item = CommonUtil.setMenuItem(context, 200, 220, R.string.fun_addFavor, 16, Color.parseColor("#69e359"));
 
                 swipeRightMenu.addMenuItem(update_item);
                 swipeRightMenu.addMenuItem(delete_item);

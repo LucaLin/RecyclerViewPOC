@@ -94,7 +94,7 @@ public class SideBar extends View{
             float ypos = singleHeight * i + singleHeight;
             //選中時的狀態
             if(recordY >=0){
-                float xp = xpos -textSize * 9 +Math.abs(recordY - ypos);
+                float xp = xpos -textSize * 8 +Math.abs(recordY - ypos);
                 if(xp <0 ){
                     xpos = xpos+xp;//字出去的距離
                     t = (t-(int)(xp /2 +0.5));//字的大小
@@ -188,7 +188,7 @@ public class SideBar extends View{
 //        final int action = event.getAction();
 //        final float y = event.getY();
 //        final int oldChoose = choose;
-//        final OnTouchingLetterChangedListener listener = onTouchingLetterChangedListener;
+//        final OnTouchingLetterChangedListener onMenuItemClickListener = onTouchingLetterChangedListener;
 //        final int c = (int)(y / getHeight() * alphabet.length);
 //
 //        switch (action){
@@ -202,8 +202,8 @@ public class SideBar extends View{
 //                setBackgroundResource(R.color.colorAccent);
 //                if(oldChoose != c){
 //                    if(c >=0 && c< alphabet.length){
-//                        if(listener != null){
-//                            listener.onTouchingChanged(alphabet[c]);
+//                        if(onMenuItemClickListener != null){
+//                            onMenuItemClickListener.onTouchingChanged(alphabet[c]);
 //                        }
 //                        choose = c;
 //                        invalidate();

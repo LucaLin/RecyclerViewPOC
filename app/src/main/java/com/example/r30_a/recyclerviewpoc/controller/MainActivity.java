@@ -123,7 +123,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 PermissionsUtil.hasPermission(this, Manifest.permission.SEND_SMS) &&
                 PermissionsUtil.hasPermission(this, Manifest.permission.READ_CONTACTS) &&
                 PermissionsUtil.hasPermission(this, Manifest.permission.WRITE_CONTACTS) &&
-                PermissionsUtil.hasPermission(this, Manifest.permission.CAMERA) &&
                 PermissionsUtil.hasPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) &&
                 PermissionsUtil.hasPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 ) {
@@ -138,7 +137,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
             }, new String[]{Manifest.permission.READ_CONTACTS,
                     Manifest.permission.WRITE_CONTACTS,
-                    Manifest.permission.CAMERA,
                     Manifest.permission.READ_EXTERNAL_STORAGE,
                     Manifest.permission.WRITE_EXTERNAL_STORAGE,
                     Manifest.permission.CALL_PHONE,

@@ -77,6 +77,7 @@ public class FavorListFragment extends Fragment {
 
                 int count = c.getInt(c.getColumnIndex(MyContactDBHelper.FAVOR_TAG));
                 if(count == 1 ){
+
                     ContactData data= new ContactData();
                     data.setId(Long.valueOf(c.getString(c.getColumnIndex(MyContactDBHelper.CONTACT_ID))));
                     data.setNumber(Integer.parseInt(c.getString(c.getColumnIndex(MyContactDBHelper.NUMBER))));

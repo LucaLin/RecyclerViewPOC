@@ -1,5 +1,6 @@
 package com.example.r30_a.recyclerviewpoc.controller;
 
+import android.Manifest;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
@@ -10,6 +11,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -37,6 +39,8 @@ import com.facebook.login.LoginBehavior;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
+import com.github.dfqin.grantor.PermissionListener;
+import com.github.dfqin.grantor.PermissionsUtil;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -267,7 +271,7 @@ public class AddProfileActivity extends AppCompatActivity implements View.OnClic
     }
 
     private void cameraStart() {
-
+        if(PermissionsUtil.hasPermission(this, Manifest.permission.CAMERA)){
         if (Build.VERSION.SDK_INT < 23) {
 
             Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);//使用拍照
@@ -294,7 +298,14 @@ public class AddProfileActivity extends AppCompatActivity implements View.OnClic
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);//使用拍照
         intent.putExtra(MediaStore.EXTRA_OUTPUT, camera_uri);
         startActivityForResult(intent, CAMERA_REQUEST);
-
+        }else {
+            PermissionsUtil.requestPermission(this, new PermissionListener() {
+                @Override
+                public void permissionGranted(@NonNull String[] permission) { }
+                @Override
+                public void permissionDenied(@NonNull String[] permission) { }
+            },new String[]{Manifest.permission.CAMERA});
+        }
     }
 
     private void doCropPhoto(Uri uri, int degree) {

@@ -33,6 +33,11 @@
     <string name="p2_addFavor">加入常用清單</string>
     <string name="p3_delete">刪除聯絡人</string>
 
+    <!--function title-->
+    <string name="fun_updateData">更新</string>
+    <string name="fun_deleteData">刪除</string>
+    <string name="fun_addFavor">加入常用</string>
+
 
     <!--提示語-->
     <string name="welcome_page1">歡迎使用通訊錄小app</string>
