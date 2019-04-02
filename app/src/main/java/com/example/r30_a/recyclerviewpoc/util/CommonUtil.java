@@ -4,12 +4,15 @@ import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Environment;
 import android.provider.ContactsContract;
+import android.provider.MediaStore;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -27,6 +30,7 @@ import com.yanzhenjie.recyclerview.swipe.SwipeMenuItem;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectOutputStream;
@@ -192,5 +196,38 @@ public class CommonUtil {
         return bitmap;
 
     }
+
+    //bitmap to base64
+    public static String bitmapToBase64(Bitmap bitmap){
+        if(bitmap == null){
+            return "";
+        }
+        String img_avatar_base64 = "";
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
+        byte[] bytes = outputStream.toByteArray();
+        img_avatar_base64 = Base64.encodeToString(bytes, Base64.DEFAULT);
+        return img_avatar_base64;
+    }
+
+    public static Intent getCameraIntentUnder23(Uri camera_uri){
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);//使用拍照
+        //拍完的照片做成暫存檔
+        String folderPath = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "Test";//取得目標folder
+        File folder = new File(folderPath);
+        //如果裝置沒有此folder，建立一個新的
+        if (!folder.exists()) {
+            if (!folder.mkdir()) {
+            }
+        }
+        //組合成輸出路徑
+        String filePath = folderPath + File.separator + "temp.png";
+        File file = new File(filePath);
+        camera_uri = Uri.fromFile(file);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, camera_uri);//將拍照的檔案放入暫存檔路徑
+
+        return intent;
+    }
+
 
 }

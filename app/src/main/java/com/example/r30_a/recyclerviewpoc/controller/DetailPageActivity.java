@@ -39,7 +39,6 @@ public class DetailPageActivity extends AppCompatActivity {
     String number;
     String phoneNumber;
     String note;
-    String address;
     String city;
     String street;
     String email_home, email_company, email_other, email_custom;
@@ -85,6 +84,7 @@ public class DetailPageActivity extends AppCompatActivity {
         context = DetailPageActivity.this;
         toast = Toast.makeText(context, "", Toast.LENGTH_SHORT);
         myContactDBHelper = MyContactDBHelper.getInstance(this);
+
         sf = getSharedPreferences("profile", MODE_PRIVATE);
         userName = sf.getString("name", "");
         String img_avatarBase64 = sf.getString("avatar", "");
@@ -92,6 +92,7 @@ public class DetailPageActivity extends AppCompatActivity {
             byte[] avatar_bytes = Base64.decode(img_avatarBase64, Base64.DEFAULT);
             bitmap_avatar = BitmapFactory.decodeByteArray(avatar_bytes, 0, avatar_bytes.length);
         }
+
         sp = getSharedPreferences("favorTags", MODE_PRIVATE);
         CommonUtil.favorIdSet = sp.getStringSet("favorTags", null);
 //        get Intent data

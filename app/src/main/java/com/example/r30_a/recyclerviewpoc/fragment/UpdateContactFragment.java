@@ -356,35 +356,37 @@ public class UpdateContactFragment extends Fragment implements View.OnClickListe
         if (PermissionsUtil.hasPermission(context, Manifest.permission.CAMERA)) {
             if (Build.VERSION.SDK_INT < 23) {
 
-                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);//使用拍照
-                //拍完的照片做成暫存檔
-                String folderPath = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "Test";//取得目標folder
-                File folder = new File(folderPath);
-                //如果裝置沒有此folder，建立一個新的
-                if (!folder.exists()) {
-                    if (!folder.mkdir()) {
-                    }
-                }
-                //組合成輸出路徑
-                String filePath = folderPath + File.separator + "temp.png";
-                file = new File(filePath);
-                camera_uri = Uri.fromFile(file);
-                intent.putExtra(MediaStore.EXTRA_OUTPUT, camera_uri);//將拍照的檔案放入暫存檔路徑
-                startActivityForResult(intent, CAMERA_REQUEST);
+//                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);//使用拍照
+//                //拍完的照片做成暫存檔
+//                String folderPath = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "Test";//取得目標folder
+//                File folder = new File(folderPath);
+//                //如果裝置沒有此folder，建立一個新的
+//                if (!folder.exists()) {
+//                    if (!folder.mkdir()) {
+//                    }
+//                }
+//                //組合成輸出路徑
+//                String filePath = folderPath + File.separator + "temp.png";
+//                file = new File(filePath);
+//                camera_uri = Uri.fromFile(file);
+//                intent.putExtra(MediaStore.EXTRA_OUTPUT, camera_uri);//將拍照的檔案放入暫存檔路徑
+                startActivityForResult(CommonUtil.getCameraIntentUnder23(camera_uri), CAMERA_REQUEST);
 
             } else {
                 camera_uri = FileProvider.getUriForFile(getApplicationContext(), "com.example.r30_a.recyclerviewpoc.fileprovider", temp_file);
+                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);//使用拍照
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, camera_uri);
+                startActivityForResult(intent, CAMERA_REQUEST);
             }
-
-            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);//使用拍照
-            intent.putExtra(MediaStore.EXTRA_OUTPUT, camera_uri);
-            startActivityForResult(intent, CAMERA_REQUEST);
         } else {
             PermissionsUtil.requestPermission(getActivity(), new PermissionListener() {
                 @Override
-                public void permissionGranted(@NonNull String[] permission) {}
+                public void permissionGranted(@NonNull String[] permission) {
+                }
+
                 @Override
-                public void permissionDenied(@NonNull String[] permission) {}
+                public void permissionDenied(@NonNull String[] permission) {
+                }
             }, new String[]{Manifest.permission.CAMERA});
         }
     }
@@ -475,7 +477,6 @@ public class UpdateContactFragment extends Fragment implements View.OnClickListe
 
                         }
                     }
-
                 } catch (Exception e) {
                     e.getMessage();
                 }
@@ -508,21 +509,21 @@ public class UpdateContactFragment extends Fragment implements View.OnClickListe
 //
 //    }
 
-    private void setChangedAvatar(File file, ImageView img_avatar) {
-        try {
-
-            update_avatar = BitmapFactory.decodeFile(file.getAbsolutePath());
-            //bitmap to byte[]
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            update_avatar.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
-            bytes = outputStream.toByteArray();
-            outputStream.close();
-            img_avatar.setImageBitmap(update_avatar);
-
-        } catch (Exception e) {
-            e.getMessage();
-        }
-    }
+//    private void setChangedAvatar(File file, ImageView img_avatar) {
+//        try {
+//
+//            update_avatar = BitmapFactory.decodeFile(file.getAbsolutePath());
+//            //bitmap to byte[]
+//            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+//            update_avatar.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
+//            bytes = outputStream.toByteArray();
+//            outputStream.close();
+//            img_avatar.setImageBitmap(update_avatar);
+//
+//        } catch (Exception e) {
+//            e.getMessage();
+//        }
+//    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

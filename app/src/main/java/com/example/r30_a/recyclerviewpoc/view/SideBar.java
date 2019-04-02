@@ -183,36 +183,7 @@ public class SideBar extends View{
 
     }
 
-    //    @Override
-//    public boolean dispatchTouchEvent(MotionEvent event) {
-//        final int action = event.getAction();
-//        final float y = event.getY();
-//        final int oldChoose = choose;
-//        final OnTouchingLetterChangedListener onMenuItemClickListener = onTouchingLetterChangedListener;
-//        final int c = (int)(y / getHeight() * alphabet.length);
-//
-//        switch (action){
-//            case MotionEvent.ACTION_UP:
-//                setBackgroundDrawable(new ColorDrawable(0x00000000));
-//                choose = -1;
-//                invalidate();
-//
-//                break;
-//            default:
-//                setBackgroundResource(R.color.colorAccent);
-//                if(oldChoose != c){
-//                    if(c >=0 && c< alphabet.length){
-//                        if(onMenuItemClickListener != null){
-//                            onMenuItemClickListener.onTouchingChanged(alphabet[c]);
-//                        }
-//                        choose = c;
-//                        invalidate();
-//                    }
-//                }
-//        }
-//
-//        return true;
-//    }
+
     public void setOnTouchingLetterChangedListener(OnTouchingLetterChangedListener onTouchingLetterChangedListener){
         this.onTouchingLetterChangedListener = onTouchingLetterChangedListener;
     }

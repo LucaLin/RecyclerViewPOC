@@ -29,17 +29,13 @@ import java.util.ArrayList;
 
 public class MyCustomSearchView extends FrameLayout implements View.OnClickListener{
 
-    Context context;
     public View btnOpenSearch, btnCloseSearch;
     public RelativeLayout search_open_view, search_close_view;
     public EditText edtInput;
 
     public MyCustomSearchView(@NonNull Context context) {
         super(context);
-
         init(context);
-
-
     }
 
     public MyCustomSearchView(@NonNull Context context, @Nullable AttributeSet attrs) {
@@ -92,29 +88,21 @@ public class MyCustomSearchView extends FrameLayout implements View.OnClickListe
 
                 animator_close.addListener(new Animator.AnimatorListener() {
                     @Override
-                    public void onAnimationStart(Animator animation) {
-                    }
-
+                    public void onAnimationStart(Animator animation) {}
                     @Override
                     public void onAnimationEnd(Animator animation) {
                         search_open_view.setVisibility(INVISIBLE);
                         edtInput.setText("");
                         animator_close.removeAllListeners();
                     }
-
                     @Override
-                    public void onAnimationCancel(Animator animation) {
-                    }
-
+                    public void onAnimationCancel(Animator animation) {}
                     @Override
-                    public void onAnimationRepeat(Animator animation) {
-                    }
+                    public void onAnimationRepeat(Animator animation) {}
                 });
 
                 break;
 
-
         }
     }
-
 }

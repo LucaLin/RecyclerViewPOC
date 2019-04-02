@@ -183,22 +183,26 @@ public class ContactPageFragment extends Fragment {
             @Override
             public void onItemClick(Closeable closeable, final int pos, int menuPosition, int direction) {
                 ContactData data = new ContactData();
+                //先判斷點擊到的是原來的清單還是搜索清單
                 if (searchList.size() > 0) {
                     data = searchList.get(pos);
                 } else {
                     data = Now_ContactList.get(pos);
                 }
+
                 if (direction == -1) {//向右滑動
                     switch (menuPosition) {
                         //更新
                         case 0:
                             //獲取現有資料至下一頁進行更新
-                            Fragment fragment = UpdateContactFragment.newInstance(String.valueOf(data.getId()), data.getName(),
+                            Fragment fragment = UpdateContactFragment.newInstance(
+                                    String.valueOf(data.getId()), data.getName(),
                                     data.getPhoneNum(), data.getImg_avatar(),
                                     data.getNote(), data.getCity(),
                                     data.getStreet(), data.getEmail_home(),
                                     data.getEmail_company(), data.getEmail_other(),
                                     data.getEmail_custom());
+
                             FragmentTransaction transaction = getFragmentManager().beginTransaction();
                             transaction.setCustomAnimations(R.anim.slide_right_in, R.anim.slide_left_out, R.anim.slide_left_in, R.anim.slide_right_out);
                             transaction.replace(R.id.frameLayout, fragment);
@@ -248,7 +252,7 @@ public class ContactPageFragment extends Fragment {
         floatButton = (MyFloatButton) v.findViewById(R.id.fab);
         floatButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(View v) {//直接至新增好友頁
                 Fragment fragment = new AddContactFragment();
                 FragmentTransaction transaction = getFragmentManager().beginTransaction();
                 transaction.setCustomAnimations(R.anim.slide_right_in, R.anim.slide_left_out, R.anim.slide_left_in, R.anim.slide_right_out);
@@ -257,15 +261,13 @@ public class ContactPageFragment extends Fragment {
 
             }
         });
-        //------動態搜尋欄---------//
+        //------客製化動態搜尋欄-------//
         searchView = new MyCustomSearchView(context);
         searchView.edtInput = (EditText) v.findViewById(R.id.search_input_text);
         searchView.edtInput.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+            @Override//根據搜尋結果即時更新清單
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 String txt = String.valueOf(s);
                 if (txt.length() > 0) {
@@ -293,8 +295,7 @@ public class ContactPageFragment extends Fragment {
             }
 
             @Override
-            public void afterTextChanged(Editable s) {
-            }
+            public void afterTextChanged(Editable s) {}
         });
 
         //--------側邊字母快搜欄設定--------//
@@ -337,14 +338,12 @@ public class ContactPageFragment extends Fragment {
                     mobileNum = cursor.getString(cursor.getColumnIndex(Phone.NUMBER));//電話
 
 //                  //----------抓取備註欄----------//
-                    Cursor info_cursor = resolver.query(Data.CONTENT_URI,
-                            new String[]{Data._ID, Note.NOTE},
+                    Cursor info_cursor = resolver.query(Data.CONTENT_URI, new String[]{Data._ID, Note.NOTE},
                             Data.CONTACT_ID + "=?" + " AND " + Data.MIMETYPE + "='" + Note.CONTENT_ITEM_TYPE + "'",
-                            new String[]{String.valueOf(id)}, null);
+                                    new String[]{String.valueOf(id)}, null);
                     if (info_cursor != null && info_cursor.moveToFirst()) {
                         note = info_cursor.getString(info_cursor.getColumnIndex(Note.NOTE));
                     }
-//                    String address="";
 
                     //--------抓取地址--------//
                     String cityName = "", streetName = "";
@@ -382,8 +381,7 @@ public class ContactPageFragment extends Fragment {
                         }
                     }
                     email_cursor.close();
-
-
+                    //只抓取符合手機號碼格式的
                     if (!TextUtils.isEmpty(mobileNum) && !isCellPhoneNumber(mobileNum)) {
                         continue;
                     } else {
@@ -409,11 +407,12 @@ public class ContactPageFragment extends Fragment {
 
     }
 
-    /*新增聯絡人到手機清單*/
+    /*新增聯絡人到手機清單的功能*/
     private void addContactToList(int number, long id, String phoneNumber, String name, Bitmap avatar, String note, String city, String street, List<EmailData> emailList) {
 
         if (!tempId.equals(String.valueOf(id))) {
             String email = "";
+
             ContentValues values = new ContentValues();
             values.put(MyContactDBHelper.CONTACT_ID, id);
             values.put(MyContactDBHelper.NAME, name);
@@ -456,11 +455,12 @@ public class ContactPageFragment extends Fragment {
 
             String img_avatar_base64 = "";
             if (avatar != null) {
-                ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-                avatar.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
-                byte[] bytes = outputStream.toByteArray();
-                img_avatar_base64 = Base64.encodeToString(bytes, Base64.DEFAULT);
-                values.put(MyContactDBHelper.IMG_AVATAR, img_avatar_base64);
+//                ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+//                avatar.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
+//                byte[] bytes = outputStream.toByteArray();
+//                img_avatar_base64 = Base64.encodeToString(bytes, Base64.DEFAULT);
+//
+                values.put(MyContactDBHelper.IMG_AVATAR, CommonUtil.bitmapToBase64(avatar));
             }
 
             myContactDBHelper.getWritableDatabase().insert(MyContactDBHelper.TABLE_NAME, null, values);
@@ -471,7 +471,7 @@ public class ContactPageFragment extends Fragment {
 
     /*刪除聯絡人*/
     private void deleteContact(final long id, final int number, final String[] projection) {
-
+        //刪除之前先對話框確認，避免user誤按
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle(R.string.attention)
                 .setMessage(R.string.deleteOrNot)
@@ -480,16 +480,13 @@ public class ContactPageFragment extends Fragment {
                     public void onClick(DialogInterface dialog, int which) {
                         try {
                             //使用id來找原始資料
-                            Cursor c = resolver.query(Phone.CONTENT_URI,
-                                    projection,
-                                    "contact_id =?",
-                                    new String[]{String.valueOf(id)},
-                                    null);
+                            Cursor c = resolver.query(Phone.CONTENT_URI, projection, "contact_id =?", new String[]{String.valueOf(id)}, null);
                             if (c.moveToFirst()) {
-
+                                //手機裝置、資料庫、顯示清單一併移除
                                 resolver.delete(ContactsContract.RawContacts.CONTENT_URI, "contact_id =?", new String[]{String.valueOf(id)});
                                 myContactDBHelper.getWritableDatabase().delete(MyContactDBHelper.TABLE_NAME, String.valueOf(id), null);
                                 Now_ContactList.remove(number - 1);
+
                                 toast.setText(R.string.deleteOK);
                                 toast.show();
 
@@ -503,7 +500,7 @@ public class ContactPageFragment extends Fragment {
                 .setNegativeButton(R.string.no, null)
                 .show();
     }
-
+    //從資料庫取得聯絡人清單
     public ArrayList<ContactData> getList() {
         ArrayList<ContactData> list = new ArrayList<>();
 
@@ -571,5 +568,4 @@ public class ContactPageFragment extends Fragment {
         adapter = new MyAdapter(context, list);
         return list;
     }
-
 }

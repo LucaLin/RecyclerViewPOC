@@ -28,6 +28,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.example.r30_a.recyclerviewpoc.R;
 import com.example.r30_a.recyclerviewpoc.util.BitmapUtil;
+import com.example.r30_a.recyclerviewpoc.util.CommonUtil;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
@@ -128,6 +129,7 @@ public class AddProfileActivity extends AppCompatActivity implements View.OnClic
 
         }
     }
+
     //登入FB功能
     private void loginFB() {
 
@@ -271,40 +273,43 @@ public class AddProfileActivity extends AppCompatActivity implements View.OnClic
     }
 
     private void cameraStart() {
-        if(PermissionsUtil.hasPermission(this, Manifest.permission.CAMERA)){
-        if (Build.VERSION.SDK_INT < 23) {
+        if (PermissionsUtil.hasPermission(this, Manifest.permission.CAMERA)) {
+            if (Build.VERSION.SDK_INT < 23) {
 
-            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);//使用拍照
-            //拍完的照片做成暫存檔
-            String folderPath = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "Test";//取得目標folder
-            File folder = new File(folderPath);
-            //如果裝置沒有此folder，建立一個新的
-            if (!folder.exists()) {
-                if (!folder.mkdir()) {
-                }
+//                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);//使用拍照
+//                //拍完的照片做成暫存檔
+//                String folderPath = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "Test";//取得目標folder
+//                File folder = new File(folderPath);
+//                //如果裝置沒有此folder，建立一個新的
+//                if (!folder.exists()) {
+//                    if (!folder.mkdir()) {
+//                    }
+//                }
+//                //組合成輸出路徑
+//                filePath = folderPath + File.separator + "temp.png";
+//                file = new File(filePath);
+//                camera_uri = Uri.fromFile(file);
+//
+//                intent.putExtra(MediaStore.EXTRA_OUTPUT, camera_uri);//將拍照的檔案放入暫存檔路徑
+                startActivityForResult(CommonUtil.getCameraIntentUnder23(camera_uri), CAMERA_REQUEST);
+
+            } else {
+                camera_uri = FileProvider.getUriForFile(getApplicationContext(), "com.example.r30_a.recyclerviewpoc.fileprovider", temp_file);
+
+                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);//使用拍照
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, camera_uri);
+                startActivityForResult(intent, CAMERA_REQUEST);
             }
-            //組合成輸出路徑
-            filePath = folderPath + File.separator + "temp.png";
-            file = new File(filePath);
-            camera_uri = Uri.fromFile(file);
-
-            intent.putExtra(MediaStore.EXTRA_OUTPUT, camera_uri);//將拍照的檔案放入暫存檔路徑
-            startActivityForResult(intent, CAMERA_REQUEST);
-
         } else {
-            camera_uri = FileProvider.getUriForFile(getApplicationContext(), "com.example.r30_a.recyclerviewpoc.fileprovider", temp_file);
-        }
-
-        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);//使用拍照
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, camera_uri);
-        startActivityForResult(intent, CAMERA_REQUEST);
-        }else {
             PermissionsUtil.requestPermission(this, new PermissionListener() {
                 @Override
-                public void permissionGranted(@NonNull String[] permission) { }
+                public void permissionGranted(@NonNull String[] permission) {
+                }
+
                 @Override
-                public void permissionDenied(@NonNull String[] permission) { }
-            },new String[]{Manifest.permission.CAMERA});
+                public void permissionDenied(@NonNull String[] permission) {
+                }
+            }, new String[]{Manifest.permission.CAMERA});
         }
     }
 

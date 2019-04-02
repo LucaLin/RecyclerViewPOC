@@ -1,5 +1,6 @@
 package com.example.r30_a.recyclerviewpoc.fragment;
 
+import android.Manifest;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.content.ContentResolver;
@@ -18,6 +19,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.ContactsContract;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.FileProvider;
@@ -40,6 +42,9 @@ import com.example.r30_a.recyclerviewpoc.controller.CropImageActivity;
 import com.example.r30_a.recyclerviewpoc.helper.MyContactDBHelper;
 import com.example.r30_a.recyclerviewpoc.helper.UpdateHelper;
 import com.example.r30_a.recyclerviewpoc.util.BitmapUtil;
+import com.example.r30_a.recyclerviewpoc.util.CommonUtil;
+import com.github.dfqin.grantor.PermissionListener;
+import com.github.dfqin.grantor.PermissionsUtil;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -170,31 +175,42 @@ public class AddContactFragment extends Fragment {
     }
 
     private void cameraStart() {
+        if (PermissionsUtil.hasPermission(context, Manifest.permission.CAMERA)) {
+            if (Build.VERSION.SDK_INT < 23) {
 
-        if (Build.VERSION.SDK_INT < 23) {
+//            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);//使用拍照
+//            //拍完的照片做成暫存檔
+//            String folderPath = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "Test";//取得目標folder
+//            File folder = new File(folderPath);
+//            //如果裝置沒有此folder，建立一個新的
+//            if (!folder.exists()) {
+//                if (!folder.mkdir()) {
+//                }
+//            }
+//            //組合成輸出路徑
+//            String filePath = folderPath + File.separator + "temp.png";
+//            file = new File(filePath);
+//            camera_uri = Uri.fromFile(file);
+//            intent.putExtra(MediaStore.EXTRA_OUTPUT, camera_uri);//將拍照的檔案放入暫存檔路徑
+                startActivityForResult(CommonUtil.getCameraIntentUnder23(camera_uri), CAMERA_REQUEST);
 
-            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);//使用拍照
-            //拍完的照片做成暫存檔
-            String folderPath = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "Test";//取得目標folder
-            File folder = new File(folderPath);
-            //如果裝置沒有此folder，建立一個新的
-            if (!folder.exists()) {
-                if (!folder.mkdir()) {
-                }
+            } else {
+                camera_uri = FileProvider.getUriForFile(getApplicationContext(), "com.example.r30_a.recyclerviewpoc.fileprovider", temp_file);
+                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);//使用拍照
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, camera_uri);
+                startActivityForResult(intent, CAMERA_REQUEST);
             }
-            //組合成輸出路徑
-            String filePath = folderPath + File.separator + "temp.png";
-            file = new File(filePath);
-            camera_uri = Uri.fromFile(file);
-            intent.putExtra(MediaStore.EXTRA_OUTPUT, camera_uri);//將拍照的檔案放入暫存檔路徑
-            startActivityForResult(intent, CAMERA_REQUEST);
-
         } else {
-            camera_uri = FileProvider.getUriForFile(getApplicationContext(), "com.example.r30_a.recyclerviewpoc.fileprovider", temp_file);
+            PermissionsUtil.requestPermission(getActivity(), new PermissionListener() {
+                @Override
+                public void permissionGranted(@NonNull String[] permission) {
+                }
+
+                @Override
+                public void permissionDenied(@NonNull String[] permission) {
+                }
+            }, new String[]{Manifest.permission.CAMERA});
         }
-        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);//使用拍照
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, camera_uri);
-        startActivityForResult(intent, CAMERA_REQUEST);
     }
 
     private void albumStart() {
@@ -214,7 +230,7 @@ public class AddContactFragment extends Fragment {
 
                 if (data != null && data.getData() != null) {
                     album_uri = data.getData();
-                    doCropPhoto(album_uri,90);
+                    doCropPhoto(album_uri, 90);
                 } else {
                     int degree = 0;
                     //取file的絕對路徑
@@ -241,10 +257,10 @@ public class AddContactFragment extends Fragment {
 
                             if (realBitmap != null) {
                                 try {
-                                img_avatar.setImageBitmap(realBitmap);
-                                ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-                                realBitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
-                                img_avatar_bytes = outputStream.toByteArray();
+                                    img_avatar.setImageBitmap(realBitmap);
+                                    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                                    realBitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
+                                    img_avatar_bytes = outputStream.toByteArray();
                                     outputStream.close();
                                 } catch (IOException e) {
                                     e.printStackTrace();
@@ -293,7 +309,7 @@ public class AddContactFragment extends Fragment {
             img_avatar_bytes = outputStream.toByteArray();
             outputStream.close();
             img_avatar.setImageBitmap(update_avatar);
-            
+
 
         } catch (Exception e) {
             e.getMessage();
