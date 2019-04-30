@@ -41,8 +41,6 @@ public class MyFloatButton extends FloatingActionButton implements View.OnTouchL
     public boolean onTouch(View v, MotionEvent event) {
 
         int action = event.getAction();
-
-
         if(action == MotionEvent.ACTION_DOWN){
 
             downRawX = event.getRawX();
@@ -93,7 +91,5 @@ public class MyFloatButton extends FloatingActionButton implements View.OnTouchL
         }else{
             return super.onTouchEvent(event);
         }
-
-
     }
 }

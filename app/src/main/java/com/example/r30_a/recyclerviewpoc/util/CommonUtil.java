@@ -104,7 +104,7 @@ public class CommonUtil {
     }
 
 
-    public String objectToString(Object object){
+    public static String objectToString(Object object){
 
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         ObjectOutputStream objectOutputStream = null;

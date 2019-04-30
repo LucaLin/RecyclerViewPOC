@@ -31,16 +31,13 @@ public class MyAdapter extends SwipeMenuAdapter<MyAdapter.MainViewHolder> implem
     ArrayList<ContactData> list = new ArrayList();
     Context context;
 
-
     public MyAdapter(Context context, ArrayList<ContactData> list) {
         this.list = list;
         this.context = context;
     }
     @Override
     public View onCreateContentView(ViewGroup parent, int viewType) {
-
-        View v = LayoutInflater.from(context).inflate(R.layout.contactslist_layout,parent,false);
-        return v;
+        return LayoutInflater.from(context).inflate(R.layout.contactslist_layout,parent,false);
     }
 
     @Override
@@ -70,7 +67,7 @@ public class MyAdapter extends SwipeMenuAdapter<MyAdapter.MainViewHolder> implem
         //設定常用清單tag
         if(list.get(position).getFavorTag() == 1){
             list.get(position).setImg_favor(holder.img_favor);
-//            holder.img_favor.setVisibility(View.VISIBLE);
+
         }else {
             list.get(position).setImg_normal(holder.img_favor);
         }
@@ -82,10 +79,6 @@ public class MyAdapter extends SwipeMenuAdapter<MyAdapter.MainViewHolder> implem
             public void onClick(View v) {
 
                 ContactData data = list.get(position);
-//                String email_home = data.getEmail_home();
-//                String email_company = data.getEmail_company();
-//                String email_other = data.getEmail_other();
-//                String email_custom = data.getEmail_custom();
                 Intent intent = new Intent(context, DetailPageActivity.class);
                 intent.putExtra("id",data.getId());
                 intent.putExtra("number",data.getNumber());
@@ -128,7 +121,6 @@ public class MyAdapter extends SwipeMenuAdapter<MyAdapter.MainViewHolder> implem
         ImageView img_avatar;//大頭貼
         RelativeLayout contactData_layout;
         ImageView img_favor;//常用清單tag
-        //TextView txvrunrun;
         LinearLayout infoZone;
         public MainViewHolder(View v) {
             super(v);
@@ -139,10 +131,8 @@ public class MyAdapter extends SwipeMenuAdapter<MyAdapter.MainViewHolder> implem
             img_favor = v.findViewById(R.id.img_favor);
             number = v.findViewById(R.id.number);
             infoZone = v.findViewById(R.id.info_zone);
-
         }
     }
-
     public int getPosForSection(int section){
         for(int i=0; i<getItemCount(); i++){
 

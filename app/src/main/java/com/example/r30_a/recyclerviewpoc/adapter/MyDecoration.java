@@ -33,9 +33,7 @@ public class MyDecoration extends RecyclerView.ItemDecoration {
         this.callBack = callBack;
 
         paint = new Paint();
-//        paint.setColor(context.getResources().getColor(R.color.colorPrimary));
         paint.setColor(Color.parseColor("#77a6e4"));
-
 
         textPaint = new TextPaint();
         textPaint.setTypeface(Typeface.DEFAULT_BOLD);
@@ -69,15 +67,13 @@ public class MyDecoration extends RecyclerView.ItemDecoration {
             if(groupId<0){return;}
             //取得清單的第一個字
             String textLine = callBack.getGroupFirstLine(position).toUpperCase();
-
-
-            //群組的第一個才加
+            //群組的第一筆資料才加
             if((position == 0  || isFirstInGroup(position)) && !lastText.equals(textLine)){
 
                 float top = view.getTop()-topGap;
                 float bottom = view.getTop();
 
-                //繪製一個方形區塊，範圍需要上下左右的長寬
+                //這裡繪製一個方形區塊，範圍需要上下左右的長寬
 
                     c.drawRect(left,top,right,bottom,paint);
                     c.drawText(textLine,left,bottom-4,textPaint);
@@ -95,8 +91,6 @@ public class MyDecoration extends RecyclerView.ItemDecoration {
         int right = parent.getRight()-parent.getPaddingRight();
         int itemCount = state.getItemCount();
         int childCount = parent.getChildCount();
-
-        float lineHeight = textPaint.getTextSize() + fontMetrics.descent;
 
         long pregroupId, groupId = -1;
 
@@ -156,9 +150,7 @@ public class MyDecoration extends RecyclerView.ItemDecoration {
     }
 
     public interface DecorationCallBack {
-
         long getGroupId(int pos);
-
         String getGroupFirstLine(int pos);
     }
 

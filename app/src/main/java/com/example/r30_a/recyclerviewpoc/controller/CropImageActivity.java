@@ -44,7 +44,6 @@ public class CropImageActivity extends AppCompatActivity
 
     private Button btnOK,btnCancell;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

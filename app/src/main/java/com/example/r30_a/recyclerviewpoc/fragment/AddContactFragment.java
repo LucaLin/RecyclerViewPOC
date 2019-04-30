@@ -35,6 +35,7 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.Toast;
+import com.example.r30_a.recyclerviewpoc.util.CommonUtil;
 
 import com.example.r30_a.recyclerviewpoc.BuildConfig;
 import com.example.r30_a.recyclerviewpoc.R;
@@ -42,7 +43,7 @@ import com.example.r30_a.recyclerviewpoc.controller.CropImageActivity;
 import com.example.r30_a.recyclerviewpoc.helper.MyContactDBHelper;
 import com.example.r30_a.recyclerviewpoc.helper.UpdateHelper;
 import com.example.r30_a.recyclerviewpoc.util.BitmapUtil;
-import com.example.r30_a.recyclerviewpoc.util.CommonUtil;
+
 import com.github.dfqin.grantor.PermissionListener;
 import com.github.dfqin.grantor.PermissionsUtil;
 
@@ -52,6 +53,7 @@ import java.io.IOException;
 
 import static android.app.Activity.RESULT_OK;
 import static android.support.v4.content.FileProvider.getUriForFile;
+import static com.example.r30_a.recyclerviewpoc.util.CommonUtil.getCameraIntentUnder23;
 import static com.example.r30_a.recyclerviewpoc.util.CommonUtil.isCellPhoneNumber;
 import static com.facebook.FacebookSdk.getApplicationContext;
 
@@ -192,7 +194,7 @@ public class AddContactFragment extends Fragment {
 //            file = new File(filePath);
 //            camera_uri = Uri.fromFile(file);
 //            intent.putExtra(MediaStore.EXTRA_OUTPUT, camera_uri);//將拍照的檔案放入暫存檔路徑
-                startActivityForResult(CommonUtil.getCameraIntentUnder23(camera_uri), CAMERA_REQUEST);
+                startActivityForResult(getCameraIntentUnder23(camera_uri), CAMERA_REQUEST);
 
             } else {
                 camera_uri = FileProvider.getUriForFile(getApplicationContext(), "com.example.r30_a.recyclerviewpoc.fileprovider", temp_file);
