@@ -24,7 +24,7 @@ import com.example.r30_a.recyclerviewpoc.adapter.MyAdapter;
 import com.example.r30_a.recyclerviewpoc.helper.MyContactDBHelper;
 
 import com.example.r30_a.recyclerviewpoc.model.ContactData;
-import com.example.r30_a.recyclerviewpoc.util.CommonUtil;
+import com.example.r30_a.recyclerviewpoc.util.Util;
 import com.yanzhenjie.recyclerview.swipe.Closeable;
 import com.yanzhenjie.recyclerview.swipe.OnSwipeMenuItemClickListener;
 import com.yanzhenjie.recyclerview.swipe.SwipeMenu;
@@ -67,7 +67,7 @@ public class FavorListFragment extends Fragment {
             manager = new LinearLayoutManager(context);
             sp = context.getSharedPreferences("favorTags",MODE_PRIVATE);
             myContactDBHelper = MyContactDBHelper.getInstance(context);
-            CommonUtil.favorIdSet = sp.getStringSet("favorTags",new HashSet<String>());
+            Util.favorIdSet = sp.getStringSet("favorTags",new HashSet<String>());
             toast = Toast.makeText(context,"",Toast.LENGTH_SHORT);
 
         Cursor c = myContactDBHelper.getReadableDatabase().query(MyContactDBHelper.TABLE_NAME,null,null,null,null,null,null);
@@ -116,7 +116,7 @@ public class FavorListFragment extends Fragment {
 
         if(favorList.size()>0){
             adapter = new MyAdapter(context, favorList);
-            CommonUtil.setContactList(context, contact_RecyclerView, adapter, favorList,manager);
+            Util.setContactList(context, contact_RecyclerView, adapter, favorList,manager);
         }else {
             noDataLayout.setVisibility(View.VISIBLE);
         }
@@ -125,7 +125,7 @@ public class FavorListFragment extends Fragment {
             @Override
             public void onCreateMenu(SwipeMenu swipeLeftMenu, SwipeMenu swipeRightMenu, int viewType) {
                 //建立右菜單刪除按鈕
-                SwipeMenuItem delete_item = CommonUtil.setMenuItem(context,200,240,R.drawable.icons8_trash_48,16, Color.parseColor("#dd0000"));
+                SwipeMenuItem delete_item = Util.setMenuItem(context,200,240,R.drawable.icons8_trash_48,16, Color.parseColor("#dd0000"));
                 swipeRightMenu.addMenuItem(delete_item);
             }
         });
@@ -137,7 +137,7 @@ public class FavorListFragment extends Fragment {
                     switch (menuPosition){
                         case 0:
 
-                            CommonUtil.favorIdSet.remove(String.valueOf(favorList.get(adapterPosition).getId()));
+                            Util.favorIdSet.remove(String.valueOf(favorList.get(adapterPosition).getId()));
 
                             try{
                                 ContentValues values = new ContentValues();
@@ -149,7 +149,7 @@ public class FavorListFragment extends Fragment {
                             }
                             favorList.remove(favorList.get(adapterPosition));
                             adapter = new MyAdapter(context,favorList);
-                            CommonUtil.setContactList(context,contact_RecyclerView,adapter,favorList,manager);
+                            Util.setContactList(context,contact_RecyclerView,adapter,favorList,manager);
 
                             toast.setText(R.string.deleteOK);toast.show();
                             //刪除最愛清單

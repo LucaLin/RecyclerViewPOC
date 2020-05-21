@@ -14,7 +14,7 @@ import android.widget.TextView;
 import com.example.r30_a.recyclerviewpoc.R;
 import com.example.r30_a.recyclerviewpoc.controller.MainActivity;
 import com.example.r30_a.recyclerviewpoc.controller.WelcomeActivity;
-import com.example.r30_a.recyclerviewpoc.util.CommonUtil;
+import com.example.r30_a.recyclerviewpoc.util.Util;
 
 public class WelcomeFragment extends Fragment implements View.OnClickListener{
     private static final String PAGE_NUMBER = "page-number";
@@ -63,7 +63,7 @@ public class WelcomeFragment extends Fragment implements View.OnClickListener{
         intent = new Intent(getActivity(), MainActivity.class);
 
         if ((intent!= null)){//第二次開啟就不進入歡迎畫面
-            CommonUtil.setFirstTimeUse(getActivity(),false);
+            Util.setFirstTimeUse(getActivity(),false);
             startActivity(intent);
             getActivity().finish();
             intent = null;

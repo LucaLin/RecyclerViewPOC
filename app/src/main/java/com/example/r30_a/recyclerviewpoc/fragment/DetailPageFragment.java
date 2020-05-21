@@ -30,7 +30,7 @@ import android.widget.Toast;
 import com.example.r30_a.recyclerviewpoc.R;
 
 import com.example.r30_a.recyclerviewpoc.controller.MapsActivity;
-import com.example.r30_a.recyclerviewpoc.util.CommonUtil;
+import com.example.r30_a.recyclerviewpoc.util.Util;
 import com.github.dfqin.grantor.PermissionListener;
 import com.github.dfqin.grantor.PermissionsUtil;
 
@@ -135,7 +135,7 @@ public class DetailPageFragment extends Fragment {
             context = getContext();
             toast = Toast.makeText(context, "", Toast.LENGTH_SHORT);
             sp = context.getSharedPreferences("favorTags", MODE_PRIVATE);
-            CommonUtil.favorIdSet = sp.getStringSet("favorTags", new HashSet<String>());
+            Util.favorIdSet = sp.getStringSet("favorTags", new HashSet<String>());
 
         }
     }

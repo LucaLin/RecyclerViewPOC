@@ -28,7 +28,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.example.r30_a.recyclerviewpoc.R;
 import com.example.r30_a.recyclerviewpoc.util.BitmapUtil;
-import com.example.r30_a.recyclerviewpoc.util.CommonUtil;
+import com.example.r30_a.recyclerviewpoc.util.Util;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
@@ -291,7 +291,7 @@ public class AddProfileActivity extends AppCompatActivity implements View.OnClic
 //                camera_uri = Uri.fromFile(file);
 //
 //                intent.putExtra(MediaStore.EXTRA_OUTPUT, camera_uri);//將拍照的檔案放入暫存檔路徑
-                startActivityForResult(CommonUtil.getCameraIntentUnder23(camera_uri), CAMERA_REQUEST);
+                startActivityForResult(Util.getCameraIntentUnder23(camera_uri), CAMERA_REQUEST);
 
             } else {
                 camera_uri = FileProvider.getUriForFile(getApplicationContext(), "com.example.r30_a.recyclerviewpoc.fileprovider", temp_file);

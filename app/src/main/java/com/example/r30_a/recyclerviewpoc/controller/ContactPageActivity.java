@@ -21,7 +21,7 @@ import android.widget.TextView;
 import com.example.r30_a.recyclerviewpoc.R;
 import com.example.r30_a.recyclerviewpoc.fragment.ContactPageFragment;
 import com.example.r30_a.recyclerviewpoc.fragment.FavorListFragment;
-import com.example.r30_a.recyclerviewpoc.util.CommonUtil;
+import com.example.r30_a.recyclerviewpoc.util.Util;
 
 public class ContactPageActivity extends AppCompatActivity {
     //------抽屜元件--------//
@@ -64,7 +64,7 @@ public class ContactPageActivity extends AppCompatActivity {
 
 
         drawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
-        CommonUtil.setDrawer( ContactPageActivity.this, drawerLayout, toolbar, R.layout.drawer_header, userName, navigationView);
+        Util.setDrawer( ContactPageActivity.this, drawerLayout, toolbar, R.layout.drawer_header, userName, navigationView);
         //----------抽屜動作----------//
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override

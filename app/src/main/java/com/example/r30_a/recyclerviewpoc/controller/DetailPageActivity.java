@@ -32,7 +32,7 @@ import com.example.r30_a.recyclerviewpoc.fragment.FavorListFragment;
 import com.example.r30_a.recyclerviewpoc.fragment.UpdateContactFragment;
 import com.example.r30_a.recyclerviewpoc.helper.MyContactDBHelper;
 
-import com.example.r30_a.recyclerviewpoc.util.CommonUtil;
+import com.example.r30_a.recyclerviewpoc.util.Util;
 
 public class DetailPageActivity extends AppCompatActivity {
 
@@ -58,7 +58,6 @@ public class DetailPageActivity extends AppCompatActivity {
     SharedPreferences sf;
     String userName;
     ImageView img_headerAvatar;
-    Bitmap bitmap_avatar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,7 +76,7 @@ public class DetailPageActivity extends AppCompatActivity {
         transaction.replace(R.id.frameLayout, fragment);
         transaction.commit();
 
-        CommonUtil.setDrawer(this, drawerLayout, toolbar, R.layout.drawer_header, userName, navigationView);
+        Util.setDrawer(this, drawerLayout, toolbar, R.layout.drawer_header, userName, navigationView);
     }
 
     private void findViewAndGetData() {
@@ -93,7 +92,7 @@ public class DetailPageActivity extends AppCompatActivity {
         toolbar.setOnMenuItemClickListener(onMenuItemClickListener);
 
         userName = sf.getString("name", "");
-        CommonUtil.favorIdSet = sp.getStringSet("favorTags", null);
+        Util.favorIdSet = sp.getStringSet("favorTags", null);
 //        get Intent data
 
         final Intent intent = getIntent();
@@ -119,21 +118,10 @@ public class DetailPageActivity extends AppCompatActivity {
         TextView txv_header = navigationView.getHeaderView(0).findViewById(R.id.txvHeaderTitle);
         img_headerAvatar = navigationView.getHeaderView(0).findViewById(R.id.img_headerAvatar);
         txv_header.setText(getResources().getString(R.string.welcomeBack) + userName);
-        
-        if (bitmap_avatar != null) {
-            img_headerAvatar.setImageBitmap(getBitmap_avatar(sf.getString("avatar", "")));
-        }
+
+        img_headerAvatar.setImageBitmap(Util.getBitmap_avatar(sf.getString("avatar", "")));
 
     }
-
-    public Bitmap getBitmap_avatar(String img_base64) {
-        if (!TextUtils.isEmpty(img_base64)) {
-            byte[] avatar_bytes = Base64.decode(img_base64, Base64.DEFAULT);
-            bitmap_avatar = BitmapFactory.decodeByteArray(avatar_bytes, 0, avatar_bytes.length);
-        }
-        return bitmap_avatar;
-    }
-
 
     public NavigationView.OnNavigationItemSelectedListener navigationItemSelectedListener = new NavigationView.OnNavigationItemSelectedListener() {
         @Override
@@ -173,14 +161,14 @@ public class DetailPageActivity extends AppCompatActivity {
 
                     break;
                 case R.id.p2_addFavor:
-                    if (!CommonUtil.favorIdSet.contains(String.valueOf(id))) {
+                    if (!Util.favorIdSet.contains(String.valueOf(id))) {
 
                         ContentValues values = new ContentValues();
                         values.put(MyContactDBHelper.FAVOR_TAG, 1);
                         myContactDBHelper.getWritableDatabase().update(MyContactDBHelper.TABLE_NAME, values,
                                 MyContactDBHelper.CONTACT_ID + "=?", new String[]{String.valueOf(id)});
 
-                        CommonUtil.favorIdSet.add(String.valueOf(id));
+                        Util.favorIdSet.add(String.valueOf(id));
                         toast.setText(R.string.favorDone);
                         toast.show();
                         finish();
@@ -200,7 +188,7 @@ public class DetailPageActivity extends AppCompatActivity {
                                     try {
                                         //使用id來找原始資料
                                         Cursor c = getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
-                                                CommonUtil.phoneNumberProjection,
+                                                Util.phoneNumberProjection,
                                                 "contact_id =?",
                                                 new String[]{String.valueOf(id)},
                                                 null);

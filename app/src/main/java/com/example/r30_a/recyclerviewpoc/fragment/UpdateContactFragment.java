@@ -10,7 +10,6 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -42,7 +41,7 @@ import com.example.r30_a.recyclerviewpoc.controller.CropImageActivity;
 import com.example.r30_a.recyclerviewpoc.helper.MyContactDBHelper;
 import com.example.r30_a.recyclerviewpoc.helper.UpdateHelper;
 import com.example.r30_a.recyclerviewpoc.util.BitmapUtil;
-import com.example.r30_a.recyclerviewpoc.util.CommonUtil;
+import com.example.r30_a.recyclerviewpoc.util.Util;
 import com.github.dfqin.grantor.PermissionListener;
 import com.github.dfqin.grantor.PermissionsUtil;
 
@@ -51,9 +50,6 @@ import java.io.File;
 
 import android.provider.ContactsContract.CommonDataKinds.Phone;
 import android.provider.ContactsContract.Data;
-import android.provider.ContactsContract.CommonDataKinds.Note;
-import android.provider.ContactsContract.Contacts;
-import android.provider.ContactsContract.CommonDataKinds.StructuredPostal;
 
 import static android.app.Activity.RESULT_OK;
 import static com.facebook.FacebookSdk.getApplicationContext;
@@ -199,7 +195,7 @@ public class UpdateContactFragment extends Fragment implements View.OnClickListe
                 toast.setText(R.string.wrongInput);
                 toast.show();
             } else {
-                if (CommonUtil.isCellPhoneNumber(updatePhone)) {
+                if (Util.isCellPhoneNumber(updatePhone)) {
                     final AlertDialog.Builder builder = new AlertDialog.Builder(context);
                     builder.setTitle(R.string.hint)
                             .setMessage(R.string.sureToUpdate)
@@ -370,7 +366,7 @@ public class UpdateContactFragment extends Fragment implements View.OnClickListe
 //                file = new File(filePath);
 //                camera_uri = Uri.fromFile(file);
 //                intent.putExtra(MediaStore.EXTRA_OUTPUT, camera_uri);//將拍照的檔案放入暫存檔路徑
-                startActivityForResult(CommonUtil.getCameraIntentUnder23(camera_uri), CAMERA_REQUEST);
+                startActivityForResult(Util.getCameraIntentUnder23(camera_uri), CAMERA_REQUEST);
 
             } else {
                 camera_uri = FileProvider.getUriForFile(getApplicationContext(), "com.example.r30_a.recyclerviewpoc.fileprovider", temp_file);

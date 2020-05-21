@@ -12,7 +12,6 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -35,9 +34,7 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.Toast;
-import com.example.r30_a.recyclerviewpoc.util.CommonUtil;
 
-import com.example.r30_a.recyclerviewpoc.BuildConfig;
 import com.example.r30_a.recyclerviewpoc.R;
 import com.example.r30_a.recyclerviewpoc.controller.CropImageActivity;
 import com.example.r30_a.recyclerviewpoc.helper.MyContactDBHelper;
@@ -52,9 +49,8 @@ import java.io.File;
 import java.io.IOException;
 
 import static android.app.Activity.RESULT_OK;
-import static android.support.v4.content.FileProvider.getUriForFile;
-import static com.example.r30_a.recyclerviewpoc.util.CommonUtil.getCameraIntentUnder23;
-import static com.example.r30_a.recyclerviewpoc.util.CommonUtil.isCellPhoneNumber;
+import static com.example.r30_a.recyclerviewpoc.util.Util.getCameraIntentUnder23;
+import static com.example.r30_a.recyclerviewpoc.util.Util.isCellPhoneNumber;
 import static com.facebook.FacebookSdk.getApplicationContext;
 
 public class AddContactFragment extends Fragment {

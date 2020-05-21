@@ -20,6 +20,7 @@ import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.util.Base64;
 import android.view.View;
 
@@ -45,7 +46,7 @@ import java.util.regex.Pattern;
  * Created by LUCA on 2018/12/12.
  */
 
-public class CommonUtil  {
+public class Util {
 
     private static final String MY_TEST_PREF = "MY_TEST_PREF";
     private static final String FIRST_USE = "FIRST_USE";
@@ -227,6 +228,15 @@ public class CommonUtil  {
         intent.putExtra(MediaStore.EXTRA_OUTPUT, camera_uri);//將拍照的檔案放入暫存檔路徑
 
         return intent;
+    }
+
+    public static Bitmap getBitmap_avatar(String img_base64) {
+        Bitmap bitmap_avatar = null;
+        if (!TextUtils.isEmpty(img_base64)) {
+            byte[] avatar_bytes = Base64.decode(img_base64, Base64.DEFAULT);
+            bitmap_avatar = BitmapFactory.decodeByteArray(avatar_bytes, 0, avatar_bytes.length);
+        }
+        return bitmap_avatar;
     }
 
 

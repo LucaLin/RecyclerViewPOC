@@ -8,7 +8,7 @@ import android.view.View;
 import com.example.r30_a.recyclerviewpoc.R;
 import com.example.r30_a.recyclerviewpoc.adapter.WelcomePagerAdapter;
 import com.example.r30_a.recyclerviewpoc.fragment.WelcomeFragment;
-import com.example.r30_a.recyclerviewpoc.util.CommonUtil;
+import com.example.r30_a.recyclerviewpoc.util.Util;
 
 import java.util.ArrayList;
 
@@ -44,8 +44,8 @@ public class WelcomeActivity extends AppCompatActivity {
         if(WelcomeFragment.MAX_PAGE_NUMBER <= 1){
             indicator.setVisibility(View.INVISIBLE);
         }
-        if(CommonUtil.isFirstTimeUse(this)){
-            CommonUtil.setFirstTimeUse(this,false);
+        if(Util.isFirstTimeUse(this)){
+            Util.setFirstTimeUse(this,false);
         }
     }
 
