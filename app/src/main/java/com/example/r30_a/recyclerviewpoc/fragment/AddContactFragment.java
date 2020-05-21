@@ -37,7 +37,7 @@ import android.widget.Toast;
 
 import com.example.r30_a.recyclerviewpoc.R;
 import com.example.r30_a.recyclerviewpoc.controller.CropImageActivity;
-import com.example.r30_a.recyclerviewpoc.helper.MyContactDBHelper;
+import com.example.r30_a.recyclerviewpoc.helper.MyDBHelper;
 import com.example.r30_a.recyclerviewpoc.helper.UpdateHelper;
 import com.example.r30_a.recyclerviewpoc.util.BitmapUtil;
 
@@ -74,7 +74,7 @@ public class AddContactFragment extends Fragment {
     FrameLayout pickUserPhoto;
     Bitmap update_avatar = null;
     ContentValues values;
-    MyContactDBHelper myContactDBHelper;
+    MyDBHelper myDBHelper;
     SharedPreferences sp;
     File file;
 
@@ -95,7 +95,7 @@ public class AddContactFragment extends Fragment {
         toast = Toast.makeText(context, "", Toast.LENGTH_SHORT);
         resolver = context.getContentResolver();
         temp_file = new File("/sdcard/a.jpg");
-        myContactDBHelper = MyContactDBHelper.getInstance(context);
+        myDBHelper = MyDBHelper.getInstance(context);
         sp = context.getSharedPreferences("favorTags", Context.MODE_PRIVATE);
     }
 
@@ -354,18 +354,18 @@ public class AddContactFragment extends Fragment {
 
             //----------加入DB----------//
             values = new ContentValues();
-            values.put(MyContactDBHelper.CONTACT_ID, contactId);
-            values.put(MyContactDBHelper.NAME, name);
-            values.put(MyContactDBHelper.PHONE_NUMBER, phoneNum);
-            values.put(MyContactDBHelper.NOTE, note);
-            values.put(MyContactDBHelper.CITY, city);
-            values.put(MyContactDBHelper.STREET, street);
+            values.put(MyDBHelper.CONTACT_ID, contactId);
+            values.put(MyDBHelper.NAME, name);
+            values.put(MyDBHelper.PHONE_NUMBER, phoneNum);
+            values.put(MyDBHelper.NOTE, note);
+            values.put(MyDBHelper.CITY, city);
+            values.put(MyDBHelper.STREET, street);
             if (img_avatar_base64 != null && img_avatar_base64.length() > 0) {
-                values.put(MyContactDBHelper.IMG_AVATAR, img_avatar_base64);
+                values.put(MyDBHelper.IMG_AVATAR, img_avatar_base64);
             }
-            values.put(MyContactDBHelper.NUMBER, (sp.getInt("listSize", 0)) + 1);
+            values.put(MyDBHelper.NUMBER, (sp.getInt("listSize", 0)) + 1);
 
-            myContactDBHelper.getWritableDatabase().insert(MyContactDBHelper.TABLE_NAME, null, values);
+            myDBHelper.getWritableDatabase().insert(MyDBHelper.TABLE_NAME, null, values);
 
             NotificationManager manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
             NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "1");

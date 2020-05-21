@@ -4,14 +4,10 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
-import android.text.TextUtils;
-import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,14 +17,10 @@ import android.widget.Toast;
 
 import com.example.r30_a.recyclerviewpoc.R;
 import com.example.r30_a.recyclerviewpoc.adapter.MyAdapter;
-import com.example.r30_a.recyclerviewpoc.helper.MyContactDBHelper;
+import com.example.r30_a.recyclerviewpoc.helper.MyDBHelper;
 
 import com.example.r30_a.recyclerviewpoc.model.ContactData;
 import com.example.r30_a.recyclerviewpoc.util.Util;
-import com.yanzhenjie.recyclerview.swipe.Closeable;
-import com.yanzhenjie.recyclerview.swipe.OnSwipeMenuItemClickListener;
-import com.yanzhenjie.recyclerview.swipe.SwipeMenu;
-import com.yanzhenjie.recyclerview.swipe.SwipeMenuCreator;
 import com.yanzhenjie.recyclerview.swipe.SwipeMenuItem;
 import com.yanzhenjie.recyclerview.swipe.SwipeMenuRecyclerView;
 
@@ -39,7 +31,7 @@ import static android.content.Context.MODE_PRIVATE;
 
 public class FavorListFragment extends Fragment {
 
-    MyContactDBHelper myContactDBHelper;
+    MyDBHelper myDBHelper;
 
     ArrayList<ContactData> favorList = new ArrayList<>();
     SwipeMenuRecyclerView contact_RecyclerView;
@@ -66,33 +58,33 @@ public class FavorListFragment extends Fragment {
             context = getContext();
             manager = new LinearLayoutManager(context);
             sp = context.getSharedPreferences("favorTags",MODE_PRIVATE);
-            myContactDBHelper = MyContactDBHelper.getInstance(context);
+            myDBHelper = MyDBHelper.getInstance(context);
             Util.favorIdSet = sp.getStringSet("favorTags", new HashSet<>());
             toast = Toast.makeText(context,"",Toast.LENGTH_SHORT);
 
-        Cursor c = myContactDBHelper.getReadableDatabase().query(MyContactDBHelper.TABLE_NAME,null,null,null,null,null,null);
+        Cursor c = myDBHelper.getReadableDatabase().query(MyDBHelper.TABLE_NAME,null,null,null,null,null,null);
 
         if(c != null){
             while (c.moveToNext()){
 
-                int count = c.getInt(c.getColumnIndex(MyContactDBHelper.FAVOR_TAG));
+                int count = c.getInt(c.getColumnIndex(MyDBHelper.FAVOR_TAG));
                 if(count == 1 ){
 
                     ContactData data= new ContactData();
-                    data.setId(Long.valueOf(Util.getDBData(c,MyContactDBHelper.CONTACT_ID)));
-                    data.setNumber(Integer.parseInt(Util.getDBData(c,MyContactDBHelper.NUMBER)));
-                    data.setName(Util.getDBData(c,MyContactDBHelper.NAME));
-                    data.setPhoneNum(Util.getDBData(c,MyContactDBHelper.PHONE_NUMBER));
-                    data.setNote(Util.getDBData(c,MyContactDBHelper.NOTE));
-                    data.setFavorTag(Integer.parseInt(Util.getDBData(c,MyContactDBHelper.FAVOR_TAG)));
+                    data.setId(Long.valueOf(Util.getDBData(c, MyDBHelper.CONTACT_ID)));
+                    data.setNumber(Integer.parseInt(Util.getDBData(c, MyDBHelper.NUMBER)));
+                    data.setName(Util.getDBData(c, MyDBHelper.NAME));
+                    data.setPhoneNum(Util.getDBData(c, MyDBHelper.PHONE_NUMBER));
+                    data.setNote(Util.getDBData(c, MyDBHelper.NOTE));
+                    data.setFavorTag(Integer.parseInt(Util.getDBData(c, MyDBHelper.FAVOR_TAG)));
                     data.setImg_favor(new ImageView(context));
-                    data.setCity(Util.getDBData(c,MyContactDBHelper.CITY));
-                    data.setStreet(Util.getDBData(c,MyContactDBHelper.STREET));
-                    data.setEmail_home(Util.getDBData(c,MyContactDBHelper.EMAIL_DATA_HOME));
-                    data.setEmail_company(Util.getDBData(c,MyContactDBHelper.EMAIL_DATA_COM));
-                    data.setEmail_other(Util.getDBData(c,MyContactDBHelper.EMAIL_DATA_OTHER));
-                    data.setEmail_custom(Util.getDBData(c,MyContactDBHelper.EMAIL_DATA_CUSTOM));
-                    String avatar_base64 = Util.getDBData(c,MyContactDBHelper.IMG_AVATAR);
+                    data.setCity(Util.getDBData(c, MyDBHelper.CITY));
+                    data.setStreet(Util.getDBData(c, MyDBHelper.STREET));
+                    data.setEmail_home(Util.getDBData(c, MyDBHelper.EMAIL_DATA_HOME));
+                    data.setEmail_company(Util.getDBData(c, MyDBHelper.EMAIL_DATA_COM));
+                    data.setEmail_other(Util.getDBData(c, MyDBHelper.EMAIL_DATA_OTHER));
+                    data.setEmail_custom(Util.getDBData(c, MyDBHelper.EMAIL_DATA_CUSTOM));
+                    String avatar_base64 = Util.getDBData(c, MyDBHelper.IMG_AVATAR);
                     data.setImg_avatar(Util.getBitmap_avatar(avatar_base64));
 
                     favorList.add(data);
@@ -133,9 +125,9 @@ public class FavorListFragment extends Fragment {
 
                         try{
                             ContentValues values = new ContentValues();
-                            values.put(MyContactDBHelper.FAVOR_TAG,0);
-                            myContactDBHelper.getWritableDatabase().update(MyContactDBHelper.TABLE_NAME,
-                                    values,MyContactDBHelper.CONTACT_ID + "=? ",new String[]{String.valueOf(favorList.get(adapterPosition).getId())});
+                            values.put(MyDBHelper.FAVOR_TAG,0);
+                            myDBHelper.getWritableDatabase().update(MyDBHelper.TABLE_NAME,
+                                    values, MyDBHelper.CONTACT_ID + "=? ",new String[]{String.valueOf(favorList.get(adapterPosition).getId())});
                         }catch (Exception e){
                             e.getMessage();
                         }

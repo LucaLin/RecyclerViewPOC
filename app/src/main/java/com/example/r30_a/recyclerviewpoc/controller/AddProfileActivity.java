@@ -207,7 +207,7 @@ public class AddProfileActivity extends AppCompatActivity implements View.OnClic
         toast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
         resolver = getContentResolver();
         temp_file = new File("/sdcard/a.jpg");
-        //myContactDBHelper = MyContactDBHelper.getInstance(this);
+        //myDBHelper = MyDBHelper.getInstance(this);
         sp = getSharedPreferences("favorTags", Context.MODE_PRIVATE);
         edtName = (EditText) findViewById(R.id.edtContactName);
         edtPhomeNumber = (EditText) findViewById(R.id.edtPhoneNumber);

@@ -3,11 +3,9 @@ package com.example.r30_a.recyclerviewpoc.fragment;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
@@ -20,11 +18,9 @@ import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -32,7 +28,7 @@ import com.example.r30_a.recyclerviewpoc.R;
 import com.example.r30_a.recyclerviewpoc.adapter.MyAdapter;
 import com.example.r30_a.recyclerviewpoc.adapter.MyDecoration;
 
-import com.example.r30_a.recyclerviewpoc.helper.MyContactDBHelper;
+import com.example.r30_a.recyclerviewpoc.helper.MyDBHelper;
 
 import com.example.r30_a.recyclerviewpoc.model.ContactData;
 import com.example.r30_a.recyclerviewpoc.model.EmailData;
@@ -51,7 +47,6 @@ import com.yanzhenjie.recyclerview.swipe.SwipeMenuRecyclerView;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 
@@ -88,7 +83,7 @@ public class ContactPageFragment extends Fragment {
     private RecyclerView.ItemDecoration itemDecoration;//字首顯示欄
 
     //儲存資料用
-    MyContactDBHelper myContactDBHelper;
+    MyDBHelper myDBHelper;
     SharedPreferences sp;
     //動態搜尋欄
     MyCustomSearchView searchView;
@@ -131,7 +126,7 @@ public class ContactPageFragment extends Fragment {
         resolver = context.getContentResolver();
         toast = Toast.makeText(context, "", Toast.LENGTH_SHORT);
         //資料相關
-        myContactDBHelper = MyContactDBHelper.getInstance(context);
+        myDBHelper = MyDBHelper.getInstance(context);
         sp = context.getSharedPreferences("Tags", Context.MODE_PRIVATE);
 
 //        Util.favorIdSet = sp.getStringSet("favorTags",new HashSet<String>());
@@ -225,10 +220,10 @@ public class ContactPageFragment extends Fragment {
                                     //更新當前清單
 
                                     ContentValues values = new ContentValues();
-                                    values.put(MyContactDBHelper.FAVOR_TAG, 1);
+                                    values.put(MyDBHelper.FAVOR_TAG, 1);
 
-                                    myContactDBHelper.getWritableDatabase().update(MyContactDBHelper.TABLE_NAME, values,
-                                            MyContactDBHelper.CONTACT_ID + "=?", new String[]{String.valueOf(data.getId())});
+                                    myDBHelper.getWritableDatabase().update(MyDBHelper.TABLE_NAME, values,
+                                            MyDBHelper.CONTACT_ID + "=?", new String[]{String.valueOf(data.getId())});
 
                                     Now_ContactList = getList();
                                     Util.setContactList(context, contact_RecyclerView, adapter, Now_ContactList, manager);
@@ -414,10 +409,10 @@ public class ContactPageFragment extends Fragment {
             String email = "";
 
             ContentValues values = new ContentValues();
-            values.put(MyContactDBHelper.CONTACT_ID, id);
-            values.put(MyContactDBHelper.NAME, name);
-            values.put(MyContactDBHelper.PHONE_NUMBER, Util.getFormatPhone(phoneNumber));
-            values.put(MyContactDBHelper.NUMBER, number + 1);
+            values.put(MyDBHelper.CONTACT_ID, id);
+            values.put(MyDBHelper.NAME, name);
+            values.put(MyDBHelper.PHONE_NUMBER, Util.getFormatPhone(phoneNumber));
+            values.put(MyDBHelper.NUMBER, number + 1);
 
             if (emailList != null && emailList.size() > 0) {
                 for (int i = 0; i < emailList.size(); i++) {
@@ -426,16 +421,16 @@ public class ContactPageFragment extends Fragment {
                         switch (emailList.get(i).getType()) {
                             //多個同樣tag的資料怎麼辦 = =?
                             case "1"://住家
-                                values.put(MyContactDBHelper.EMAIL_DATA_HOME, emailList.get(i).getMail());
+                                values.put(MyDBHelper.EMAIL_DATA_HOME, emailList.get(i).getMail());
                                 break;
                             case "2"://公司
-                                values.put(MyContactDBHelper.EMAIL_DATA_COM, emailList.get(i).getMail());
+                                values.put(MyDBHelper.EMAIL_DATA_COM, emailList.get(i).getMail());
                                 break;
                             case "3":
-                                values.put(MyContactDBHelper.EMAIL_DATA_OTHER, emailList.get(i).getMail());
+                                values.put(MyDBHelper.EMAIL_DATA_OTHER, emailList.get(i).getMail());
                                 break;
                             case "0":
-                                values.put(MyContactDBHelper.EMAIL_DATA_CUSTOM, emailList.get(i).getMail());
+                                values.put(MyDBHelper.EMAIL_DATA_CUSTOM, emailList.get(i).getMail());
                                 break;
                         }
                     }
@@ -443,17 +438,17 @@ public class ContactPageFragment extends Fragment {
             }
 
             if (!TextUtils.isEmpty(note)) {
-                values.put(MyContactDBHelper.NOTE, note);
+                values.put(MyDBHelper.NOTE, note);
             }
-            values.put(MyContactDBHelper.CITY, city);
-            values.put(MyContactDBHelper.STREET, street);
+            values.put(MyDBHelper.CITY, city);
+            values.put(MyDBHelper.STREET, street);
 
             if (avatar != null) {
 
-                values.put(MyContactDBHelper.IMG_AVATAR, Util.bitmapToBase64(avatar));
+                values.put(MyDBHelper.IMG_AVATAR, Util.bitmapToBase64(avatar));
             }
 
-            myContactDBHelper.getWritableDatabase().insert(MyContactDBHelper.TABLE_NAME, null, values);
+            myDBHelper.getWritableDatabase().insert(MyDBHelper.TABLE_NAME, null, values);
             tempId = String.valueOf(id);
         }
     }
@@ -472,7 +467,7 @@ public class ContactPageFragment extends Fragment {
                         if (c.moveToFirst()) {
                             //手機裝置、資料庫、顯示清單一併移除
                             resolver.delete(ContactsContract.RawContacts.CONTENT_URI, "contact_id =?", new String[]{String.valueOf(id)});
-                            myContactDBHelper.getWritableDatabase().delete(MyContactDBHelper.TABLE_NAME, String.valueOf(id), null);
+                            myDBHelper.getWritableDatabase().delete(MyDBHelper.TABLE_NAME, String.valueOf(id), null);
                             Now_ContactList.remove(number - 1);
 
                             toast.setText(R.string.deleteOK);
@@ -492,31 +487,31 @@ public class ContactPageFragment extends Fragment {
     public ArrayList<ContactData> getList() {
         ArrayList<ContactData> list = new ArrayList<>();
 
-        Cursor c = myContactDBHelper.getReadableDatabase().query(MyContactDBHelper.TABLE_NAME, null, null, null, null, null, null);
+        Cursor c = myDBHelper.getReadableDatabase().query(MyDBHelper.TABLE_NAME, null, null, null, null, null, null);
         if (c != null) {
             while (c.moveToNext()) {
                 ContactData data = new ContactData();
 
-                data.setId(Long.valueOf(Util.getDBData(c,MyContactDBHelper.CONTACT_ID)));
-                data.setName(Util.getDBData(c,MyContactDBHelper.NAME));
-                data.setPhoneNum(Util.getDBData(c,MyContactDBHelper.PHONE_NUMBER));
-                data.setNumber(Integer.parseInt(Util.getDBData(c,MyContactDBHelper.NUMBER)));
-                data.setNote(Util.getDBData(c,MyContactDBHelper.NOTE));
-                data.setCity(Util.getDBData(c,MyContactDBHelper.CITY));
-                data.setStreet(Util.getDBData(c,MyContactDBHelper.STREET));
-                data.setEmail_home(Util.getDBData(c,MyContactDBHelper.EMAIL_DATA_HOME));
-                data.setEmail_company(Util.getDBData(c,MyContactDBHelper.EMAIL_DATA_COM));
-                data.setEmail_other(Util.getDBData(c,MyContactDBHelper.EMAIL_DATA_OTHER));
-                data.setEmail_custom(Util.getDBData(c,MyContactDBHelper.EMAIL_DATA_CUSTOM));
+                data.setId(Long.valueOf(Util.getDBData(c, MyDBHelper.CONTACT_ID)));
+                data.setName(Util.getDBData(c, MyDBHelper.NAME));
+                data.setPhoneNum(Util.getDBData(c, MyDBHelper.PHONE_NUMBER));
+                data.setNumber(Integer.parseInt(Util.getDBData(c, MyDBHelper.NUMBER)));
+                data.setNote(Util.getDBData(c, MyDBHelper.NOTE));
+                data.setCity(Util.getDBData(c, MyDBHelper.CITY));
+                data.setStreet(Util.getDBData(c, MyDBHelper.STREET));
+                data.setEmail_home(Util.getDBData(c, MyDBHelper.EMAIL_DATA_HOME));
+                data.setEmail_company(Util.getDBData(c, MyDBHelper.EMAIL_DATA_COM));
+                data.setEmail_other(Util.getDBData(c, MyDBHelper.EMAIL_DATA_OTHER));
+                data.setEmail_custom(Util.getDBData(c, MyDBHelper.EMAIL_DATA_CUSTOM));
 
-                int favor_tags = c.getInt(c.getColumnIndex(MyContactDBHelper.FAVOR_TAG));
+                int favor_tags = c.getInt(c.getColumnIndex(MyDBHelper.FAVOR_TAG));
                 if (favor_tags == 1) {
                     data.setFavorTag(favor_tags);
                     data.setImg_favor(new ImageView(context));
                 } else {
                     data.setImg_normal(new ImageView(context));
                 }
-                data.setImg_avatar(Util.getBitmap_avatar(Util.getDBData(c,MyContactDBHelper.IMG_AVATAR)));
+                data.setImg_avatar(Util.getBitmap_avatar(Util.getDBData(c, MyDBHelper.IMG_AVATAR)));
 
                 //-------獲取名稱的第一個字母拼音，供sidebar使用------//
                 String letter = Pinyin.toPinyin(data.getName().substring(0, 1).charAt(0));

@@ -6,8 +6,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -19,8 +17,6 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
-import android.util.Base64;
 import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -30,7 +26,7 @@ import com.example.r30_a.recyclerviewpoc.R;
 import com.example.r30_a.recyclerviewpoc.fragment.DetailPageFragment;
 import com.example.r30_a.recyclerviewpoc.fragment.FavorListFragment;
 import com.example.r30_a.recyclerviewpoc.fragment.UpdateContactFragment;
-import com.example.r30_a.recyclerviewpoc.helper.MyContactDBHelper;
+import com.example.r30_a.recyclerviewpoc.helper.MyDBHelper;
 
 import com.example.r30_a.recyclerviewpoc.util.Util;
 
@@ -52,7 +48,7 @@ public class DetailPageActivity extends AppCompatActivity {
     Toast toast;
     SharedPreferences sp;
 
-    MyContactDBHelper myContactDBHelper;
+    MyDBHelper myDBHelper;
     byte[] bytes;
 
     SharedPreferences sf;
@@ -83,7 +79,7 @@ public class DetailPageActivity extends AppCompatActivity {
 //        DB相關與sf
         context = DetailPageActivity.this;
         toast = Toast.makeText(context, "", Toast.LENGTH_SHORT);
-        myContactDBHelper = MyContactDBHelper.getInstance(this);
+        myDBHelper = MyDBHelper.getInstance(this);
         sf = getSharedPreferences("profile", MODE_PRIVATE);
         sp = getSharedPreferences("favorTags", MODE_PRIVATE);
 
@@ -164,9 +160,9 @@ public class DetailPageActivity extends AppCompatActivity {
                     if (!Util.favorIdSet.contains(String.valueOf(id))) {
 
                         ContentValues values = new ContentValues();
-                        values.put(MyContactDBHelper.FAVOR_TAG, 1);
-                        myContactDBHelper.getWritableDatabase().update(MyContactDBHelper.TABLE_NAME, values,
-                                MyContactDBHelper.CONTACT_ID + "=?", new String[]{String.valueOf(id)});
+                        values.put(MyDBHelper.FAVOR_TAG, 1);
+                        myDBHelper.getWritableDatabase().update(MyDBHelper.TABLE_NAME, values,
+                                MyDBHelper.CONTACT_ID + "=?", new String[]{String.valueOf(id)});
 
                         Util.favorIdSet.add(String.valueOf(id));
                         toast.setText(R.string.favorDone);

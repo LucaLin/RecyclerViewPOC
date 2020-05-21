@@ -5,7 +5,6 @@ import android.Manifest;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -38,7 +37,7 @@ import android.widget.Toast;
 import com.example.r30_a.recyclerviewpoc.R;
 
 import com.example.r30_a.recyclerviewpoc.controller.CropImageActivity;
-import com.example.r30_a.recyclerviewpoc.helper.MyContactDBHelper;
+import com.example.r30_a.recyclerviewpoc.helper.MyDBHelper;
 import com.example.r30_a.recyclerviewpoc.helper.UpdateHelper;
 import com.example.r30_a.recyclerviewpoc.util.BitmapUtil;
 import com.example.r30_a.recyclerviewpoc.util.Util;
@@ -113,7 +112,7 @@ public class UpdateContactFragment extends Fragment implements View.OnClickListe
     File temp_file;
     File file;
 
-    MyContactDBHelper myContactDBHelper;
+    MyDBHelper myDBHelper;
 
     View v;
 
@@ -148,41 +147,50 @@ public class UpdateContactFragment extends Fragment implements View.OnClickListe
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
+            Bundle bundle = getArguments();
             context = getContext();
             resolver = context.getContentResolver();
-            contact_id = getArguments().getString(CONTACT_ID);
-            oldname = getArguments().getString(USER_OLD_NAME);
-            oldphoneNumber = getArguments().getString(USER_OLD_PHONE);
-            oldNote = getArguments().getString(NOTE);
+            contact_id = getInfo(bundle,CONTACT_ID);
+            oldname = getInfo(bundle,USER_OLD_NAME);
+            oldphoneNumber = getInfo(bundle,USER_OLD_PHONE);
+            oldNote = getInfo(bundle,NOTE);
 
-            oldCity = getArguments().getString(CITY);
-            oldStreet = getArguments().getString(STREET);
-            oldEmail_home = getArguments().getString(EMAIL_HOME);
-            oldEmail_company = getArguments().getString(EMAIL_COM);
-            oldEmail_other = getArguments().getString(EMAIL_OTHER);
-            oldEmail_custom = getArguments().getString(EMAIL_CUSTOM);
+            oldCity = getInfo(bundle,CITY);
+            oldStreet = getInfo(bundle,STREET);
+            oldEmail_home = getInfo(bundle,EMAIL_HOME);
+            oldEmail_company = getInfo(bundle,EMAIL_COM);
+            oldEmail_other = getInfo(bundle,EMAIL_OTHER);
+            oldEmail_custom = getInfo(bundle,EMAIL_CUSTOM);
 
-            img_avatar_bytes = getArguments().getByteArray(USER_AVATAR);
+            img_avatar_bytes = bundle.getByteArray(USER_AVATAR);
             temp_file = new File("/sdcard/a.jpg");
             toast = Toast.makeText(context, "", Toast.LENGTH_SHORT);
-            myContactDBHelper = MyContactDBHelper.getInstance(context);
+            myDBHelper = MyDBHelper.getInstance(context);
 
         }
+    }
+
+    public String getInfo(Bundle bundle, String type){
+        return bundle.getString(type);
+    }
+
+    public String getEditString(EditText editText){
+        return editText.getText().toString();
     }
 
     @Override
     public void onClick(final View v) {
         if (v.getId() == R.id.btnUpdate) {
 
-            final String updateName = edtName.getText().toString();
-            final String updatePhone = edtPhone.getText().toString();
-            final String updateNote = edtNote.getText().toString();
-            final String updateCity = edtCity.getText().toString();
-            final String updateStreet = edtStreet.getText().toString();
-            final String updateEmail_home = edtEmail_home.getText().toString();
-            final String updateEmail_company = edtEmail_company.getText().toString();
-            final String updateEmail_other = edtEmail_other.getText().toString();
-            final String updateEmail_custom = edtEmail_custom.getText().toString();
+            final String updateName = getEditString(edtName);
+            final String updatePhone = getEditString(edtPhone);
+            final String updateNote = getEditString(edtNote);
+            final String updateCity = getEditString(edtCity);
+            final String updateStreet = getEditString(edtStreet);
+            final String updateEmail_home = getEditString(edtEmail_home);
+            final String updateEmail_company = getEditString(edtEmail_company);
+            final String updateEmail_other = getEditString(edtEmail_other);
+            final String updateEmail_custom = getEditString(edtEmail_custom);
 
             //updateEmail = edtEmail.getText().toString();
 
@@ -199,56 +207,49 @@ public class UpdateContactFragment extends Fragment implements View.OnClickListe
                     final AlertDialog.Builder builder = new AlertDialog.Builder(context);
                     builder.setTitle(R.string.hint)
                             .setMessage(R.string.sureToUpdate)
-                            .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
+                            .setPositiveButton(R.string.yes, (dialog, which) -> {
 
-                                    Cursor c = resolver.query(Data.CONTENT_URI, new String[]{Data.RAW_CONTACT_ID},
-                                            Phone.CONTACT_ID + "=?", new String[]{contact_id}, null);
-                                    c.moveToFirst();
-                                    String raw_contact_id = c.getString(c.getColumnIndex(Data.RAW_CONTACT_ID));
-                                    c.close();
-                                    try {
-                                        //更新電話
-                                        UpdateHelper.updatePhone(resolver, updatePhone, raw_contact_id);
-                                        //更新名字
-                                        UpdateHelper.updateName(resolver, updateName, contact_id);
-                                        //更新備註
-                                        UpdateHelper.updateNote(resolver, oldNote, updateNote, contact_id);
+                                Cursor c = resolver.query(Data.CONTENT_URI, new String[]{Data.RAW_CONTACT_ID},
+                                        Phone.CONTACT_ID + "=?", new String[]{contact_id}, null);
+                                c.moveToFirst();
+                                String raw_contact_id = Util.getDBData(c,Data.RAW_CONTACT_ID);
+                                c.close();
+                                try {
+                                    //更新電話
+                                    UpdateHelper.updatePhone(resolver, updatePhone, raw_contact_id);
+                                    //更新名字
+                                    UpdateHelper.updateName(resolver, updateName, contact_id);
+                                    //更新備註
+                                    UpdateHelper.updateNote(resolver, oldNote, updateNote, contact_id);
 
-                                        //更新地址
-                                        if (!TextUtils.isEmpty(updateCity) && !TextUtils.isEmpty(updateStreet)) {
-                                            UpdateHelper.updateAddress(resolver, updateCity, updateStreet, contact_id, raw_contact_id);
-                                        } else {
-                                            toast.setText("地址不完整，本次尚未更新");
-                                            toast.show();
-                                        }
-                                        //更新email
-                                        UpdateHelper.updateEmail(resolver, contact_id, updateEmail_home, "1");
-                                        UpdateHelper.updateEmail(resolver, contact_id, updateEmail_company, "2");
-                                        UpdateHelper.updateEmail(resolver, contact_id, updateEmail_other, "3");
-                                        UpdateHelper.updateEmail(resolver, contact_id, updateEmail_custom, "0");
-
-                                    } catch (Exception e) {
-                                        e.getMessage();
+                                    //更新地址
+                                    if (!TextUtils.isEmpty(updateCity) && !TextUtils.isEmpty(updateStreet)) {
+                                        UpdateHelper.updateAddress(resolver, updateCity, updateStreet, contact_id, raw_contact_id);
+                                    } else {
+                                        toast.setText("地址不完整，本次尚未更新");
+                                        toast.show();
                                     }
-                                    //更新資料庫
+                                    //更新email
+                                    UpdateHelper.updateEmail(resolver, contact_id, updateEmail_home, "1");
+                                    UpdateHelper.updateEmail(resolver, contact_id, updateEmail_company, "2");
+                                    UpdateHelper.updateEmail(resolver, contact_id, updateEmail_other, "3");
+                                    UpdateHelper.updateEmail(resolver, contact_id, updateEmail_custom, "0");
 
-                                    updateDB(updateName, updatePhone, updateNote, updateCity, updateStreet,
-                                            updateEmail_home, updateEmail_company, updateEmail_other, updateEmail_custom, bytes);
-
-                                    toast.setText(R.string.updateDataOK);
-                                    toast.show();
-
-                                    changeToThisFrag(new ContactPageFragment());
-
-
+                                } catch (Exception e) {
+                                    e.getMessage();
                                 }
-                            }).setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                        }
-                    }).create();
+                                //更新資料庫
+
+                                updateDB(updateName, updatePhone, updateNote, updateCity, updateStreet,
+                                        updateEmail_home, updateEmail_company, updateEmail_other, updateEmail_custom, bytes);
+
+                                toast.setText(R.string.updateDataOK);
+                                toast.show();
+
+                                changeToThisFrag(new ContactPageFragment());
+
+                            }).setNegativeButton(R.string.no, (dialog, which) -> {
+                            }).create();
 
                     builder.show();
                 } else {
@@ -267,24 +268,24 @@ public class UpdateContactFragment extends Fragment implements View.OnClickListe
                           String updateEmail_other, String updateEmail_custom, byte[] img_avatar_bytes) {
 
         values = new ContentValues();
-        values.put(MyContactDBHelper.NAME, updateName);
-        values.put(MyContactDBHelper.PHONE_NUMBER, updatePhone);
-        values.put(MyContactDBHelper.NOTE, updateNote);
-        values.put(MyContactDBHelper.CITY, updateCity);
-        values.put(MyContactDBHelper.STREET, updateStreet);
-        values.put(MyContactDBHelper.EMAIL_DATA_HOME, updateEmail_home);
-        values.put(MyContactDBHelper.EMAIL_DATA_COM, updateEmail_company);
-        values.put(MyContactDBHelper.EMAIL_DATA_OTHER, updateEmail_other);
-        values.put(MyContactDBHelper.EMAIL_DATA_CUSTOM, updateEmail_custom);
+        values.put(MyDBHelper.NAME, updateName);
+        values.put(MyDBHelper.PHONE_NUMBER, updatePhone);
+        values.put(MyDBHelper.NOTE, updateNote);
+        values.put(MyDBHelper.CITY, updateCity);
+        values.put(MyDBHelper.STREET, updateStreet);
+        values.put(MyDBHelper.EMAIL_DATA_HOME, updateEmail_home);
+        values.put(MyDBHelper.EMAIL_DATA_COM, updateEmail_company);
+        values.put(MyDBHelper.EMAIL_DATA_OTHER, updateEmail_other);
+        values.put(MyDBHelper.EMAIL_DATA_CUSTOM, updateEmail_custom);
         if (img_avatar_bytes != null && img_avatar_bytes.length > 0) {
             String img_base64 = Base64.encodeToString(img_avatar_bytes, Base64.DEFAULT);
-            values.put(MyContactDBHelper.IMG_AVATAR, img_base64);
+            values.put(MyDBHelper.IMG_AVATAR, img_base64);
         } else {//
         }
         try {
 
-            myContactDBHelper.getWritableDatabase().update(MyContactDBHelper.TABLE_NAME, values,
-                    MyContactDBHelper.CONTACT_ID + "=" + contact_id, null);
+            myDBHelper.getWritableDatabase().update(MyDBHelper.TABLE_NAME, values,
+                    MyDBHelper.CONTACT_ID + "=" + contact_id, null);
         } catch (Exception e) {
             e.getMessage();
         }
@@ -330,19 +331,16 @@ public class UpdateContactFragment extends Fragment implements View.OnClickListe
         PopupMenu popupMenu = new PopupMenu(context, v);
         popupMenu.inflate(R.menu.popupmenu_foravatar);
 
-        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.item_camera:
-                        cameraStart();
-                        break;
-                    case R.id.item_picture:
-                        albumStart();
-                        break;
-                }
-                return true;
+        popupMenu.setOnMenuItemClickListener(item -> {
+            switch (item.getItemId()) {
+                case R.id.item_camera:
+                    cameraStart();
+                    break;
+                case R.id.item_picture:
+                    albumStart();
+                    break;
             }
+            return true;
         });
         popupMenu.show();
 
@@ -487,39 +485,6 @@ public class UpdateContactFragment extends Fragment implements View.OnClickListe
         startActivityForResult(intent, CROP_REQUEST);
     }
 
-    //呼叫裁切圖片介面
-//    private Intent getCropImageIntent(Uri uri) {
-//
-//        Intent intent = new Intent("com.android.camera.action.CROP");
-//        intent.setDataAndType(uri, "image/*");
-//        intent.putExtra("crop", "true");
-//        intent.putExtra("scale", true);
-//        intent.putExtra("aspectX", 1);// 这兩項為裁剪框的比例.
-//        intent.putExtra("aspectY", 1);// x:y=1:1
-//        intent.putExtra("outputX", 200);//回傳照片比例X
-//        intent.putExtra("outputY", 200);//回傳照片比例Y
-//        intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(temp_file));
-//        intent.putExtra("outputFormat", "JPEG");
-//
-//        return intent;
-//
-//    }
-
-//    private void setChangedAvatar(File file, ImageView img_avatar) {
-//        try {
-//
-//            update_avatar = BitmapFactory.decodeFile(file.getAbsolutePath());
-//            //bitmap to byte[]
-//            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-//            update_avatar.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
-//            bytes = outputStream.toByteArray();
-//            outputStream.close();
-//            img_avatar.setImageBitmap(update_avatar);
-//
-//        } catch (Exception e) {
-//            e.getMessage();
-//        }
-//    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -527,28 +492,28 @@ public class UpdateContactFragment extends Fragment implements View.OnClickListe
 
         v = inflater.inflate(R.layout.fragment_update_contact, container, false);
 
-        btnUpdate = (Button) v.findViewById(R.id.btnUpdate);
+        btnUpdate = v.findViewById(R.id.btnUpdate);
         btnUpdate.setOnClickListener(this);
-        img_avatar = (ImageView) v.findViewById(R.id.userPhoto);
+        img_avatar = v.findViewById(R.id.userPhoto);
         img_avatar.setOnClickListener(this);
-        pickUserPhoto = (FrameLayout) v.findViewById(R.id.pickUserPhoto);
+        pickUserPhoto = v.findViewById(R.id.pickUserPhoto);
         pickUserPhoto.setOnClickListener(this);
 
-        edtName = (EditText) v.findViewById(R.id.edtDataName);
-        edtPhone = (EditText) v.findViewById(R.id.edtDataPhone);
-        edtNote = (EditText) v.findViewById(R.id.edtDataNote);
-        edtCity = (EditText) v.findViewById(R.id.edtDataCity);
-        edtStreet = (EditText) v.findViewById(R.id.edtDataStreet);
+        edtName = v.findViewById(R.id.edtDataName);
+        edtPhone = v.findViewById(R.id.edtDataPhone);
+        edtNote = v.findViewById(R.id.edtDataNote);
+        edtCity = v.findViewById(R.id.edtDataCity);
+        edtStreet = v.findViewById(R.id.edtDataStreet);
 
-        edtEmail_home = (EditText) v.findViewById(R.id.edtEmail_home);
-        edtEmail_company = (EditText) v.findViewById(R.id.edtEmail_company);
-        edtEmail_other = (EditText) v.findViewById(R.id.edtEmail_other);
-        edtEmail_custom = (EditText) v.findViewById(R.id.edtEmail_custom);
+        edtEmail_home = v.findViewById(R.id.edtEmail_home);
+        edtEmail_company = v.findViewById(R.id.edtEmail_company);
+        edtEmail_other = v.findViewById(R.id.edtEmail_other);
+        edtEmail_custom = v.findViewById(R.id.edtEmail_custom);
 
-        email_homeLayout = (LinearLayout) v.findViewById(R.id.emailHomeLayout);
-        email_companyLayout = (LinearLayout) v.findViewById(R.id.emailWorkLayout);
-        email_otherLayout = (LinearLayout) v.findViewById(R.id.emailOtherLayout);
-        email_customLayout = (LinearLayout) v.findViewById(R.id.emailCustomLayout);
+        email_homeLayout = v.findViewById(R.id.emailHomeLayout);
+        email_companyLayout = v.findViewById(R.id.emailWorkLayout);
+        email_otherLayout = v.findViewById(R.id.emailOtherLayout);
+        email_customLayout = v.findViewById(R.id.emailCustomLayout);
 
         setOldinfo(oldname, oldphoneNumber, oldNote, oldEmail_home, oldEmail_company, oldEmail_other, oldEmail_custom, oldCity, oldStreet);
 

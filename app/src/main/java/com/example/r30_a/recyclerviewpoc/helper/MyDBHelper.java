@@ -8,7 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
  * Created by R30-A on 2019/1/3.
  */
 
-public class MyContactDBHelper extends SQLiteOpenHelper {
+public class MyDBHelper extends SQLiteOpenHelper {
 
     private static final String DB_NAME="CONTACT_DB";//資料庫名稱
     private static final int DB_VERSION = 2;//資料庫版本
@@ -49,14 +49,14 @@ public class MyContactDBHelper extends SQLiteOpenHelper {
             +EMAIL_DATA_OTHER+" TEXT, "
             +EMAIL_DATA_CUSTOM+" TEXT); ";
 
-    private static MyContactDBHelper instance;
+    private static MyDBHelper instance;
     //取得實體
-    public static MyContactDBHelper getInstance(Context context){
-        if(instance==null){instance= new MyContactDBHelper(context,DB_NAME,null,DB_VERSION);};
+    public static MyDBHelper getInstance(Context context){
+        if(instance==null){instance= new MyDBHelper(context,DB_NAME,null,DB_VERSION);};
         return instance;
     }
 
-    private MyContactDBHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version){
+    private MyDBHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version){
         super(context,name,factory,version);
     }
     @Override
