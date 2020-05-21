@@ -16,6 +16,7 @@ import android.provider.MediaStore;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -44,7 +45,7 @@ import java.util.regex.Pattern;
  * Created by LUCA on 2018/12/12.
  */
 
-public class CommonUtil {
+public class CommonUtil  {
 
     private static final String MY_TEST_PREF = "MY_TEST_PREF";
     private static final String FIRST_USE = "FIRST_USE";
@@ -153,7 +154,6 @@ public class CommonUtil {
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
         View headerView = activity.getLayoutInflater().inflate(headerViewResId, navigationView, false);
-
 
     }
 

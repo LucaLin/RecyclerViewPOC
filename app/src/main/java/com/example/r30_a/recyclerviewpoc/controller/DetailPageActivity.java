@@ -19,6 +19,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.util.Base64;
 import android.view.MenuItem;
 import android.widget.ImageView;
@@ -84,16 +85,14 @@ public class DetailPageActivity extends AppCompatActivity {
         context = DetailPageActivity.this;
         toast = Toast.makeText(context, "", Toast.LENGTH_SHORT);
         myContactDBHelper = MyContactDBHelper.getInstance(this);
-
         sf = getSharedPreferences("profile", MODE_PRIVATE);
-        userName = sf.getString("name", "");
-        String img_avatarBase64 = sf.getString("avatar", "");
-        if (img_avatarBase64.length() > 0) {
-            byte[] avatar_bytes = Base64.decode(img_avatarBase64, Base64.DEFAULT);
-            bitmap_avatar = BitmapFactory.decodeByteArray(avatar_bytes, 0, avatar_bytes.length);
-        }
-
         sp = getSharedPreferences("favorTags", MODE_PRIVATE);
+
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.inflateMenu(R.menu.detail_menu);
+        toolbar.setOnMenuItemClickListener(onMenuItemClickListener);
+
+        userName = sf.getString("name", "");
         CommonUtil.favorIdSet = sp.getStringSet("favorTags", null);
 //        get Intent data
 
@@ -113,23 +112,26 @@ public class DetailPageActivity extends AppCompatActivity {
         email_custom = intent.getStringExtra("email_custom");
 
 //      findView and setView
+        navigationView = (NavigationView) findViewById(R.id.navigationView);
+        navigationView.setNavigationItemSelectedListener(navigationItemSelectedListener);
+        drawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
 
         TextView txv_header = navigationView.getHeaderView(0).findViewById(R.id.txvHeaderTitle);
         img_headerAvatar = navigationView.getHeaderView(0).findViewById(R.id.img_headerAvatar);
         txv_header.setText(getResources().getString(R.string.welcomeBack) + userName);
-
+        
         if (bitmap_avatar != null) {
-            img_headerAvatar.setImageBitmap(bitmap_avatar);
+            img_headerAvatar.setImageBitmap(getBitmap_avatar(sf.getString("avatar", "")));
         }
 
-        drawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
+    }
 
-        navigationView = (NavigationView) findViewById(R.id.navigationView);
-        navigationView.setNavigationItemSelectedListener(navigationItemSelectedListener);
-
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.inflateMenu(R.menu.detail_menu);
-        toolbar.setOnMenuItemClickListener(onMenuItemClickListener);
+    public Bitmap getBitmap_avatar(String img_base64) {
+        if (!TextUtils.isEmpty(img_base64)) {
+            byte[] avatar_bytes = Base64.decode(img_base64, Base64.DEFAULT);
+            bitmap_avatar = BitmapFactory.decodeByteArray(avatar_bytes, 0, avatar_bytes.length);
+        }
+        return bitmap_avatar;
     }
 
 
