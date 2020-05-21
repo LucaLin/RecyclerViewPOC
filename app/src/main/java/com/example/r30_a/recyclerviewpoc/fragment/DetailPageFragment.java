@@ -144,24 +144,24 @@ public class DetailPageFragment extends Fragment {
     public View onCreateView(final LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_detail_page, container, false);
-        txvName = (TextView) v.findViewById(R.id.txv_detailName);
-        txvPhoneNumber = (TextView) v.findViewById(R.id.txv_detailPhone);
-        img_avatar = (ImageView) v.findViewById(R.id.detail_img_avatar);
-        ibt_toDial = (ImageButton) v.findViewById(R.id.ib_toCall);
-        ibt_toSMS = (ImageButton) v.findViewById(R.id.ib_toMsg);
-        ibt_toEmail = (ImageButton) v.findViewById(R.id.ib_toEmail);
-        txvNote = (TextView) v.findViewById(R.id.txv_detailNote);
-        txv_detailAddress = (TextView) v.findViewById(R.id.txv_detailAddress);
-        txv_email_home = (TextView) v.findViewById(R.id.txv_email_home);
-        txv_email_company = (TextView) v.findViewById(R.id.txv_email_company);
-        txv_email_other = (TextView) v.findViewById(R.id.txv_email_other);
-        txv_email_custom = (TextView) v.findViewById(R.id.txv_email_custom);
-        emailHomeLayout = (LinearLayout) v.findViewById(R.id.emailHomeLayout);
-        emailWorkLayout = (LinearLayout) v.findViewById(R.id.emailComLayout);
-        emailOtherLayout = (LinearLayout) v.findViewById(R.id.emailOtherLayout);
-        emailCustomLayout = (LinearLayout) v.findViewById(R.id.emailCustomLayout);
+        txvName = v.findViewById(R.id.txv_detailName);
+        txvPhoneNumber = v.findViewById(R.id.txv_detailPhone);
+        img_avatar = v.findViewById(R.id.detail_img_avatar);
+        ibt_toDial = v.findViewById(R.id.ib_toCall);
+        ibt_toSMS = v.findViewById(R.id.ib_toMsg);
+        ibt_toEmail = v.findViewById(R.id.ib_toEmail);
+        txvNote = v.findViewById(R.id.txv_detailNote);
+        txv_detailAddress = v.findViewById(R.id.txv_detailAddress);
+        txv_email_home = v.findViewById(R.id.txv_email_home);
+        txv_email_company = v.findViewById(R.id.txv_email_company);
+        txv_email_other = v.findViewById(R.id.txv_email_other);
+        txv_email_custom = v.findViewById(R.id.txv_email_custom);
+        emailHomeLayout = v.findViewById(R.id.emailHomeLayout);
+        emailWorkLayout = v.findViewById(R.id.emailComLayout);
+        emailOtherLayout = v.findViewById(R.id.emailOtherLayout);
+        emailCustomLayout = v.findViewById(R.id.emailCustomLayout);
 
-        btn_locate = (ImageView) v.findViewById(R.id.btn_locate);
+        btn_locate = v.findViewById(R.id.btn_locate);
         if (!TextUtils.isEmpty(note)) {
             txvNote.setText(note);
         }
@@ -181,91 +181,78 @@ public class DetailPageFragment extends Fragment {
         setText(emailCustomLayout, txv_email_custom, email_custom);
 
         //----------撥號----------//
-        ibt_toDial.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent_dial = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + phoneNumber));
-                if (ActivityCompat.checkSelfPermission(context, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
-                    return;
-                }
-                context.startActivity(intent_dial);
+        ibt_toDial.setOnClickListener(v1 -> {
+            Intent intent_dial = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + phoneNumber));
+            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+                return;
             }
+            context.startActivity(intent_dial);
         });
         //----------簡訊----------//
-        ibt_toSMS.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent_sms = new Intent(Intent.ACTION_SENDTO, Uri.parse("smsto:" + phoneNumber));
-                if (ActivityCompat.checkSelfPermission(context, Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED) {
-                    return;
-                }
-                context.startActivity(intent_sms);
+        ibt_toSMS.setOnClickListener(v12 -> {
+            Intent intent_sms = new Intent(Intent.ACTION_SENDTO, Uri.parse("smsto:" + phoneNumber));
+            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED) {
+                return;
             }
+            context.startActivity(intent_sms);
         });
         //----------信箱----------//
-        ibt_toEmail.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                final List<String> emailList = new ArrayList<>();
-                addMailToList(emailList, email_home);
-                addMailToList(emailList, email_company);
-                addMailToList(emailList, email_other);
-                addMailToList(emailList, email_custom);
-                if (emailList.size() > 0) {
-                    new AlertDialog.Builder(context).setItems(emailList.toArray(new String[emailList.size()]), new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int pos) {
-                            Intent intent = new Intent(Intent.ACTION_SEND);
-                            intent.setData(Uri.parse("mailto:"));
-                            intent.setType("text/plant");
-                            intent.putExtra(Intent.EXTRA_EMAIL, emailList.get(pos));
-                            startActivity(intent);
-                        }
-                    }).setTitle(R.string.chooseMail)
-                            .show();
-                } else {
-                    toast.setText(R.string.noEmailData);
-                    toast.show();
-                }
+        ibt_toEmail.setOnClickListener(v13 -> {
+            final List<String> emailList = new ArrayList<>();
+            addMailToList(emailList, email_home);
+            addMailToList(emailList, email_company);
+            addMailToList(emailList, email_other);
+            addMailToList(emailList, email_custom);
+            if (emailList.size() > 0) {
+                new AlertDialog.Builder(context).setItems(emailList.toArray(new String[emailList.size()]), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int pos) {
+                        Intent intent = new Intent(Intent.ACTION_SEND);
+                        intent.setData(Uri.parse("mailto:"));
+                        intent.setType("text/plant");
+                        intent.putExtra(Intent.EXTRA_EMAIL, emailList.get(pos));
+                        startActivity(intent);
+                    }
+                }).setTitle(R.string.chooseMail).show();
+            } else {
+                toast.setText(R.string.noEmailData);
+                toast.show();
             }
         });
         //----------定位功能----------//
-        btn_locate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        btn_locate.setOnClickListener(v14 -> {
 
-                if (PermissionsUtil.hasPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) &&
-                        PermissionsUtil.hasPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)) {
-                    //GPS定位,抓地址的經緯度後傳給googlemap顯示
-                    try {
-                        if (!TextUtils.isEmpty(address)) {
-                            Intent intent = new Intent(context, MapsActivity.class);
-                            Geocoder geocoder = new Geocoder(context, Locale.getDefault());
-                            List<Address> location = geocoder.getFromLocationName(address, 1);
-                            double lat = location.get(0).getLatitude();
-                            double lng = location.get(0).getLongitude();
-                            intent.putExtra("lat", lat);
-                            intent.putExtra("lng", lng);
-                            intent.putExtra("address", address);
-                            startActivity(intent);
-                        } else {
-                            toast.setText(R.string.noAddress);
-                            toast.show();
-                        }
-
-                    } catch (IOException e) {
-                        e.printStackTrace();
+            if (PermissionsUtil.hasPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) &&
+                    PermissionsUtil.hasPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)) {
+                //GPS定位,抓地址的經緯度後傳給googlemap顯示
+                try {
+                    if (!TextUtils.isEmpty(address)) {
+                        Intent intent = new Intent(context, MapsActivity.class);
+                        Geocoder geocoder = new Geocoder(context, Locale.getDefault());
+                        List<Address> location = geocoder.getFromLocationName(address, 1);
+                        double lat = location.get(0).getLatitude();
+                        double lng = location.get(0).getLongitude();
+                        intent.putExtra("lat", lat);
+                        intent.putExtra("lng", lng);
+                        intent.putExtra("address", address);
+                        startActivity(intent);
+                    } else {
+                        toast.setText(R.string.noAddress);
+                        toast.show();
                     }
 
-                } else {
-                    PermissionsUtil.requestPermission(getActivity(), new PermissionListener() {
-                        @Override
-                        public void permissionGranted(@NonNull String[] permission) {}
-                        @Override
-                        public void permissionDenied(@NonNull String[] permission) {}
-                    }, new String[]{Manifest.permission.ACCESS_FINE_LOCATION,
-                            Manifest.permission.ACCESS_COARSE_LOCATION});
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
+
+            } else {
+                PermissionsUtil.requestPermission(getActivity(), new PermissionListener() {
+                    @Override
+                    public void permissionGranted(@NonNull String[] permission) {}
+                    @Override
+                    public void permissionDenied(@NonNull String[] permission) {}
+                }, new String[]{Manifest.permission.ACCESS_FINE_LOCATION,
+                        Manifest.permission.ACCESS_COARSE_LOCATION});
             }
         });
 

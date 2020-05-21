@@ -67,7 +67,7 @@ public class FavorListFragment extends Fragment {
             manager = new LinearLayoutManager(context);
             sp = context.getSharedPreferences("favorTags",MODE_PRIVATE);
             myContactDBHelper = MyContactDBHelper.getInstance(context);
-            Util.favorIdSet = sp.getStringSet("favorTags",new HashSet<String>());
+            Util.favorIdSet = sp.getStringSet("favorTags", new HashSet<>());
             toast = Toast.makeText(context,"",Toast.LENGTH_SHORT);
 
         Cursor c = myContactDBHelper.getReadableDatabase().query(MyContactDBHelper.TABLE_NAME,null,null,null,null,null,null);
@@ -79,25 +79,22 @@ public class FavorListFragment extends Fragment {
                 if(count == 1 ){
 
                     ContactData data= new ContactData();
-                    data.setId(Long.valueOf(c.getString(c.getColumnIndex(MyContactDBHelper.CONTACT_ID))));
-                    data.setNumber(Integer.parseInt(c.getString(c.getColumnIndex(MyContactDBHelper.NUMBER))));
-                    data.setName(c.getString(c.getColumnIndex(MyContactDBHelper.NAME)));
-                    data.setPhoneNum(c.getString(c.getColumnIndex(MyContactDBHelper.PHONE_NUMBER)));
-                    data.setNote(c.getString(c.getColumnIndex(MyContactDBHelper.NOTE)));
-                    data.setFavorTag(Integer.parseInt(c.getString(c.getColumnIndex(MyContactDBHelper.FAVOR_TAG))));
+                    data.setId(Long.valueOf(Util.getDBData(c,MyContactDBHelper.CONTACT_ID)));
+                    data.setNumber(Integer.parseInt(Util.getDBData(c,MyContactDBHelper.NUMBER)));
+                    data.setName(Util.getDBData(c,MyContactDBHelper.NAME));
+                    data.setPhoneNum(Util.getDBData(c,MyContactDBHelper.PHONE_NUMBER));
+                    data.setNote(Util.getDBData(c,MyContactDBHelper.NOTE));
+                    data.setFavorTag(Integer.parseInt(Util.getDBData(c,MyContactDBHelper.FAVOR_TAG)));
                     data.setImg_favor(new ImageView(context));
-                    data.setCity(c.getString(c.getColumnIndex(MyContactDBHelper.CITY)));
-                    data.setStreet(c.getString(c.getColumnIndex(MyContactDBHelper.STREET)));
-                    data.setEmail_home(c.getString(c.getColumnIndex(MyContactDBHelper.EMAIL_DATA_HOME)));
-                    data.setEmail_company(c.getString(c.getColumnIndex(MyContactDBHelper.EMAIL_DATA_COM)));
-                    data.setEmail_other(c.getString(c.getColumnIndex(MyContactDBHelper.EMAIL_DATA_OTHER)));
-                    data.setEmail_custom(c.getString(c.getColumnIndex(MyContactDBHelper.EMAIL_DATA_CUSTOM)));
-                    String avatar_base64 = c.getString(c.getColumnIndex(MyContactDBHelper.IMG_AVATAR));
-                    if(!TextUtils.isEmpty(avatar_base64)){
-                        byte[] bytes = Base64.decode(avatar_base64, Base64.DEFAULT);
-                        Bitmap img_avatar = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                        data.setImg_avatar(img_avatar);
-                        }
+                    data.setCity(Util.getDBData(c,MyContactDBHelper.CITY));
+                    data.setStreet(Util.getDBData(c,MyContactDBHelper.STREET));
+                    data.setEmail_home(Util.getDBData(c,MyContactDBHelper.EMAIL_DATA_HOME));
+                    data.setEmail_company(Util.getDBData(c,MyContactDBHelper.EMAIL_DATA_COM));
+                    data.setEmail_other(Util.getDBData(c,MyContactDBHelper.EMAIL_DATA_OTHER));
+                    data.setEmail_custom(Util.getDBData(c,MyContactDBHelper.EMAIL_DATA_CUSTOM));
+                    String avatar_base64 = Util.getDBData(c,MyContactDBHelper.IMG_AVATAR);
+                    data.setImg_avatar(Util.getBitmap_avatar(avatar_base64));
+
                     favorList.add(data);
                     }
                 }
@@ -109,9 +106,9 @@ public class FavorListFragment extends Fragment {
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_favor_list, container, false);
 
-        contact_RecyclerView = (SwipeMenuRecyclerView)v.findViewById(R.id.contact_RecyclerView);
+        contact_RecyclerView = v.findViewById(R.id.contact_RecyclerView);
         //無資料的固定顯示頁，預設隱藏
-        noDataLayout = (LinearLayout)v.findViewById(R.id.noData);
+        noDataLayout = v.findViewById(R.id.noData);
         noDataLayout.setVisibility(View.INVISIBLE);
 
         if(favorList.size()>0){
@@ -121,45 +118,39 @@ public class FavorListFragment extends Fragment {
             noDataLayout.setVisibility(View.VISIBLE);
         }
 
-        contact_RecyclerView.setSwipeMenuCreator(new SwipeMenuCreator() {
-            @Override
-            public void onCreateMenu(SwipeMenu swipeLeftMenu, SwipeMenu swipeRightMenu, int viewType) {
-                //建立右菜單刪除按鈕
-                SwipeMenuItem delete_item = Util.setMenuItem(context,200,240,R.drawable.icons8_trash_48,16, Color.parseColor("#dd0000"));
-                swipeRightMenu.addMenuItem(delete_item);
-            }
+        contact_RecyclerView.setSwipeMenuCreator((swipeLeftMenu, swipeRightMenu, viewType) -> {
+            //建立右菜單刪除按鈕
+            SwipeMenuItem delete_item = Util.setMenuItem(context,200,240,R.drawable.icons8_trash_48,16, Color.parseColor("#dd0000"));
+            swipeRightMenu.addMenuItem(delete_item);
         });
 
-        contact_RecyclerView.setSwipeMenuItemClickListener(new OnSwipeMenuItemClickListener() {
-            @Override
-            public void onItemClick(Closeable closeable, final int adapterPosition, int menuPosition, int direction) {
-                if(direction == -1){
-                    switch (menuPosition){
-                        case 0:
+        contact_RecyclerView.setSwipeMenuItemClickListener((closeable, adapterPosition, menuPosition, direction) -> {
+            if(direction == -1){
+                switch (menuPosition){
+                    case 0:
 
-                            Util.favorIdSet.remove(String.valueOf(favorList.get(adapterPosition).getId()));
+                        Util.favorIdSet.remove(String.valueOf(favorList.get(adapterPosition).getId()));
 
-                            try{
-                                ContentValues values = new ContentValues();
-                                values.put(MyContactDBHelper.FAVOR_TAG,0);
-                                myContactDBHelper.getWritableDatabase().update(MyContactDBHelper.TABLE_NAME,
-                                        values,MyContactDBHelper.CONTACT_ID + "=? ",new String[]{String.valueOf(favorList.get(adapterPosition).getId())});
-                            }catch (Exception e){
-                                e.getMessage();
-                            }
-                            favorList.remove(favorList.get(adapterPosition));
-                            adapter = new MyAdapter(context,favorList);
-                            Util.setContactList(context,contact_RecyclerView,adapter,favorList,manager);
+                        try{
+                            ContentValues values = new ContentValues();
+                            values.put(MyContactDBHelper.FAVOR_TAG,0);
+                            myContactDBHelper.getWritableDatabase().update(MyContactDBHelper.TABLE_NAME,
+                                    values,MyContactDBHelper.CONTACT_ID + "=? ",new String[]{String.valueOf(favorList.get(adapterPosition).getId())});
+                        }catch (Exception e){
+                            e.getMessage();
+                        }
+                        favorList.remove(favorList.get(adapterPosition));
+                        adapter = new MyAdapter(context,favorList);
+                        Util.setContactList(context,contact_RecyclerView,adapter,favorList,manager);
 
-                            toast.setText(R.string.deleteOK);toast.show();
-                            //刪除最愛清單
-                            if(favorList.size() == 0){
-                                noDataLayout.setVisibility(View.VISIBLE);
-                            }
-                            break;
-                    }
-                };
-            }
+                        toast.setText(R.string.deleteOK);toast.show();
+                        //刪除最愛清單
+                        if(favorList.size() == 0){
+                            noDataLayout.setVisibility(View.VISIBLE);
+                        }
+                        break;
+                }
+            };
         });
         return v;
     }

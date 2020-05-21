@@ -164,8 +164,8 @@ public class Util {
 
         item.setWidth(width)
                 .setHeight(height)
-//                .setImage(iconId)
-                .setText(textId)
+                .setImage(textId)
+//                .setText(textId)
                 .setTextSize(textSize)
                 .setBackgroundColor(color);
 
@@ -238,6 +238,8 @@ public class Util {
         }
         return bitmap_avatar;
     }
-
+    public static String getDBData(Cursor c, String dbNameId){
+        return c.getString(c.getColumnIndex(dbNameId));
+    }
 
 }

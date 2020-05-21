@@ -355,8 +355,8 @@ public class ContactPageFragment extends Fragment {
                             null, Phone.CONTACT_ID + " =? AND " + Data.MIMETYPE + "=?",
                             new String[]{String.valueOf(id), StructuredPostal.CONTENT_ITEM_TYPE}, null);
                     if (info_cursor != null && info_cursor.moveToFirst()) {
-                        cityName = getDBData(info_cursor, StructuredPostal.CITY);
-                        streetName = getDBData(info_cursor,StructuredPostal.STREET);
+                        cityName = Util.getDBData(info_cursor, StructuredPostal.CITY);
+                        streetName = Util.getDBData(info_cursor,StructuredPostal.STREET);
                         if (streetName == null)
                             streetName = "";
                         if (cityName == null)
@@ -372,8 +372,8 @@ public class ContactPageFragment extends Fragment {
                         emailList.clear();
                         while (email_cursor.moveToNext()) {
                             EmailData emailData = new EmailData();
-                            String type = getDBData(email_cursor, Email.TYPE);
-                            email = getDBData(email_cursor, Email.DATA);
+                            String type = Util.getDBData(email_cursor, Email.TYPE);
+                            email = Util.getDBData(email_cursor, Email.DATA);
                             emailData.setType(type);
                             emailData.setMail(email);
                             emailList.add(emailData);
@@ -497,17 +497,17 @@ public class ContactPageFragment extends Fragment {
             while (c.moveToNext()) {
                 ContactData data = new ContactData();
 
-                data.setId(Long.valueOf(getDBData(c,MyContactDBHelper.CONTACT_ID)));
-                data.setName(getDBData(c,MyContactDBHelper.NAME));
-                data.setPhoneNum(getDBData(c,MyContactDBHelper.PHONE_NUMBER));
-                data.setNumber(Integer.parseInt(getDBData(c,MyContactDBHelper.NUMBER)));
-                data.setNote(getDBData(c,MyContactDBHelper.NOTE));
-                data.setCity(getDBData(c,MyContactDBHelper.CITY));
-                data.setStreet(getDBData(c,MyContactDBHelper.STREET));
-                data.setEmail_home(getDBData(c,MyContactDBHelper.EMAIL_DATA_HOME));
-                data.setEmail_company(getDBData(c,MyContactDBHelper.EMAIL_DATA_COM));
-                data.setEmail_other(getDBData(c,MyContactDBHelper.EMAIL_DATA_OTHER));
-                data.setEmail_custom(getDBData(c,MyContactDBHelper.EMAIL_DATA_CUSTOM));
+                data.setId(Long.valueOf(Util.getDBData(c,MyContactDBHelper.CONTACT_ID)));
+                data.setName(Util.getDBData(c,MyContactDBHelper.NAME));
+                data.setPhoneNum(Util.getDBData(c,MyContactDBHelper.PHONE_NUMBER));
+                data.setNumber(Integer.parseInt(Util.getDBData(c,MyContactDBHelper.NUMBER)));
+                data.setNote(Util.getDBData(c,MyContactDBHelper.NOTE));
+                data.setCity(Util.getDBData(c,MyContactDBHelper.CITY));
+                data.setStreet(Util.getDBData(c,MyContactDBHelper.STREET));
+                data.setEmail_home(Util.getDBData(c,MyContactDBHelper.EMAIL_DATA_HOME));
+                data.setEmail_company(Util.getDBData(c,MyContactDBHelper.EMAIL_DATA_COM));
+                data.setEmail_other(Util.getDBData(c,MyContactDBHelper.EMAIL_DATA_OTHER));
+                data.setEmail_custom(Util.getDBData(c,MyContactDBHelper.EMAIL_DATA_CUSTOM));
 
                 int favor_tags = c.getInt(c.getColumnIndex(MyContactDBHelper.FAVOR_TAG));
                 if (favor_tags == 1) {
@@ -516,7 +516,7 @@ public class ContactPageFragment extends Fragment {
                 } else {
                     data.setImg_normal(new ImageView(context));
                 }
-                data.setImg_avatar(Util.getBitmap_avatar(getDBData(c,MyContactDBHelper.IMG_AVATAR)));
+                data.setImg_avatar(Util.getBitmap_avatar(Util.getDBData(c,MyContactDBHelper.IMG_AVATAR)));
 
                 //-------獲取名稱的第一個字母拼音，供sidebar使用------//
                 String letter = Pinyin.toPinyin(data.getName().substring(0, 1).charAt(0));
@@ -550,7 +550,7 @@ public class ContactPageFragment extends Fragment {
         return list;
     }
 
-    public String getDBData(Cursor c, String dbNameId){
-        return c.getString(c.getColumnIndex(dbNameId));
-    }
+//    public String getDBData(Cursor c, String dbNameId){
+//        return c.getString(c.getColumnIndex(dbNameId));
+//    }
 }
