@@ -83,7 +83,7 @@ public class DetailPageActivity extends AppCompatActivity {
         sf = getSharedPreferences("profile", MODE_PRIVATE);
         sp = getSharedPreferences("favorTags", MODE_PRIVATE);
 
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = findViewById(R.id.toolbar);
         toolbar.inflateMenu(R.menu.detail_menu);
         toolbar.setOnMenuItemClickListener(onMenuItemClickListener);
 
@@ -107,9 +107,9 @@ public class DetailPageActivity extends AppCompatActivity {
         email_custom = intent.getStringExtra("email_custom");
 
 //      findView and setView
-        navigationView = (NavigationView) findViewById(R.id.navigationView);
+        navigationView = findViewById(R.id.navigationView);
         navigationView.setNavigationItemSelectedListener(navigationItemSelectedListener);
-        drawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
+        drawerLayout = findViewById(R.id.drawerLayout);
 
         TextView txv_header = navigationView.getHeaderView(0).findViewById(R.id.txvHeaderTitle);
         img_headerAvatar = navigationView.getHeaderView(0).findViewById(R.id.img_headerAvatar);

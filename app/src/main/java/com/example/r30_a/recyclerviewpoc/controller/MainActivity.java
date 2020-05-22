@@ -74,20 +74,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //自動輪播新聞的設定
     private void autoplayView() {
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while (!isStop) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (viewPager != null) {
-                                viewPager.setCurrentItem(viewPager.getCurrentItem() + 1);
-                            }
-                        }
-                    });
-                    SystemClock.sleep(5000);
-                }
+        new Thread(() -> {
+            while (!isStop) {
+                runOnUiThread(() -> {
+                    if (viewPager != null) {
+                        viewPager.setCurrentItem(viewPager.getCurrentItem() + 1);
+                    }
+                });
+                SystemClock.sleep(5000);
             }
         }).start();
     }
@@ -95,14 +89,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void initView() {
         getNews();
 
-        viewPager = (ViewPager) findViewById(R.id.viewPager);
+        viewPager = findViewById(R.id.viewPager);
 
         myViewPagerAdapter = new MyViewPagerAdapter(MainActivity.this, viewPager, myNewsList);
         viewPager.setAdapter(myViewPagerAdapter);
 
-        btn_toContactPage = (Button) findViewById(R.id.btnContactPage);
-        btn_toSettingPage = (Button) findViewById(R.id.btnSettingPage);
-        btn_toProfile = (Button) findViewById(R.id.btnProfile);
+        btn_toContactPage = findViewById(R.id.btnContactPage);
+        btn_toSettingPage = findViewById(R.id.btnSettingPage);
+        btn_toProfile = findViewById(R.id.btnProfile);
         btn_toContactPage.setOnClickListener(this);
         btn_toSettingPage.setOnClickListener(this);
         btn_toProfile.setOnClickListener(this);
@@ -128,15 +122,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 @Override
                 public void permissionDenied(@NonNull String[] permission) {
                 }
-            }, new String[]{Manifest.permission.READ_CONTACTS,
+            }, Manifest.permission.READ_CONTACTS,
                     Manifest.permission.WRITE_CONTACTS,
                     Manifest.permission.READ_EXTERNAL_STORAGE,
                     Manifest.permission.WRITE_EXTERNAL_STORAGE,
                     Manifest.permission.CALL_PHONE,
-                    Manifest.permission.SEND_SMS,
-
-
-            });
+                    Manifest.permission.SEND_SMS);
         }
 
     }
@@ -165,29 +156,26 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     public void getNews() {
 
-        new Thread(new Runnable() {//使用線程確保資料能順利抓取
-            @Override
-            public void run() {
-                try {
+        //使用線程確保資料能順利抓取
+        new Thread(() -> {
+            try {
 
-                    Document doc = Jsoup.connect("https://tw.yahoo.com/").get();//要連結的新聞網址
+                Document doc = Jsoup.connect("https://tw.yahoo.com/").get();//要連結的新聞網址
 
-                    Element element = doc.getElementById("t1");
-                    Elements titles = element.select("a[href]");//標題列
-                    for (int i = 3; i < titles.size(); i++) {
-                        String title = titles.get(i).select("a[href] > span").text();
-                        String url = titles.get(i).select("a").attr("href");
+                Element element = doc.getElementById("t1");
+                Elements titles = element.select("a[href]");//標題列
+                for (int i = 3; i < titles.size(); i++) {
+                    String title = titles.get(i).select("a[href] > span").text();
+                    String url = titles.get(i).select("a").attr("href");
 
-                        ViewPagerData data = new ViewPagerData(MainActivity.this, title, url);
-                        myNewsList.add(data);
+                    ViewPagerData data = new ViewPagerData(MainActivity.this, title, url);
+                    myNewsList.add(data);
 
-                    }
-
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    getNews();
                 }
 
+            } catch (IOException e) {
+                e.printStackTrace();
+                getNews();
             }
 
         }) {

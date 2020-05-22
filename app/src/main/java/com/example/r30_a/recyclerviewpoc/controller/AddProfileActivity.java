@@ -212,20 +212,20 @@ public class AddProfileActivity extends AppCompatActivity implements View.OnClic
         temp_file = new File("/sdcard/a.jpg");
         //myDBHelper = MyDBHelper.getInstance(this);
         sp = getSharedPreferences("favorTags", Context.MODE_PRIVATE);
-        edtName = (EditText) findViewById(R.id.edtContactName);
-        edtPhomeNumber = (EditText) findViewById(R.id.edtPhoneNumber);
-        edtNote = (EditText) findViewById(R.id.edtNote);
-        edtCity = (EditText) findViewById(R.id.edtCity);
-        edtStreet = (EditText) findViewById(R.id.edtStreet);
-        edtEmail_Custom = (EditText) findViewById(R.id.edtEmail_custom);
-        btnAddContact = (Button) findViewById(R.id.btnUpdate);
-        btnLoginFB = (LoginButton) findViewById(R.id.btnFBLogin);
+        edtName = findViewById(R.id.edtContactName);
+        edtPhomeNumber = findViewById(R.id.edtPhoneNumber);
+        edtNote = findViewById(R.id.edtNote);
+        edtCity = findViewById(R.id.edtCity);
+        edtStreet = findViewById(R.id.edtStreet);
+        edtEmail_Custom = findViewById(R.id.edtEmail_custom);
+        btnAddContact = findViewById(R.id.btnUpdate);
+        btnLoginFB = findViewById(R.id.btnFBLogin);
 
         btnLoginFB.setOnClickListener(this);
-        img_avatar = (ImageView) findViewById(R.id.userPhoto);
+        img_avatar = findViewById(R.id.userPhoto);
         img_avatar.setOnClickListener(this);
 
-        btnUpdate = (Button) findViewById(R.id.btnUpdate);
+        btnUpdate = findViewById(R.id.btnUpdate);
         btnUpdate.setOnClickListener(this);
 
         edtName.setText(sf.getString("name", ""));
@@ -247,19 +247,16 @@ public class AddProfileActivity extends AppCompatActivity implements View.OnClic
         PopupMenu popupMenu = new PopupMenu(this, v);
         popupMenu.inflate(R.menu.popupmenu_foravatar);
 
-        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.item_camera:
-                        cameraStart();
-                        break;
-                    case R.id.item_picture:
-                        albumStart();
-                        break;
-                }
-                return true;
+        popupMenu.setOnMenuItemClickListener(item -> {
+            switch (item.getItemId()) {
+                case R.id.item_camera:
+                    cameraStart();
+                    break;
+                case R.id.item_picture:
+                    albumStart();
+                    break;
             }
+            return true;
         });
         popupMenu.show();
 
@@ -323,45 +320,6 @@ public class AddProfileActivity extends AppCompatActivity implements View.OnClic
         startActivityForResult(intent, CROP_REQUEST);
     }
 
-    //呼叫裁切圖片介面
-//    private Intent getCropImageIntent(Uri uri) {
-//        try {
-//            Intent intent = new Intent("com.android.camera.action.CROP");
-//            File cropFile = new File(Environment.getExternalStorageDirectory().getPath(), "avatar.png");
-//            if (cropFile.exists()) {
-//                cropFile.delete();
-//            }
-//
-//            cropFile.createNewFile();
-//
-//            Uri imageUri = uri;
-//            Uri outputUri = null;
-//
-//            outputUri = Uri.fromFile(cropFile);
-//            intent.putExtra("crop", "true");
-//            intent.putExtra("aspectX", 1);// 这兩項為裁剪框的比例.
-//            intent.putExtra("aspectY", 1);// x:y=1:1
-////            intent.putExtra("scale", true);
-//            intent.putExtra("return-data", false);
-//            intent.putExtra("outputX", 200);//回傳照片比例X
-//            intent.putExtra("outputY", 200);//回傳照片比例Y
-//            if (imageUri != null) {
-//                intent.setDataAndType(imageUri, "image/*");
-//            }
-//            if (outputUri != null) {
-//                intent.putExtra(MediaStore.EXTRA_OUTPUT,outputUri);
-//            }
-//            intent.putExtra("noFaceDetection", true);
-//            intent.putExtra("outputFormat", Bitmap.CompressFormat.JPEG.toString());
-//
-//            return intent;
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//        return null;
-
-
-//    }
 
     private void setChangedAvatar(File file, ImageView img_avatar) {
         try {

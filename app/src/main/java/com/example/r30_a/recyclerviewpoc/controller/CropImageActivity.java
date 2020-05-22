@@ -118,14 +118,14 @@ public class CropImageActivity extends AppCompatActivity
     }
 
     public void init(){
-        btnOK = (Button) findViewById(R.id.btnok);
-        btnCancell = (Button) findViewById(R.id.btncancell);
+        btnOK = findViewById(R.id.btnok);
+        btnCancell = findViewById(R.id.btncancell);
         btnOK.setOnClickListener(this);
         btnCancell.setOnClickListener(this);
 
-        scaleImageView = (ScaleImageView) findViewById(R.id.imgPic);
+        scaleImageView = findViewById(R.id.imgPic);
         scaleImageView.setDrawingCacheEnabled(true);
-        imgMask = (ImageView) findViewById(R.id.img_mask);
+        imgMask = findViewById(R.id.img_mask);
     }
 
 

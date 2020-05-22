@@ -44,77 +44,65 @@ public class ContactPageActivity extends AppCompatActivity {
         sf = getSharedPreferences("profile", MODE_PRIVATE);
 
         //----------抽屜設定-----------//
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-        navigationView = (NavigationView) findViewById(R.id.navigationView);
+        toolbar = findViewById(R.id.toolbar);
+        navigationView = findViewById(R.id.navigationView);
 
         //--------設定抬頭個人照 && 名字----//
         userName = sf.getString("name", "");
         String img_avatarBase64 = sf.getString("avatar", "");
-        if (img_avatarBase64.length() > 0) {
-            byte[] avatar_bytes = Base64.decode(img_avatarBase64, Base64.DEFAULT);
-            bitmap_avatar = BitmapFactory.decodeByteArray(avatar_bytes, 0, avatar_bytes.length);
-        }
 
         TextView txvHeaderView = navigationView.getHeaderView(0).findViewById(R.id.txvHeaderTitle);
         img_headerAvatar = navigationView.getHeaderView(0).findViewById(R.id.img_headerAvatar);
         txvHeaderView.setText(getResources().getString(R.string.welcomeBack) + userName);
-        if (bitmap_avatar != null) {
-            img_headerAvatar.setImageBitmap(bitmap_avatar);
-        }
 
+        img_headerAvatar.setImageBitmap(Util.getBitmap_avatar(img_avatarBase64));
 
-        drawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
+        drawerLayout = findViewById(R.id.drawerLayout);
         Util.setDrawer( ContactPageActivity.this, drawerLayout, toolbar, R.layout.drawer_header, userName, navigationView);
         //----------抽屜動作----------//
-        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                drawerLayout.closeDrawer(GravityCompat.START);//選單按完之後收起抽屜
+        navigationView.setNavigationItemSelectedListener(item -> {
+            drawerLayout.closeDrawer(GravityCompat.START);//選單按完之後收起抽屜
 
-                switch (item.getItemId()) {
-                    //電子名片
-                    case R.id.my_eMess:
-                        startActivity(new Intent(ContactPageActivity.this,E_MessActivity.class));
-                        break;
+            switch (item.getItemId()) {
+                //電子名片
+                case R.id.my_eMess:
+                    startActivity(new Intent(ContactPageActivity.this,E_MessActivity.class));
+                    break;
 
-                    //全部清單
-                    case R.id.allContact:
-                        showFrag(new ContactPageFragment());
+                //全部清單
+                case R.id.allContact:
+                    showFrag(new ContactPageFragment());
 
-                        break;
-                    //常用清單
-                    case R.id.favorContact:
-                        showFrag(new FavorListFragment());
-                        break;
-                    //更多設定
-                    case R.id.settings:
-                        startActivity(new Intent(ContactPageActivity.this, SettingPageActivity.class));
-                        break;
-                }
-                return true;
+                    break;
+                //常用清單
+                case R.id.favorContact:
+                    showFrag(new FavorListFragment());
+                    break;
+                //更多設定
+                case R.id.settings:
+                    startActivity(new Intent(ContactPageActivity.this, SettingPageActivity.class));
+                    break;
             }
+            return true;
         });
         //--------工具列設定-------//
         toolbar.inflateMenu(R.menu.toolbar_menu);
-        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                switch (item.getItemId()) {
+        toolbar.setOnMenuItemClickListener(item -> {
+            switch (item.getItemId()) {
 //                    case R.id.toolbar_add:
 //                        showFrag(new AddContactFragment());
 //                        break;
 
-                    case R.id.toolbar_allContact://所有聯絡人
-                        showFrag(new ContactPageFragment());
-                        break;
+                case R.id.toolbar_allContact://所有聯絡人
+                    showFrag(new ContactPageFragment());
+                    break;
 
-                    case R.id.toolbar_favor://最愛清單
-                        showFrag(new FavorListFragment());
-                        break;
-                }
-
-                return true;
+                case R.id.toolbar_favor://最愛清單
+                    showFrag(new FavorListFragment());
+                    break;
             }
+
+            return true;
         });
     }
 
