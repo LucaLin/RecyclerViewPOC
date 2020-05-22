@@ -27,7 +27,7 @@ public class WelcomeActivity extends AppCompatActivity {
         initView();
         welcomePagerApdater = new WelcomePagerAdapter(getSupportFragmentManager());
 
-        viewPager = (ViewPager)findViewById(R.id.welcomeViewpager);
+        viewPager = findViewById(R.id.welcomeViewpager);
         viewPager.setAdapter(welcomePagerApdater);
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
@@ -38,7 +38,7 @@ public class WelcomeActivity extends AppCompatActivity {
             public void onPageScrollStateChanged(int state) {}
         });
         //標計頁數的小球
-        CircleIndicator indicator = (CircleIndicator)findViewById(R.id.indicator);
+        CircleIndicator indicator = findViewById(R.id.indicator);
         indicator.setViewPager(viewPager);
         //頁數沒有兩頁以上不顯示
         if(WelcomeFragment.MAX_PAGE_NUMBER <= 1){

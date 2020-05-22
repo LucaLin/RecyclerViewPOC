@@ -1,5 +1,6 @@
 package com.example.r30_a.recyclerviewpoc.view;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
@@ -55,6 +56,7 @@ public class ScaleImageView extends android.support.v7.widget.AppCompatImageView
     }
 
     //圖片縮放設定
+    @SuppressLint("ClickableViewAccessibility")
     private void buildImage() {
         //取得手機尺寸
         Context context = getContext();
@@ -70,60 +72,57 @@ public class ScaleImageView extends android.support.v7.widget.AppCompatImageView
         matrix.postTranslate(centerX,centerY);//設定縮放起點
         this.setImageMatrix(matrix);
 
-        this.setOnTouchListener(new OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
+        this.setOnTouchListener((v, event) -> {
 
-                //進行多點偵測
-                switch (event.getAction() & MotionEvent.ACTION_MASK){
+            //進行多點偵測
+            switch (event.getAction() & MotionEvent.ACTION_MASK){
 
-                    //一點觸碰時
-                    case MotionEvent.ACTION_DOWN:
+                //一點觸碰時
+                case MotionEvent.ACTION_DOWN:
+                    changeMatrix.set(matrix);
+                    p1.set(event.getX(),event.getY());
+                    nowState = STATE_DRAG;
+                    break;
+
+                //兩點觸碰時
+                case MotionEvent.ACTION_POINTER_DOWN:
+                    distance = getSpace(event);
+
+                    //距離大於指定距離時才判斷為兩點觸碰, 並設定為縮放狀態
+                    if(distance > 10f){
                         changeMatrix.set(matrix);
-                        p1.set(event.getX(),event.getY());
-                        nowState = STATE_DRAG;
-                        break;
+                        getMiddlePoint(p2,event);
+                        nowState = STATE_ZOOM;
+                    }
+                    break;
+                //兩點都離開觸碰時
+                case MotionEvent.ACTION_UP:break;
 
-                    //兩點觸碰時
-                    case MotionEvent.ACTION_POINTER_DOWN:
-                        distance = getSpace(event);
+                //有一點離開觸碰時，狀態恢復
+                case MotionEvent.ACTION_POINTER_UP:
+                    nowState = STATE_NONE;
+                    break;
 
-                        //距離大於指定距離時才判斷為兩點觸碰, 並設定為縮放狀態
-                        if(distance > 10f){
-                            changeMatrix.set(matrix);
-                            getMiddlePoint(p2,event);
-                            nowState = STATE_ZOOM;
-                        }
-                        break;
-                    //兩點都離開觸碰時
-                    case MotionEvent.ACTION_UP:break;
-
-                    //有一點離開觸碰時，狀態恢復
-                    case MotionEvent.ACTION_POINTER_UP:
-                        nowState = STATE_NONE;
-                        break;
-
-                    case MotionEvent.ACTION_MOVE:
-                        if(nowState == STATE_DRAG){
+                case MotionEvent.ACTION_MOVE:
+                    if(nowState == STATE_DRAG){
+                        matrix.set(changeMatrix);
+                        matrix.postTranslate(event.getX() - p1.x,
+                                event.getY() - p1.y);
+                    }else if (nowState == STATE_ZOOM){
+                        float newDistance = getSpace(event);
+                        if(newDistance > 10f){
                             matrix.set(changeMatrix);
-                            matrix.postTranslate(event.getX() - p1.x,
-                                    event.getY() - p1.y);
-                        }else if (nowState == STATE_ZOOM){
-                            float newDistance = getSpace(event);
-                            if(newDistance > 10f){
-                                matrix.set(changeMatrix);
-                                float newScale = newDistance / distance;
-                                matrix.postScale(newScale,newScale,p2.x,p2.y);
-                            }
+                            float newScale = newDistance / distance;
+                            matrix.postScale(newScale,newScale,p2.x,p2.y);
                         }
-                        break;
-                }
-                ScaleImageView.this.setImageMatrix(matrix);
-
-                scale();
-
-                return true;
+                    }
+                    break;
             }
+            ScaleImageView.this.setImageMatrix(matrix);
+
+            scale();
+
+            return true;
         });
 
     }

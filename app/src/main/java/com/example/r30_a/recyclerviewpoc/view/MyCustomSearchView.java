@@ -48,16 +48,16 @@ public class MyCustomSearchView extends FrameLayout implements View.OnClickListe
 
         LayoutInflater.from(context).inflate(R.layout.view_search,this,true);
 
-        btnOpenSearch = (View)this.findViewById(R.id.open_search_button);
-        btnCloseSearch = (View)this.findViewById(R.id.close_search_button);
+        btnOpenSearch = this.findViewById(R.id.open_search_button);
+        btnCloseSearch = this.findViewById(R.id.close_search_button);
 
         btnOpenSearch.setOnClickListener(this);
         btnCloseSearch.setOnClickListener(this);
 
-        search_close_view = (RelativeLayout)this.findViewById(R.id.search_closed_view);
-        search_open_view = (RelativeLayout)this.findViewById(R.id.search_open_view);
+        search_close_view = this.findViewById(R.id.search_closed_view);
+        search_open_view = this.findViewById(R.id.search_open_view);
 
-        edtInput = (EditText)this.findViewById(R.id.search_input_text);
+        edtInput = this.findViewById(R.id.search_input_text);
 
     }
 

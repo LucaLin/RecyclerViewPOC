@@ -4,7 +4,8 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.net.Uri;
 import android.provider.ContactsContract;
-
+import android.provider.ContactsContract.CommonDataKinds;
+import android.provider.ContactsContract.Data;
 /**
  * Created by R30-A on 2019/2/12.
  */
@@ -14,10 +15,10 @@ public class UpdateHelper {
     //新增名字
     public static boolean insertName(ContentResolver resolver, long contactId, String name){
         ContentValues values = new ContentValues();
-        values.put(ContactsContract.Data.RAW_CONTACT_ID, contactId );
-        values.put(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE);
-        values.put(ContactsContract.CommonDataKinds.StructuredName.GIVEN_NAME, name);
-        resolver.insert(ContactsContract.Data.CONTENT_URI,values);
+        values.put(Data.RAW_CONTACT_ID, contactId );
+        values.put(Data.MIMETYPE, ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE);
+        values.put(CommonDataKinds.StructuredName.GIVEN_NAME, name);
+        resolver.insert(Data.CONTENT_URI,values);
         return true;
     }
 
