@@ -112,12 +112,12 @@ public class AddProfileActivity extends AppCompatActivity implements View.OnClic
                 loginFB();
                 break;
             case R.id.btnUpdate:
-                sf.edit().putString("name", edtName.getText().toString()).commit();
-                sf.edit().putString("phoneNum", edtPhomeNumber.getText().toString()).commit();
-                sf.edit().putString("email_custom", edtEmail_Custom.getText().toString()).commit();
-                sf.edit().putString("city", edtCity.getText().toString()).commit();
-                sf.edit().putString("street", edtStreet.getText().toString()).commit();
-                sf.edit().putString("note", edtNote.getText().toString()).commit();
+                sf.edit().putString("name", (getEditStr(edtName))).commit();
+                sf.edit().putString("phoneNum", (getEditStr(edtPhomeNumber))).commit();
+                sf.edit().putString("email_custom", (getEditStr(edtEmail_Custom))).commit();
+                sf.edit().putString("city", (getEditStr(edtCity))).commit();
+                sf.edit().putString("street", (getEditStr(edtStreet))).commit();
+                sf.edit().putString("note", (getEditStr(edtNote))).commit();
 
                 if (img_avatar_base64 != null && img_avatar_base64.length() > 0) {
                     sf.edit().putString("avatar", img_avatar_base64).commit();
@@ -128,6 +128,9 @@ public class AddProfileActivity extends AppCompatActivity implements View.OnClic
                 finish();
 
         }
+    }
+    public String getEditStr(EditText editText){
+        return editText.getText().toString();
     }
 
     //登入FB功能

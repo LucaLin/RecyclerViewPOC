@@ -49,20 +49,17 @@ public class MyViewPagerAdapter extends PagerAdapter{
     public Object instantiateItem(@NonNull ViewGroup container, final int position) {
 
         View view = LayoutInflater.from(context).inflate(R.layout.news_layout,null);
-        txvTitle = (TextView)view.findViewById(R.id.txvTitle);
+        txvTitle = view.findViewById(R.id.txvTitle);
         if(list != null &&list.size()>0)
         txvTitle.setText(list.get(position % list.size()).getTitle());
         txvTitle.setGravity(Gravity.CENTER);
-        txvTitle.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Uri uri = Uri.parse(list.get(position % list.size()).getUrl());
-                Intent intent = new Intent();
-                intent.setAction(Intent.ACTION_VIEW);
-                intent.setData(uri);
-                context.startActivity(intent);
+        txvTitle.setOnClickListener(v -> {
+            Uri uri = Uri.parse(list.get(position % list.size()).getUrl());
+            Intent intent = new Intent();
+            intent.setAction(Intent.ACTION_VIEW);
+            intent.setData(uri);
+            context.startActivity(intent);
 
-            }
         });
         viewPager.addView(view);
         return view;

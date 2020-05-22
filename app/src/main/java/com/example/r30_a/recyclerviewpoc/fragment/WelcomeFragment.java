@@ -36,11 +36,11 @@ public class WelcomeFragment extends Fragment implements View.OnClickListener{
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_welcome,container,false);
+        View v = inflater.inflate(R.layout.fragment_welcome,container,false);
 
         int pageNumber = getArguments().getInt(PAGE_NUMBER);
-        ImageView imgWelcome = (ImageView)view.findViewById(R.id.imgWelcome);
-        TextView txvWelcomeTitle = (TextView)view.findViewById(R.id.txvWelcomeTitle);
+        ImageView imgWelcome = v.findViewById(R.id.imgWelcome);
+        TextView txvWelcomeTitle = v.findViewById(R.id.txvWelcomeTitle);
 
 
         //設定文字跟圖片隨著翻頁而改變
@@ -49,11 +49,11 @@ public class WelcomeFragment extends Fragment implements View.OnClickListener{
 
         //翻到最後一頁時顯示可進行下一步的button
         if(pageNumber == MAX_PAGE_NUMBER){
-            Button btnStart = (Button)view.findViewById(R.id.btn_start);
+            Button btnStart = v.findViewById(R.id.btn_start);
             btnStart.setVisibility(View.VISIBLE);
             btnStart.setOnClickListener(this);
         }
-        return view;
+        return v;
     }
 
     @Override

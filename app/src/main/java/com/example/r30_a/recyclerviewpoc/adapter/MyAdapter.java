@@ -28,7 +28,7 @@ import java.util.List;
 
 public class MyAdapter extends SwipeMenuAdapter<MyAdapter.MainViewHolder> implements View.OnClickListener{
 
-    ArrayList<ContactData> list = new ArrayList();
+    ArrayList<ContactData> list;
     Context context;
 
     public MyAdapter(Context context, ArrayList<ContactData> list) {
@@ -53,23 +53,25 @@ public class MyAdapter extends SwipeMenuAdapter<MyAdapter.MainViewHolder> implem
     @Override
     public void onBindViewHolder(@NonNull final MainViewHolder holder, final int position) {
 
-        holder.txv_Name.setText(list.get(position).getName());
-        holder.txv_PhoneNum.setText(list.get(position).getPhoneNum());
-        holder.number.setText(String.valueOf(list.get(position).getNumber()));
+        ContactData data = list.get(position);
+
+        holder.txv_Name.setText(data.getName());
+        holder.txv_PhoneNum.setText(data.getPhoneNum());
+        holder.number.setText(String.valueOf(data.getNumber()));
 
         //設定大頭貼
-        if(list.get(position).getImg_avatar() != null){
-            Bitmap bitmap_avatar = BitmapFactory.decodeByteArray(list.get(position).getImg_avatar(),0,list.get(position).getImg_avatar().length);
+        if(data.getImg_avatar() != null){
+            Bitmap bitmap_avatar = BitmapFactory.decodeByteArray(data.getImg_avatar(),0,data.getImg_avatar().length);
             holder.img_avatar.setImageBitmap(bitmap_avatar);
         }else{//沒有大頭貼的話給一個預設圖
             holder.img_avatar.setBackgroundResource(R.drawable.iconfinder_man_196742);
         }
         //設定常用清單tag
-        if(list.get(position).getFavorTag() == 1){
-            list.get(position).setImg_favor(holder.img_favor);
+        if(data.getFavorTag() == 1){
+            data.setImg_favor(holder.img_favor);
 
         }else {
-            list.get(position).setImg_normal(holder.img_favor);
+            data.setImg_normal(holder.img_favor);
         }
 
 
@@ -136,7 +138,8 @@ public class MyAdapter extends SwipeMenuAdapter<MyAdapter.MainViewHolder> implem
     public int getPosForSection(int section){
         for(int i=0; i<getItemCount(); i++){
 
-            String str = Pinyin.toPinyin(list.get(i).getName().charAt(0));
+            ContactData data = list.get(i);
+            String str = Pinyin.toPinyin(data.getName().charAt(0));
             char firstChar = str.toUpperCase().charAt(0);//取拼音的第一個字元代號
             if(firstChar == section){
                 return i;//有找到符合的話，跳頁至該資料的第一筆
