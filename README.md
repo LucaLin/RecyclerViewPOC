@@ -1,4 +1,4 @@
-# RecyclerViewPOC
+# ContactPOC
 
 使用recyclerView做出的簡易通訊錄小工具，並含有其它試做功能
 
